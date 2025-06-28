@@ -1,0 +1,424 @@
+// src/config/tools.js
+// This file defines the tools available in the application, including their routing,
+// descriptions, icons, and categories.
+
+export const TOOLS = [
+  {
+    id: 'home',
+    name: 'Home',
+    path: '/',
+    importPath: './components/HomePage',
+    description: 'Explore all the musical experiments and sound design tools.',
+    icon: '',
+    categories: ['Navigation']
+  },
+  {
+    id: 'virtual-piano',
+    name: 'Piano',
+    path: '/virtual-piano',
+    importPath: './components/VirtualPiano',
+    description: 'Full-featured virtual piano with keyboard and mouse support. Play melodies and chords with realistic sound.',
+    icon: '',
+    categories: ['Instruments', 'Fun']
+  },
+  {
+    id: 'guitar-fretboard',
+    name: 'Guitar Fretboard',
+    path: '/guitar-fretboard',
+    importPath: './components/GuitarFretboardApp',
+    description: 'Interactive guitar neck visualization. Learn note positions, scales, and chord shapes across the fretboard.',
+    icon: '',
+    categories: ['Instruments', 'Theory']
+  },
+  {
+    id: 'drum-machine',
+    name: 'Drum Machine',
+    path: '/drum-machine',
+    importPath: './components/DrumMachine',
+    description: 'Step sequencer with multiple drum kits. Create beats, adjust tempo, and experiment with rhythm patterns.',
+    icon: '',
+    categories: ['Instruments', 'Rhythm', 'Fun']
+  },
+  {
+    id: 'arpeggiator-sequencer',
+    name: 'Arpeggiator',
+    path: '/arpeggiator-sequencer',
+    importPath: './components/ArpeggiatorSequencer',
+    description: 'Advanced arpeggio generator with customizable patterns, note length, and octave range controls.',
+    icon: '',
+    categories: ['Instruments', 'Rhythm', 'Theory', 'Synth']
+  },
+  {
+    id: 'portamento-glide',
+    name: 'Portamento',
+    path: '/portamento-glide',
+    importPath: './components/PortamentoGlide',
+    description: 'Experiment with smooth pitch transitions between notes. Adjust glide time and curve parameters.',
+    icon: '',
+    categories: ['Instruments', 'Synth']
+  },
+  {
+    id: 'wavetable-editor',
+    name: 'Wavetable',
+    path: '/wavetable-editor',
+    importPath: './components/WavetableEditor',
+    description: 'Create and manipulate custom wavetables for unique synth sounds. Draw and morph waveforms.',
+    icon: '',
+    categories: ['Synth', 'Challenge']
+  },
+  {
+    id: 'waveform-combiner',
+    name: 'Waveform Mixer',
+    path: '/waveform-combiner',
+    importPath: './components/WaveformCombiner',
+    description: 'Combine multiple waveforms to create complex sounds. Adjust phase, volume, and harmonic content.',
+    icon: '',
+    categories: ['Synth']
+  },
+  {
+    id: 'lfo-modulation',
+    name: 'LFO',
+    path: '/lfo-modulation',
+    importPath: './components/LFOModulation',
+    description: 'Low Frequency Oscillator tool. Modulate parameters with various waveforms and speed controls.',
+    icon: '',
+    categories: ['Synth']
+  },
+  {
+    id: 'adsr-envelope-tool',
+    name: 'ADSR',
+    path: '/adsr-envelope-tool',
+    importPath: './components/ADSREnvelopeTool',
+    description: 'Visual ADSR envelope editor. Shape attack, decay, sustain, and release parameters for dynamic sounds.',
+    icon: '',
+    categories: ['Synth', 'Theory']
+  },
+  {
+    id: 'humanizer-panel',
+    name: 'Humanizer',
+    path: '/humanizer-panel',
+    importPath: './components/HumanizerPanel',
+    description: 'Add human-like variations to your performances with timing, velocity, and micro-tuning controls.',
+    icon: '',
+    categories: ['Instruments', 'Rhythm']
+  },
+  {
+    id: 'tap-tempo-tool',
+    name: 'Tap Tempo',
+    path: '/tap-tempo-tool',
+    importPath: './components/TapTempoTool',
+    description: 'Set your project tempo by tapping. Includes visual feedback and BPM calculation.',
+    icon: '',
+    categories: ['Rhythm']
+  },
+  {
+    id: 'chord-explorer',
+    name: 'Chord Finder',
+    path: '/chord-explorer',
+    importPath: './components/ChordHighlightPage',
+    description: 'Interactive chord dictionary. Visualize chord structures and hear how they sound.',
+    icon: '',
+    categories: ['Theory']
+  },
+  {
+    id: 'chord-progression-builder',
+    name: 'Chord Progressions',
+    path: '/chord-progression-builder',
+    importPath: './components/ChordProgressionBuilder',
+    description: 'Build and audition chord sequences. Explore common progressions in different keys.',
+    icon: '',
+    categories: ['Theory', 'Challenge']
+  },
+  {
+    id: 'scale-explorer',
+    name: 'Scales',
+    path: '/scale-explorer',
+    importPath: './components/ScaleContent',
+    description: 'Comprehensive scale library. Visualize scales across instruments with audio playback.',
+    icon: '',
+    categories: ['Theory']
+  },
+  {
+    id: 'interval-training',
+    name: 'Interval Trainer',
+    path: '/interval-training',
+    importPath: './components/IntervalTrainingApp',
+    description: 'Ear training for recognizing musical intervals. Includes multiple difficulty levels.',
+    icon: '',
+    categories: ['Theory', 'Games', 'Challenge']
+  },
+  {
+    id: 'circle-of-fifths',
+    name: 'Circle of Fifths',
+    path: '/circle-of-fifths',
+    importPath: './components/CircleOfFifthsContent',
+    description: 'Interactive circle of fifths diagram. Explore key relationships and chord functions.',
+    icon: '',
+    categories: ['Theory']
+  },
+  {
+    id: 'consonance-dissonance',
+    name: 'Consonance',
+    path: '/consonance-dissonance',
+    importPath: './components/ConsonanceDissonance',
+    description: 'Experiment with harmonic tension. Compare consonant and dissonant intervals.',
+    icon: '',
+    categories: ['Theory']
+  },
+  {
+    id: 'piano-roll-basics',
+    name: 'Piano Roll',
+    path: '/piano-roll',
+    importPath: './components/PianoRollBasics',
+    description: 'Learn MIDI sequencing fundamentals with this interactive piano roll editor.',
+    icon: '',
+    categories: ['Theory']
+  },
+  {
+    id: 'eq-explorer',
+    name: 'EQ',
+    path: '/eq-explorer',
+    importPath: './components/EQExplorer',
+    description: 'Interactive equalizer. Learn how different frequency bands affect your sound.',
+    icon: '',
+    categories: ['Effects']
+  },
+  {
+    id: 'compression-explorer',
+    name: 'Compressor',
+    path: '/compression-explorer',
+    importPath: './components/CompressionExplorer',
+    description: 'Dynamic range processor. Adjust threshold, ratio, attack, and release parameters.',
+    icon: '',
+    categories: ['Effects']
+  },
+  {
+    id: 'reverb-explorer',
+    name: 'Reverb',
+    path: '/reverb-explorer',
+    importPath: './components/ReverbExplorer',
+    description: 'Space simulator. Adjust decay time, pre-delay, and room size parameters.',
+    icon: '',
+    categories: ['Effects']
+  },
+  {
+    id: 'panner-tool',
+    name: 'Panner',
+    path: '/panner-tool',
+    importPath: './components/PannerTool',
+    description: 'Stereo imaging tool. Position sounds in the stereo field with automation options.',
+    icon: '',
+    categories: ['Effects']
+  },
+  {
+    id: 'mid-side-explorer',
+    name: 'Mid/Side',
+    path: '/mid-side-explorer',
+    importPath: './components/MidSideExplorer',
+    description: 'Mid/Side processing toolkit. Isolate and process center vs. side information separately.',
+    icon: '',
+    categories: ['Effects']
+  },
+  {
+    id: 'delay-explorer',
+    name: 'Delay',
+    path: '/delay-explorer',
+    importPath: './components/DelayExplorer',
+    description: 'Time-based effects processor. Create echoes, slapbacks, and rhythmic patterns.',
+    icon: '',
+    categories: ['Effects']
+  },
+  {
+    id: 'pitch-shift-explorer',
+    name: 'Pitch Shifter',
+    path: '/pitch-shift-explorer',
+    importPath: './components/PitchShiftExplorer',
+    description: 'Real-time pitch manipulation. Experiment with formant-preserving shifts and harmonies.',
+    icon: '',
+    categories: ['Effects']
+  },
+  {
+    id: 'stereo-imager-explorer',
+    name: 'Stereo Imager',
+    path: '/stereo-imager-explorer',
+    importPath: './components/StereoImagerExplorer',
+    description: 'Stereo width controller. Adjust spatial characteristics of your mix.',
+    icon: '',
+    categories: ['Effects']
+  },
+  {
+    id: 'limiter-explorer',
+    name: 'Limiter',
+    path: '/limiter-explorer',
+    importPath: './components/LimiterExplorer',
+    description: 'Peak controller. Prevent clipping while maximizing loudness.',
+    icon: '',
+    categories: ['Effects']
+  },
+  {
+    id: 'saturation-explorer',
+    name: 'Saturation',
+    path: '/saturation-explorer',
+    importPath: './components/SaturationExplor',
+    description: 'Harmonic exciter. Add warmth and distortion with various saturation algorithms.',
+    icon: '',
+    categories: ['Effects', 'Synth']
+  },
+  {
+    id: 'chorus-explorer',
+    name: 'Chorus',
+    path: '/chorus-explorer',
+    importPath: './components/ChorusExplor',
+    description: 'Modulation effect. Create lush, animated textures with rate and depth controls.',
+    icon: '',
+    categories: ['Effects']
+  },
+  {
+    id: 'tremolo-explorer',
+    name: 'Tremolo',
+    path: '/tremolo-explorer',
+    importPath: './components/TremoloExplorer',
+    description: 'Amplitude modulator. Create rhythmic volume pulsations with shape controls.',
+    icon: '',
+    categories: ['Effects']
+  },
+  {
+    id: 'granular-explorer',
+    name: 'Granular',
+    path: '/granular-explorer',
+    importPath: './components/GranularExplor',
+    description: 'Granular synthesis engine. Manipulate sound at the microscopic level.',
+    icon: '',
+    categories: ['Effects', 'Synth']
+  },
+  {
+    id: 'time-signature-metronome',
+    name: 'Time Signatures',
+    path: '/time-signature-metronome',
+    importPath: './components/TimeSignatureMetronome',
+    description: 'Metronome with flexible time signatures. Visualize different rhythmic divisions.',
+    icon: '',
+    categories: ['Rhythm']
+  },
+  {
+    id: 'polyrhythm-sequencer',
+    name: 'Polyrhythms',
+    path: '/polyrhythm-sequencer',
+    importPath: './components/PolyrhythmSequencer',
+    description: 'Create complex rhythmic layers. Visualize and audition multiple concurrent patterns.',
+    icon: '',
+    categories: ['Rhythm', 'Challenge']
+  },
+  {
+    id: 'euclidean-rhythm-generator',
+    name: 'Euclidean Rhythms',
+    path: '/euclidean-rhythm-generator',
+    importPath: './components/EuclideanRhythmGenerator',
+    description: 'Algorithmic rhythm generator. Create balanced patterns based on mathematical distributions.',
+    icon: '',
+    categories: ['Rhythm']
+  },
+  {
+    id: 'beat-repeat-looper',
+    name: 'Beat Repeater',
+    path: '/beat-repeat-looper',
+    importPath: './components/BeatRepeatLooper',
+    description: 'Creative looping tool. Capture and manipulate rhythmic fragments in real-time.',
+    icon: '',
+    categories: ['Rhythm', 'Effects', 'Fun']
+  },
+  {
+    id: 'swing-groove-visualizer',
+    name: 'Swing',
+    path: '/swing-groove-visualizer',
+    importPath: './components/SwingGrooveVisualizer',
+    description: 'Groove quantizer. Adjust swing percentage and visualize timing variations.',
+    icon: '',
+    categories: ['Rhythm', 'Theory']
+  },
+  {
+    id: 'chord-training-quiz',
+    name: 'Chord Quiz',
+    path: '/chord-training-quiz',
+    importPath: './games/ChordTrainingQuiz',
+    description: 'Test your chord recognition skills. Multiple difficulty levels and feedback.',
+    icon: '',
+    categories: ['Games', 'Theory', 'Challenge']
+  },
+  {
+    id: 'drum-sequencer-game',
+    name: 'Drum Game',
+    path: '/drum-sequencer-game',
+    importPath: './games/DrumSequencerGame',
+    description: 'Rhythm challenge game. Recreate drum patterns and test your timing.',
+    icon: '',
+    categories: ['Games', 'Rhythm', 'Fun']
+  },
+  {
+    id: 'ear-training-quiz',
+    name: 'Ear Trainer',
+    path: '/ear-training-quiz',
+    importPath: './games/EarTrainingQuiz',
+    description: 'Comprehensive ear training. Identify intervals, chords, and progressions by ear.',
+    icon: '',
+    categories: ['Games', 'Theory', 'Challenge']
+  },
+  {
+    id: 'synthesis-challenge',
+    name: 'Synth Challenge',
+    path: '/synthesis-challenge',
+    importPath: './games/SynthesisChallenge',
+    description: 'Sound design puzzles. Recreate target sounds using provided synth parameters.',
+    icon: '',
+    categories: ['Games', 'Synth', 'Challenge']
+  }
+];
+
+// Define the desired order of categories for the Navbar dropdown
+const DEFAULT_CATEGORIES_ORDER = [
+  'Instruments',
+  'Synth',
+  'Theory',
+  'Effects',
+  'Rhythm',
+  'Games',
+  'Fun',
+  'Challenge',
+  'Tools'
+];
+
+// Helper to group tools by category for external use (e.g., in Navbar)
+export const getCategorizedTools = (tools) => {
+  const categories = {};
+
+  DEFAULT_CATEGORIES_ORDER.forEach(categoryName => {
+    categories[categoryName] = [];
+  });
+
+  tools.forEach(tool => {
+    if (tool.categories && Array.isArray(tool.categories)) {
+      tool.categories.forEach(categoryName => {
+        if (DEFAULT_CATEGORIES_ORDER.includes(categoryName) && tool.id !== 'home') {
+          if (!categories[categoryName].some(existingTool => existingTool.id === tool.id)) {
+            categories[categoryName].push(tool);
+          }
+        }
+      });
+    }
+  });
+
+  for (const categoryName in categories) {
+    categories[categoryName].sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  const filteredCategories = {};
+  DEFAULT_CATEGORIES_ORDER.forEach(categoryName => {
+    if (categories[categoryName] && categories[categoryName].length > 0) {
+      filteredCategories[categoryName] = categories[categoryName];
+    }
+  });
+
+  return filteredCategories;
+};
+
+export default TOOLS;
