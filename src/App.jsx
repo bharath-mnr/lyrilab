@@ -11,19 +11,12 @@ import ContactPage from './pages/ContactPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsAndConditionsPage from './pages/TermsAndConditionsPage';
 
-// --- START: Enhanced Dynamic Import Logic (Corrected) ---
+// --- START: Enhanced Dynamic Import Logic ---
 const preloadedComponents = Object.fromEntries(
   ALL_TOOLS.map(tool => [
     tool.component,
     lazy(() =>
-      // *** IMPORTANT CHANGE: Removed /* @vite-ignore */ ***
-      // This allows Vite to correctly bundle the dynamic imports
-      // and generate the appropriate hashed chunk names and paths
-      // for production.
-      // Ensure that 'tool.importPath' contains a valid, static-analysable
-      // relative path from the current file (App.jsx) to the component,
-      // e.g., './pages/HomePage.jsx'.
-      import(`${tool.importPath}`)
+      import(/* @vite-ignore */ `${tool.importPath}`)
         .catch(error => {
           console.error(`Failed to load component for ${tool.component} from ${tool.importPath}:`, error);
           // Return a fallback component if the import fails
@@ -68,7 +61,6 @@ const App = () => {
                   path="/"
                   element={
                     <Suspense fallback={<LoadingFallback toolName="Home" />}>
-                      {/* Ensure 'HomePage' is a valid key in preloadedComponents */}
                       {React.createElement(preloadedComponents['HomePage'], {
                         tools: toolsWithoutHome,
                         allTools: ALL_TOOLS,
