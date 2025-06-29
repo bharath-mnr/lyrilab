@@ -12,19 +12,26 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsAndConditionsPage from './pages/TermsAndConditionsPage';
 
 // --- START: Fixed Dynamic Import Logic using Vite's import.meta.glob ---
-// Get all modules from both pages and components directories
+// Get all modules from pages, components, and games directories
 const allModules = {
+  // Pages
   ...import.meta.glob('./pages/*.jsx', { eager: false }),
   ...import.meta.glob('./pages/*.js', { eager: false }),
+  // Components (including nested)
   ...import.meta.glob('./components/*.jsx', { eager: false }),
   ...import.meta.glob('./components/*.js', { eager: false }),
   ...import.meta.glob('./components/**/*.jsx', { eager: false }),
-  ...import.meta.glob('./components/**/*.js', { eager: false })
+  ...import.meta.glob('./components/**/*.js', { eager: false }),
+  // Games (including nested) - Added to resolve routing for game components
+  ...import.meta.glob('./games/*.jsx', { eager: false }),
+  ...import.meta.glob('./games/*.js', { eager: false }),
+  ...import.meta.glob('./games/**/*.jsx', { eager: false }),
+  ...import.meta.glob('./games/**/*.js', { eager: false })
 };
 
 // Create a mapping function to resolve the correct module path
 const getModulePath = (importPath) => {
-  // Convert importPath like "./pages/HomePage.jsx" to the glob key format
+  // Normalize importPath to match glob keys (e.g., "./pages/HomePage.jsx")
   const normalizedPath = importPath.startsWith('./') ? importPath : `./${importPath}`;
   
   // First try exact match
@@ -32,12 +39,12 @@ const getModulePath = (importPath) => {
     return allModules[normalizedPath];
   }
   
-  // If not found, try with different extensions
+  // If not found, try with common extensions
   const pathWithoutExt = normalizedPath.replace(/\.(jsx?|tsx?)$/, '');
   const possiblePaths = [
     `${pathWithoutExt}.jsx`,
     `${pathWithoutExt}.js`,
-    `${pathWithoutExt}.tsx`,
+    `${pathWithoutExt}.tsx`, // Include TypeScript extensions for broader compatibility
     `${pathWithoutExt}.ts`
   ];
   
@@ -47,6 +54,7 @@ const getModulePath = (importPath) => {
     }
   }
   
+  // If still not found, return null
   return null;
 };
 
@@ -57,7 +65,7 @@ const preloadedComponents = Object.fromEntries(
       const moduleLoader = getModulePath(tool.importPath);
       
       if (!moduleLoader) {
-        console.error(`Module not found for ${tool.component} at ${tool.importPath}`);
+        console.error(`Module not found for ${tool.component} at ${tool.importPath}. Please check ALL_TOOLS and file paths.`);
         // Return a fallback component if the module is not found
         return Promise.resolve({
           default: () => (
@@ -111,6 +119,7 @@ const App = () => {
                   path="/"
                   element={
                     <Suspense fallback={<LoadingFallback toolName="Home" />}>
+                      {/* Ensure 'HomePage' is a valid key in preloadedComponents */}
                       {React.createElement(preloadedComponents['HomePage'], {
                         tools: toolsWithoutHome,
                         allTools: ALL_TOOLS,
