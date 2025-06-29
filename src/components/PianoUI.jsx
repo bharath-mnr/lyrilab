@@ -45,7 +45,7 @@ const PianoUI = ({ pianoKeys, pressedKeys, handleKeyPress, handleKeyRelease, isA
             'D#': 0.85, // D# is further to the right of 'D'.
             'F#': 0.65, // F# is slightly to the right of 'F'.
             'G#': 0.75, // G# is more centered between 'G' and 'A'.
-            'A#': 0.85  // A# is further to the right of 'A'.
+            'A#': 0.85 // A# is further to the right of 'A'.
         };
 
         // Extract the root note (e.g., 'C#', 'D#') from the full note string (e.g., 'C#3').
@@ -56,6 +56,43 @@ const PianoUI = ({ pianoKeys, pressedKeys, handleKeyPress, handleKeyRelease, isA
         // The final left position is the base position adjusted by the offset within a white key's width.
         return baseLeft + (whiteKeyWidthPercentage * offset);
     }, [whiteKeys]); // Dependency: relies on the `whiteKeys` array to correctly calculate positions.
+
+    // Updated event handlers for `onTouchStart` and `onTouchEnd`
+    // The `e.preventDefault()` within touch events can cause a warning
+    // "Unable to preventDefault inside passive event listener invocation."
+    // This is because touchstart/touchmove are often passive by default for performance.
+    // While `preventDefault` is often needed for custom touch interactions like a piano,
+    // if the goal is only to play/stop notes and not to prevent scrolling, you can often
+    // remove `e.preventDefault()` if it's causing issues and not strictly needed to stop default scrolling behavior.
+    // For this piano, `e.preventDefault()` is usually desired to prevent scrolling the page
+    // when interacting with the keys, making them feel more responsive.
+    // If you were adding the event listener imperatively with `addEventListener`, you would add `{ passive: false }`.
+    // With JSX, React handles the listener registration, and typically, if `e.preventDefault()` is called,
+    // React attempts to ensure it's not a passive listener if possible. However, the browser's default
+    // passive behavior might still trigger the warning.
+    // To resolve this, `touch-manipulation` CSS property helps, and explicitly not preventing default
+    // on `onTouchEnd` is also a common practice. For `onTouchStart`, `preventDefault` is often needed
+    // to prevent synthetic click events and provide immediate feedback.
+
+    const handleTouchStart = useCallback((e, note) => {
+        // Prevent default only if necessary to stop scrolling or other default browser behaviors
+        // that interfere with the piano interaction.
+        // For a piano, preventing default scrolling is usually desired.
+        if (e.cancelable) { // Check if the event is cancelable before calling preventDefault
+            e.preventDefault();
+        }
+        handleKeyPress(note);
+    }, [handleKeyPress]);
+
+    const handleTouchEnd = useCallback((e, note) => {
+        // `e.preventDefault()` on touchEnd is less common and might not be needed.
+        // The main interaction usually happens on touchStart.
+        if (e.cancelable) {
+            e.preventDefault(); // Keep if you explicitly want to prevent default behavior on release
+        }
+        handleKeyRelease(note);
+    }, [handleKeyRelease]);
+
 
     return (
         // Adjusted padding and removed flex-1 (as it's handled by VirtualPiano's landscape div)
@@ -84,8 +121,8 @@ const PianoUI = ({ pianoKeys, pressedKeys, handleKeyPress, handleKeyRelease, isA
                                         onMouseDown={() => handleKeyPress(key.note)}
                                         onMouseUp={() => handleKeyRelease(key.note)}
                                         onMouseLeave={() => handleKeyRelease(key.note)} // Ensures note stops if mouse leaves while held
-                                        onTouchStart={(e) => { e.preventDefault(); handleKeyPress(key.note); }}
-                                        onTouchEnd={(e) => { e.preventDefault(); handleKeyRelease(key.note); }}
+                                        onTouchStart={(e) => handleTouchStart(e, key.note)} // Use the new handler
+                                        onTouchEnd={(e) => handleTouchEnd(e, key.note)}     // Use the new handler
                                         className={`flex-1 bg-gradient-to-b from-gray-50 to-white border border-gray-300 rounded-b-xl
                                             transition-all duration-100 ease-out hover:from-gray-100 hover:to-gray-50
                                             active:from-gray-200 active:to-gray-100 touch-manipulation
@@ -121,8 +158,8 @@ const PianoUI = ({ pianoKeys, pressedKeys, handleKeyPress, handleKeyRelease, isA
                                             onMouseDown={() => handleKeyPress(key.note)}
                                             onMouseUp={() => handleKeyRelease(key.note)}
                                             onMouseLeave={() => handleKeyRelease(key.note)}
-                                            onTouchStart={(e) => { e.preventDefault(); handleKeyPress(key.note); }}
-                                            onTouchEnd={(e) => { e.preventDefault(); handleKeyRelease(key.note); }}
+                                            onTouchStart={(e) => handleTouchStart(e, key.note)} // Use the new handler
+                                            onTouchEnd={(e) => handleTouchEnd(e, key.note)}     // Use the new handler
                                             className={`absolute bg-gradient-to-b from-gray-800 via-gray-900 to-black rounded-b-xl
                                                 transition-all duration-100 ease-out hover:from-gray-700 hover:via-gray-800
                                                 active:from-gray-600 touch-manipulation flex flex-col justify-end items-center pb-1 shadow-xl border border-gray-600
