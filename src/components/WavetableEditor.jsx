@@ -410,7 +410,7 @@ const WavetableEditorContent = () => {
 
     return (
         <div
-            className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
+            className="min-h-screen flex flex-col items-center justify-center p-3 sm:p-4 md:p-8 relative overflow-hidden w-full"
             style={{
                 background: 'linear-gradient(135deg, #e0f2fe 0%, #bfdbfe 50%, #93c5fd 100%)',
                 fontFamily: 'Inter, sans-serif',
@@ -424,43 +424,48 @@ const WavetableEditorContent = () => {
                 }}
             ></div>
 
-            <div className="text-center mb-6 md:mb-10 z-10 w-full px-2">
-                <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
-                    <Waves size={36} className="text-blue-700 md:mb-0 mb-2" />
-                    <h1 className="text-3xl md:text-5xl font-extrabold text-blue-900 drop-shadow-lg">
-                        Wavetable Explorer
-                    </h1>
+            <div className="text-center mb-4 sm:mb-6 md:mb-10 z-10 w-full max-w-5xl">
+                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-blue-900 drop-shadow-lg mb-2 sm:mb-4 leading-tight">
+                    Wavetable Synth
+                </h1>
+
+                {/* Status Messages */}
+                <div className="min-h-[1.5rem] flex items-center justify-center">
+                    {isLoading && (
+                        <p className="text-blue-700 text-sm sm:text-base animate-pulse">
+                            Setting up audio engine...
+                        </p>
+                    )}
+                    {!isLoading && !isAudioReady && (
+                        <p className="text-blue-700 text-sm sm:text-base">
+                            Click "Play Sound" to activate audio.
+                        </p>
+                    )}
+                    {!isLoading && isAudioReady && (
+                        <p className="text-blue-600 text-sm sm:text-base font-medium">
+                             Ready! Choose waveform and play.
+                        </p>
+                    )}
                 </div>
-                {isLoading && (
-                    <p className="text-blue-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
-                        Setting up audio engine...
-                    </p>
-                )}
-                {!isLoading && !isAudioReady && (
-                    <p className="text-blue-700 text-xs md:text-sm mt-2 md:mt-4">
-                        Click "Play Sound" to activate audio.
-                    </p>
-                )}
-                {!isLoading && isAudioReady && (
-                    <p className="text-blue-600 text-xs md:text-sm mt-2 md:mt-4">
-                        Ready. Choose waveform and play!
-                    </p>
-                )}
             </div>
 
-            <div className="bg-white/80 backdrop-blur-sm p-4 md:p-8 rounded-xl shadow-lg w-full max-w-4xl flex flex-col items-center space-y-4 md:space-y-8 z-10 border border-blue-200 mx-2">
+            <div className="bg-white/90 backdrop-blur-md p-4 sm:p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-4xl flex flex-col items-center space-y-6 sm:space-y-8 z-10 border border-blue-200/50 mx-2">
 
                 {/* Play and Stop Sound Buttons */}
-                <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-4 md:mb-6 w-full">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full max-w-md">
                     <button
                         type="button"
                         onClick={playNote}
-                        className={`px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full
+                        className={`px-6 py-4 sm:px-8 sm:py-5 rounded-xl font-bold text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-3 transition-all duration-300 w-full shadow-lg hover:shadow-xl
                                 ${!isPlaying && !isLoading
-                                    ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                                    ? 'bg-blue-500 hover:bg-blue-600 active:scale-95 text-white hover:scale-105'
                                     : 'bg-gray-400 cursor-not-allowed text-gray-700'}
                                 `}
-                        disabled={isPlaying || isLoading} // Allow click to activate audio context
+                        disabled={isPlaying || isLoading}
+                        style={{
+                            WebkitTapHighlightColor: 'transparent',
+                            touchAction: 'manipulation'
+                        }}
                     >
                         <Play size={20} />
                         Play Sound
@@ -469,12 +474,16 @@ const WavetableEditorContent = () => {
                     <button
                         type="button"
                         onClick={stopNote}
-                        className={`px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full
+                        className={`px-6 py-4 sm:px-8 sm:py-5 rounded-xl font-bold text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-3 transition-all duration-300 w-full shadow-lg hover:shadow-xl
                                 ${isPlaying && isAudioReady
-                                    ? 'bg-blue-700 hover:bg-blue-800 text-white'
+                                    ? 'bg-blue-700 hover:bg-blue-800 active:scale-95 text-white hover:scale-105'
                                     : 'bg-gray-400 cursor-not-allowed text-gray-700'}
                                 `}
                         disabled={!isPlaying || !isAudioReady}
+                        style={{
+                            WebkitTapHighlightColor: 'transparent',
+                            touchAction: 'manipulation'
+                        }}
                     >
                         <Pause size={20} />
                         Stop
@@ -491,49 +500,60 @@ const WavetableEditorContent = () => {
                 </div>
 
                 {/* Waveform Type Selection */}
-                <div className="flex justify-center gap-2 md:gap-4 w-full mt-4 md:mt-6 flex-wrap">
-                    {[
-                        { type: 'sine', label: 'Sine', Icon: Circle },
-                        { type: 'square', label: 'Square', Icon: Square },
-                        { type: 'sawtooth', label: 'Saw', Icon: Activity },
-                        { type: 'triangle', label: 'Tri', Icon: Triangle },
-                    ].map(({ type, label, Icon }) => (
-                        <button
-                            key={type}
-                            onClick={() => setWaveformType(type)}
-                            className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold text-sm md:text-base flex items-center gap-1 md:gap-2 transition-all duration-200
-                                ${waveformType === type
-                                    ? 'bg-blue-600 text-white shadow-md'
-                                    : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}
-                                ${isLoading ? 'cursor-not-allowed opacity-50' : ''}
-                            `}
-                            disabled={isLoading} // Allow changing type even if audio context is suspended, but not while loading
-                        >
-                            <Icon size={16} className="flex-shrink-0" />
-                            <span className="whitespace-nowrap">{label}</span>
-                        </button>
-                    ))}
+                <div className="w-full px-2">
+                    <h3 className="text-sm sm:text-base font-semibold text-gray-700 mb-3 text-center">Waveform Type:</h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 justify-center">
+                        {[
+                            { type: 'sine', label: 'Sine', Icon: Circle },
+                            { type: 'square', label: 'Square', Icon: Square },
+                            { type: 'sawtooth', label: 'Saw', Icon: Activity },
+                            { type: 'triangle', label: 'Tri', Icon: Triangle },
+                        ].map(({ type, label, Icon }) => (
+                            <button
+                                key={type}
+                                onClick={() => setWaveformType(type)}
+                                className={`px-4 py-2 sm:px-5 sm:py-3 rounded-lg font-semibold text-sm sm:text-base flex items-center justify-center gap-1 sm:gap-2 transition-all duration-200 shadow-sm hover:shadow-md
+                                    ${waveformType === type
+                                        ? 'bg-blue-600 text-white shadow-md ring-2 ring-blue-400'
+                                        : 'bg-gray-200 text-gray-800 hover:bg-gray-300 active:scale-95'}
+                                    ${isLoading ? 'cursor-not-allowed opacity-50' : ''}
+                                `}
+                                disabled={isLoading}
+                                style={{
+                                    WebkitTapHighlightColor: 'transparent',
+                                    touchAction: 'manipulation'
+                                }}
+                            >
+                                <Icon size={16} className="flex-shrink-0" />
+                                <span className="whitespace-nowrap">{label}</span>
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
+
                 {/* Parameter Sliders */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full mt-4 md:mt-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 w-full">
                     <ParameterSlider
                         label="Frequency" value={frequency} setter={setFrequency}
                         min="50" max="2000" step="1" unit=" Hz"
                         explanation={getExplanation('frequency')}
+                        isDisabled={isLoading}
+                        colorClass="accent-blue-600 bg-blue-100"
                     />
 
                     <ParameterSlider
                         label="Volume" value={volume} setter={setVolume}
                         min="-60" max="0" step="1" unit=" dB"
                         explanation={getExplanation('volume')}
+                        isDisabled={isLoading}
+                        colorClass="accent-blue-600 bg-blue-100"
                     />
                 </div>
-
-                <div className="text-center text-gray-700 text-xs md:text-sm mt-4 md:mt-6 italic px-2">
-                    Generates continuous waveforms. Select type, adjust pitch/volume, then play.
-                </div>
             </div>
+
+            {/* Footer spacing for mobile */}
+            <div className="h-8 sm:h-4"></div>
         </div>
     );
 };
