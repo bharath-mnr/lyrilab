@@ -114,8 +114,6 @@ const usePianoSynth = (initialVolume = 0.7, initialMuteState = false) => {
 };
 
 // --- Chord Definitions ---
-// CORRECTED: This is static data, no need for useMemo here.
-// Defining it outside components is the standard practice for constants.
 const CHORDS = [
     { name: 'C Major', notes: ['C4', 'E4', 'G4'], intervals: ['1', '3', '5'] },
     { name: 'C Minor', notes: ['C4', 'Eb4', 'G4'], intervals: ['1', 'b3', '5'] },
@@ -153,35 +151,36 @@ const PianoKeys = React.memo(({ highlightedNotes, playNote, stopNote, isAudioRea
     const [pressedKeys, setPressedKeys] = useState(new Set());
 
     // Memoize the piano key layout to prevent unnecessary re-renders
+    // Each position represents a "white key unit" or half for black keys
     const PIANO_KEY_LAYOUT = useMemo(() => [
-        { note: 'C4', type: 'white', display: 'C', position: 0 },
-        { note: 'C#4', type: 'black', display: 'C#', position: 0.5 },
-        { note: 'D4', type: 'white', display: 'D', position: 1 },
-        { note: 'D#4', type: 'black', display: 'D#', position: 1.5 },
-        { note: 'E4', type: 'white', display: 'E', position: 2 },
-        { note: 'F4', type: 'white', display: 'F', position: 3 },
-        { note: 'F#4', type: 'black', display: 'F#', position: 3.5 },
-        { note: 'G4', type: 'white', display: 'G', position: 4 },
-        { note: 'G#4', type: 'black', display: 'G#', position: 4.5 },
-        { note: 'A4', type: 'white', display: 'A', position: 5 },
-        { note: 'A#4', type: 'black', display: 'A#', position: 5.5 },
-        { note: 'B4', type: 'white', display: 'B', position: 6 },
-        { note: 'C5', type: 'white', display: 'C', position: 7 },
-        { note: 'C#5', type: 'black', display: 'C#', position: 7.5 },
-        { note: 'D5', type: 'white', display: 'D', position: 8 },
-        { note: 'D#5', type: 'black', display: 'D#', position: 8.5 },
-        { note: 'E5', type: 'white', display: 'E', position: 9 },
+        { note: 'C4', type: 'white', display: 'C', basePosition: 0 },
+        { note: 'C#4', type: 'black', display: 'C#', basePosition: 0.5 },
+        { note: 'D4', type: 'white', display: 'D', basePosition: 1 },
+        { note: 'D#4', type: 'black', display: 'D#', basePosition: 1.5 },
+        { note: 'E4', type: 'white', display: 'E', basePosition: 2 },
+        { note: 'F4', type: 'white', display: 'F', basePosition: 3 },
+        { note: 'F#4', type: 'black', display: 'F#', basePosition: 3.5 },
+        { note: 'G4', type: 'white', display: 'G', basePosition: 4 },
+        { note: 'G#4', type: 'black', display: 'G#', basePosition: 4.5 },
+        { note: 'A4', type: 'white', display: 'A', basePosition: 5 },
+        { note: 'A#4', type: 'black', display: 'A#', basePosition: 5.5 },
+        { note: 'B4', type: 'white', display: 'B', basePosition: 6 },
+        { note: 'C5', type: 'white', display: 'C', basePosition: 7 },
+        { note: 'C#5', type: 'black', display: 'C#', basePosition: 7.5 },
+        { note: 'D5', type: 'white', display: 'D', basePosition: 8 },
+        { note: 'D#5', type: 'black', display: 'D#', basePosition: 8.5 },
+        { note: 'E5', type: 'white', display: 'E', basePosition: 9 },
     ], []); // Empty dependency array, created once
 
     const handleInteractionStart = useCallback((note) => {
-        if (!isAudioReady) return; // Prevent interaction if audio not ready
+        if (!isAudioReady) return;
         setPressedKeys(prev => {
             const newSet = new Set(prev);
             newSet.add(note);
             return newSet;
         });
         playNote(note);
-    }, [isAudioReady, playNote]); // Dependencies
+    }, [isAudioReady, playNote]);
 
     const handleInteractionEnd = useCallback((note) => {
         setPressedKeys(prev => {
@@ -190,23 +189,30 @@ const PianoKeys = React.memo(({ highlightedNotes, playNote, stopNote, isAudioRea
             return newSet;
         });
         stopNote(note);
-    }, [stopNote]); // Dependencies
+    }, [stopNote]);
 
     const handleTouchStart = useCallback((note, e) => {
-        e.preventDefault(); // Prevent default touch behaviors like scrolling
+        e.preventDefault();
         handleInteractionStart(note);
-    }, [handleInteractionStart]); // Dependencies
+    }, [handleInteractionStart]);
 
     const handleTouchEnd = useCallback((note) => {
         handleInteractionEnd(note);
-    }, [handleInteractionEnd]); // Dependencies
+    }, [handleInteractionEnd]);
 
     const whiteKeys = PIANO_KEY_LAYOUT.filter(key => key.type === 'white');
     const blackKeys = PIANO_KEY_LAYOUT.filter(key => key.type === 'black');
 
+    // The total span of the white keys is 10 units (C4 to E5 inclusive, C4=0, D4=1 ... E5=9).
+    // The width of a single white key is 1/10th of the total width.
+    const numWhiteKeyUnits = 10; // C4 to E5 has 10 white keys positions including sharps.
+                                 // C4, D4, E4, F4, G4, A4, B4, C5, D5, E5 = 10 white keys.
+    const whiteKeyWidthUnit = 100 / numWhiteKeyUnits;
+    const blackKeyWidthPercentage = whiteKeyWidthUnit * 0.6; // Black keys are typically ~60% width of white keys
+
     return (
-        <div className="relative">
-            <div className="flex relative">
+        <div className="relative w-full overflow-hidden">
+            <div className="flex relative w-full h-40"> {/* Fixed height, but flexible width for white keys */}
                 {/* White Keys */}
                 {whiteKeys.map((key) => {
                     const standardNote = getStandardPianoNote(key.note);
@@ -217,7 +223,7 @@ const PianoKeys = React.memo(({ highlightedNotes, playNote, stopNote, isAudioRea
                         <div
                             key={key.note}
                             className={`
-                                w-12 h-40 border-2 rounded-b-lg shadow-lg flex items-end justify-center pb-3 text-xs font-bold cursor-pointer select-none transition-all duration-100
+                                flex-1 h-full border-2 rounded-b-lg shadow-lg flex items-end justify-center pb-3 text-xs font-bold cursor-pointer select-none transition-all duration-100 relative
                                 ${isHighlighted
                                     ? 'bg-gradient-to-b from-yellow-200 to-yellow-400 border-yellow-500 shadow-yellow-300/50 transform scale-y-95'
                                     : isPressed
@@ -232,11 +238,11 @@ const PianoKeys = React.memo(({ highlightedNotes, playNote, stopNote, isAudioRea
                             onTouchStart={(e) => handleTouchStart(key.note, e)}
                             onTouchEnd={() => handleTouchEnd(key.note)}
                             onTouchCancel={() => handleTouchEnd(key.note)}
-                            style={{ marginRight: '-1px' }}
+                            style={{ width: `${whiteKeyWidthUnit}%`, marginRight: '-1px' }} // Apply the calculated unit width
                             role="button"
                             aria-label={`White piano key for ${key.display}${key.note.slice(-1)}`}
                         >
-                            <span className={`${isHighlighted ? 'text-amber-800' : 'text-gray-600'}`}>
+                            <span className={`${isHighlighted ? 'text-amber-800' : 'text-gray-600'} absolute bottom-2`}>
                                 {key.display}
                             </span>
                         </div>
@@ -245,19 +251,24 @@ const PianoKeys = React.memo(({ highlightedNotes, playNote, stopNote, isAudioRea
             </div>
 
             {/* Black Keys */}
-            <div className="absolute top-0 left-0 flex">
+            <div className="absolute top-0 left-0 flex w-full h-2/3"> {/* Black keys take 2/3 height of white keys */}
                 {blackKeys.map((key) => {
                     const standardNote = getStandardPianoNote(key.note);
                     const isHighlighted = highlightedNotes.has(standardNote);
                     const isPressed = pressedKeys.has(key.note);
-                    // Optimized calculation for left position
-                    const leftOffset = key.position * 48 - 12;
+
+                    // Calculate left position for black keys.
+                    // This positions the *left edge* of the black key.
+                    // The transform will then center it.
+                    // Each full 'position' unit corresponds to one white key width.
+                    // A black key at position X.5 means it's centered between white keys at X and X+1.
+                    const leftPosition = (key.basePosition * whiteKeyWidthUnit);
 
                     return (
                         <div
                             key={key.note}
                             className={`
-                                absolute w-8 h-24 rounded-b-lg shadow-xl flex items-end justify-center pb-2 text-xs font-bold cursor-pointer select-none transition-all duration-100
+                                absolute h-full rounded-b-lg shadow-xl flex items-end justify-center pb-2 text-xs font-bold cursor-pointer select-none transition-all duration-100
                                 ${isHighlighted
                                     ? 'bg-gradient-to-b from-orange-400 to-orange-600 text-white transform scale-y-95 shadow-orange-400/50'
                                     : isPressed
@@ -266,7 +277,12 @@ const PianoKeys = React.memo(({ highlightedNotes, playNote, stopNote, isAudioRea
                                 }
                                 touch-manipulation active:scale-y-95
                             `}
-                            style={{ left: `${leftOffset}px` }}
+                            style={{
+                                width: `${blackKeyWidthPercentage}%`,
+                                left: `${leftPosition}%`,
+                                transform: 'translateX(-50%)', // Pull it back by half its own width to center
+                                zIndex: 10
+                            }}
                             onMouseDown={() => handleInteractionStart(key.note)}
                             onMouseUp={() => handleInteractionEnd(key.note)}
                             onMouseLeave={() => handleInteractionEnd(key.note)}
@@ -277,7 +293,7 @@ const PianoKeys = React.memo(({ highlightedNotes, playNote, stopNote, isAudioRea
                             aria-label={`Black piano key for ${key.display}${key.note.slice(-1)}`}
                         >
                             {isHighlighted && (
-                                <span className="text-white text-xs">
+                                <span className="text-white text-xs absolute bottom-2">
                                     {key.display.replace('#', '♯')}
                                 </span>
                             )}
@@ -293,7 +309,6 @@ const PianoKeys = React.memo(({ highlightedNotes, playNote, stopNote, isAudioRea
 const ChordHighlightApp = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [highlightedNotes, setHighlightedNotes] = useState(new Set());
-    // Initial state set directly from CHORDS constant
     const [selectedChord, setSelectedChord] = useState(CHORDS[0]);
 
     const {
@@ -306,15 +321,13 @@ const ChordHighlightApp = () => {
         synthVolume,
         setSynthVolume,
         initializeAudio
-    } = usePianoSynth(0.7, false); // Initial volume and mute state
+    } = usePianoSynth(0.7, false);
 
-    // Simulate loading for better UX, runs once on mount
     useEffect(() => {
         const timer = setTimeout(() => setIsLoading(false), 1000);
         return () => clearTimeout(timer);
     }, []);
 
-    // Function to play chord audio and update highlights
     const playChordAudio = useCallback(async (chord) => {
         const audioInitialized = await initializeAudio();
         if (!audioInitialized) {
@@ -322,7 +335,7 @@ const ChordHighlightApp = () => {
             return;
         }
 
-        releaseAllNotes(); // Stop any previously playing notes
+        releaseAllNotes();
 
         if (isAudioReady && !isSynthMuted) {
             const notesToPlay = chord.notes.map(getStandardPianoNote);
@@ -330,35 +343,28 @@ const ChordHighlightApp = () => {
 
             notesToPlay.forEach(note => {
                 playNote(note);
-                // Schedule note release after 1.5 seconds for sustained sound
                 setTimeout(() => stopNote(note), 1500);
             });
 
-            // Clear visual highlights after 2 seconds
             setTimeout(() => {
                 setHighlightedNotes(new Set());
             }, 2000);
         } else {
-            // If audio is not ready or muted, only update highlights briefly
             setHighlightedNotes(new Set(chord.notes.map(getStandardPianoNote)));
             setTimeout(() => setHighlightedNotes(new Set()), 1000);
         }
-    }, [initializeAudio, releaseAllNotes, isAudioReady, isSynthMuted, playNote, stopNote]); // Dependencies
+    }, [initializeAudio, releaseAllNotes, isAudioReady, isSynthMuted, playNote, stopNote]);
 
-    // Effect to play audio whenever selectedChord changes
     useEffect(() => {
         if (selectedChord) {
             playChordAudio(selectedChord);
         }
     }, [selectedChord, playChordAudio]);
 
-    // Initial audio context activation (silent, to prime the engine)
-    // This primes Tone.js so that the first user interaction can make sound immediately.
     useEffect(() => {
         initializeAudio();
-    }, [initializeAudio]); // Dependency
+    }, [initializeAudio]);
 
-    // Loading screen JSX
     if (isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center"
@@ -375,7 +381,6 @@ const ChordHighlightApp = () => {
         );
     }
 
-    // Main application JSX
     return (
         <div
             className="min-h-screen flex flex-col relative overflow-hidden p-4"
@@ -408,7 +413,7 @@ const ChordHighlightApp = () => {
                     <button
                         onClick={toggleMute}
                         className="text-indigo-700 hover:text-indigo-900 transition-colors p-2 rounded-full hover:bg-indigo-100"
-                        disabled={!isAudioReady} // Disable if audio not ready
+                        disabled={!isAudioReady}
                         aria-label={isSynthMuted ? "Unmute audio" : "Mute audio"}
                     >
                         {isSynthMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
@@ -421,7 +426,7 @@ const ChordHighlightApp = () => {
                         value={synthVolume}
                         onChange={(e) => setSynthVolume(parseFloat(e.target.value))}
                         className="w-32 accent-indigo-600"
-                        disabled={!isAudioReady} // Disable if audio not ready
+                        disabled={!isAudioReady}
                         aria-label="Volume slider"
                         aria-valuemin="0"
                         aria-valuemax="1"
@@ -471,9 +476,9 @@ const ChordHighlightApp = () => {
                     )}
 
                     {/* Piano Frame with Improved Design */}
-                    <div className="bg-gradient-to-b from-amber-800 via-amber-900 to-amber-950 p-8 rounded-3xl shadow-2xl border-4 border-amber-700">
-                        <div className="bg-gradient-to-b from-gray-900 to-black p-6 rounded-2xl shadow-inner border-2 border-gray-800">
-                            <div className="bg-black p-4 rounded-xl relative">
+                    <div className="bg-gradient-to-b from-amber-800 via-amber-900 to-amber-950 p-4 sm:p-8 rounded-3xl shadow-2xl border-4 border-amber-700 w-full max-w-2xl">
+                        <div className="bg-gradient-to-b from-gray-900 to-black p-3 sm:p-6 rounded-2xl shadow-inner border-2 border-gray-800">
+                            <div className="bg-black p-2 sm:p-4 rounded-xl relative">
                                 <PianoKeys
                                     highlightedNotes={highlightedNotes}
                                     playNote={playNote}
@@ -485,9 +490,9 @@ const ChordHighlightApp = () => {
                     </div>
 
                     {/* Piano Legs - Enhanced Design */}
-                    <div className="flex justify-between px-20 mt-6 w-full max-w-lg">
-                        <div className="w-10 h-20 bg-gradient-to-b from-amber-800 to-amber-900 rounded-b-2xl shadow-xl border-2 border-amber-700"></div>
-                        <div className="w-10 h-20 bg-gradient-to-b from-amber-800 to-amber-900 rounded-b-2xl shadow-xl border-2 border-amber-700"></div>
+                    <div className="flex justify-between px-10 sm:px-20 mt-6 w-full max-w-lg">
+                        <div className="w-8 sm:w-10 h-16 sm:h-20 bg-gradient-to-b from-amber-800 to-amber-900 rounded-b-2xl shadow-xl border-2 border-amber-700"></div>
+                        <div className="w-8 sm:w-10 h-16 sm:h-20 bg-gradient-to-b from-amber-800 to-amber-900 rounded-b-2xl shadow-xl border-2 border-amber-700"></div>
                     </div>
                 </div>
             </div>
@@ -510,18 +515,15 @@ class ErrorBoundary extends React.Component {
     }
 
     static getDerivedStateFromError(error) {
-        // Update state so the next render will show the fallback UI.
         return { hasError: true };
     }
 
     componentDidCatch(error, errorInfo) {
-        // You can also log the error to an error reporting service
         console.error("Uncaught error in ChordHighlightApp:", error, errorInfo);
     }
 
     render() {
         if (this.state.hasError) {
-            // Fallback UI
             return (
                 <div className="min-h-screen flex items-center justify-center bg-red-100 text-red-800 font-bold text-xl p-8 rounded-lg shadow-lg">
                     <h2>Oops! Something went wrong with the Chord Explorer. Please try refreshing the page.</h2>
