@@ -2,10 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, createContext, useCont
 import * as Tone from 'tone';
 import { Play, Pause, User, Zap } from 'lucide-react'; // Icons for play/pause, user (humanizer), and reset
 
-// Define the path to a simple click sound. This is a placeholder.
-// You'll need to provide an actual short audio file (e.g., a click or percussive sound)
-// at this path for sound playback.
-const CLICK_SOUND_MP3_PATH = '/click_samples/click.wav';
+// Removed: CLICK_SOUND_MP3_PATH is no longer needed as we're generating sound with Tone.js synths.
 
 // --- AUDIO CONTEXT ---
 // This context manages the global Tone.js audio state.
@@ -62,13 +59,13 @@ const AudioContextProvider = ({ children }) => {
 // --- useHumanizerSynth Hook ---
 const useHumanizerSynth = () => {
     const { isAudioGloballyReady, startGlobalAudio } = useContext(AudioContext);
-    const clickPlayerRef = useRef(null); // Player for the click sound
+    const clickSynthRef = useRef(null); // Changed from clickPlayerRef to clickSynthRef
     const metronomeEventIdRef = useRef(null); // Stores the ID of the scheduled Tone.Transport event
     const hasInitializedRef = useRef(false); // Tracks if Tone.js nodes have been created
 
     const [isPlaying, setIsPlaying] = useState(false);
-    const [isAudioReady, setIsAudioReady] = useState(false); // True when context is running AND samples loaded
-    const [isAudioLoading, setIsAudioLoading] = useState(false); // Tracks if audio samples are currently loading
+    const [isAudioReady, setIsAudioReady] = useState(false); // True when context is running AND synth is created
+    const [isAudioLoading, setIsAudioLoading] = useState(false); // Tracks if audio setup is in progress (brief now)
 
     // Default values
     const DEFAULT_BPM = 120;
@@ -84,7 +81,7 @@ const useHumanizerSynth = () => {
 
     const [activeBeatIndex, setActiveBeatIndex] = useState(-1); // For visual feedback
 
-    // Function to initialize Tone.js nodes (Player and scheduling)
+    // Function to initialize Tone.js nodes (Synth and scheduling)
     const initAudioNodes = useCallback(async () => {
         if (hasInitializedRef.current) {
             console.log('useHumanizerSynth: initAudioNodes: already initialized, skipping init.');
@@ -97,26 +94,49 @@ const useHumanizerSynth = () => {
         }
 
         setIsAudioLoading(true); // Set loading state
-        console.log('useHumanizerSynth: Proceeding with initialization of audio nodes and loading click sound...');
+        console.log('useHumanizerSynth: Proceeding with initialization of audio nodes and creating synth...');
 
         try {
-            // Dispose existing player if any
-            if (clickPlayerRef.current) clickPlayerRef.current.dispose();
+            // Dispose existing synth if any
+            if (clickSynthRef.current) clickSynthRef.current.dispose();
             Tone.Transport.stop(); // Stop transport to ensure clean re-initialization
             Tone.Transport.cancel(); // Clear all scheduled events
 
-            // Create Tone.Player for the click sound
-            const player = new Tone.Player({
-                url: CLICK_SOUND_MP3_PATH,
-                autostart: false,
-                volume: -10 // Adjust volume for the click
+            // Create a Tone.MembraneSynth for the click sound
+            // You can experiment with parameters to get different click sounds
+            const synth = new Tone.MembraneSynth({
+                pitchDecay: 0.008,
+                octaves: 2,
+                envelope: {
+                    attack: 0.0006,
+                    decay: 0.5,
+                    sustain: 0.0,
+                    release: 0.05
+                },
+                volume: -10 // Adjust base volume of the synth
             }).toDestination(); // Direct to output
 
-            await player.loaded; // Await the 'loaded' promise for the player
-            console.log('useHumanizerSynth: Click sound loaded successfully.');
+            // If you want a more metallic or snappy sound, consider Tone.MetalSynth:
+            /*
+            const synth = new Tone.MetalSynth({
+                frequency: 200, // Adjust base frequency
+                envelope: {
+                    attack: 0.001,
+                    decay: 0.1,
+                    release: 0.05
+                },
+                harmonicity: 3.1,
+                modulationIndex: 20,
+                resonance: 4000,
+                octaves: 1.5,
+                volume: -15 // Adjust base volume
+            }).toDestination();
+            */
 
-            // Store player reference
-            clickPlayerRef.current = player;
+            console.log('useHumanizerSynth: Tone.js synth created successfully.');
+
+            // Store synth reference
+            clickSynthRef.current = synth;
 
             // Initialize Tone.Transport properties
             Tone.Transport.bpm.value = bpm;
@@ -124,38 +144,24 @@ const useHumanizerSynth = () => {
             Tone.Transport.loopEnd = '1m'; // Loop over 1 measure by default for visual consistency
 
             // Schedule the repeating metronome event
-            // The callback function now includes the humanization logic
             const eventId = Tone.Transport.scheduleRepeat((time) => {
-                if (player.loaded) {
-                    // Calculate random timing offset
-                    // timingAmount is in milliseconds, convert to seconds for Tone.js
-                    const randomTimingOffset = (Math.random() * 2 - 1) * (timingAmount / 1000); // -timingAmount to +timingAmount
-                    const scheduledTime = time + randomTimingOffset;
+                // Calculate random timing offset
+                const randomTimingOffset = (Math.random() * 2 - 1) * (timingAmount / 1000); // -timingAmount to +timingAmount
+                const scheduledTime = time + randomTimingOffset;
 
-                    // Calculate random velocity
-                    const baseVelocity = 1; // Full velocity for clicks
-                    const randomVelocity = baseVelocity - (Math.random() * velocityAmount); // 1.0 down to (1.0 - velocityAmount)
-                    const clampedVelocity = Math.max(0.1, Math.min(1.0, randomVelocity)); // Ensure minimum velocity
+                // Calculate random velocity
+                const baseVelocity = 1; // Full velocity for clicks (0 to 1)
+                const randomVelocity = baseVelocity - (Math.random() * velocityAmount * baseVelocity); // 1.0 down to (1.0 - velocityAmount)
+                const clampedVelocity = Math.max(0.01, Math.min(1.0, randomVelocity)); // Ensure minimum velocity for audible click
 
-                    player.start(scheduledTime, 0, undefined, clampedVelocity);
+                // Trigger the synth with a specific note (e.g., 'C4' for pitch consistency) and the calculated velocity
+                clickSynthRef.current.triggerAttackRelease('C4', '16n', scheduledTime, clampedVelocity);
 
-                    // Update active beat index for visualization
-                    // We can use Tone.Transport.getBarsBeatsSixteenths() for current position
-                    // but for a loop, `iterator` in a Tone.Loop or simple counter from Transport.scheduleRepeat
-                    // is simpler for activeBeatIndex.
-                    // Let's use a simple counter for activeBeatIndex if we are playing fixed subdivisions
-                    const currentBeat = Math.floor(Tone.Time(Tone.Transport.position).toSeconds() / Tone.Time(subdivision).toSeconds());
-                    Tone.Draw.schedule(() => {
-                        // This logic needs to align with the actual `subdivision` and `loopEnd` for the visualizer.
-                        // For a simple single pulse visualizer, we just need to trigger it.
-                        // If we want a sequence of visual steps (like 1 to 8), we need to track it based on subdivision.
-                        // Let's make it simpler for now and just set a generic 'active' state for the visual element.
-                        // Or, use a counter based on the subdivision, wrapped for `patternSteps`.
-                        const subInLoopEnd = Tone.Time(Tone.Transport.loopEnd).toTicks() / Tone.Time(subdivision).toTicks();
-                        setActiveBeatIndex(prev => (prev + 1) % subInLoopEnd);
-
-                    }, scheduledTime); // Schedule visual update at the actual playback time
-                }
+                // Update active beat index for visualization
+                const subInLoopEnd = Math.floor(Tone.Time(Tone.Transport.loopEnd).toTicks() / Tone.Time(subdivision).toTicks());
+                Tone.Draw.schedule(() => {
+                    setActiveBeatIndex(prev => (prev + 1) % subInLoopEnd);
+                }, scheduledTime); // Schedule visual update at the actual playback time
             }, subdivision); // Repeat interval based on selected subdivision
 
             metronomeEventIdRef.current = eventId; // Store the event ID to cancel it later
@@ -166,12 +172,12 @@ const useHumanizerSynth = () => {
             console.log('useHumanizerSynth: Audio nodes initialized and connected.');
 
         } catch (error) {
-            console.error("useHumanizerSynth: Error initializing audio nodes or loading MP3:", error);
+            console.error("useHumanizerSynth: Error initializing audio nodes or creating synth:", error);
             setIsAudioReady(false);
             hasInitializedRef.current = false;
             setIsAudioLoading(false); // Reset loading state on error
             // Ensure any partially created nodes are disposed on error
-            if (clickPlayerRef.current) { clickPlayerRef.current.dispose(); clickPlayerRef.current = null; }
+            if (clickSynthRef.current) { clickSynthRef.current.dispose(); clickSynthRef.current = null; }
             Tone.Transport.cancel(metronomeEventIdRef.current);
             metronomeEventIdRef.current = null;
         }
@@ -185,10 +191,9 @@ const useHumanizerSynth = () => {
         Tone.Transport.cancel(metronomeEventIdRef.current); // Clear specific scheduled event
         metronomeEventIdRef.current = null; // Clear ref
 
-        if (clickPlayerRef.current) {
-            clickPlayerRef.current.stop();
-            clickPlayerRef.current.dispose();
-            clickPlayerRef.current = null;
+        if (clickSynthRef.current) { // Changed from clickPlayerRef to clickSynthRef
+            clickSynthRef.current.dispose(); // Synth dispose method
+            clickSynthRef.current = null;
         }
 
         setIsPlaying(false);
@@ -228,17 +233,17 @@ const useHumanizerSynth = () => {
             if (metronomeEventIdRef.current) {
                 Tone.Transport.cancel(metronomeEventIdRef.current); // Cancel old event
                 const newEventId = Tone.Transport.scheduleRepeat((time) => {
-                    if (clickPlayerRef.current && clickPlayerRef.current.loaded) {
+                    if (clickSynthRef.current) { // Changed from clickPlayerRef.current && clickPlayerRef.current.loaded
                         const randomTimingOffset = (Math.random() * 2 - 1) * (timingAmount / 1000);
                         const scheduledTime = time + randomTimingOffset;
 
                         const baseVelocity = 1;
-                        const randomVelocity = baseVelocity - (Math.random() * velocityAmount);
-                        const clampedVelocity = Math.max(0.1, Math.min(1.0, randomVelocity));
+                        const randomVelocity = baseVelocity - (Math.random() * velocityAmount * baseVelocity);
+                        const clampedVelocity = Math.max(0.01, Math.min(1.0, randomVelocity));
 
-                        clickPlayerRef.current.start(scheduledTime, 0, undefined, clampedVelocity);
+                        clickSynthRef.current.triggerAttackRelease('C4', '16n', scheduledTime, clampedVelocity); // Trigger synth
 
-                        const subInLoopEnd = Tone.Time(Tone.Transport.loopEnd).toTicks() / Tone.Time(subdivision).toTicks();
+                        const subInLoopEnd = Math.floor(Tone.Time(Tone.Transport.loopEnd).toTicks() / Tone.Time(subdivision).toTicks());
                         Tone.Draw.schedule(() => {
                             setActiveBeatIndex(prev => (prev + 1) % subInLoopEnd);
                         }, scheduledTime);
@@ -257,7 +262,8 @@ const useHumanizerSynth = () => {
         if (!isAudioGloballyReady) {
             console.log('togglePlay: AudioContext not globally ready, attempting to start global audio...');
             await startGlobalAudio();
-            await new Promise(resolve => setTimeout(resolve, 50)); // Small delay for state propagation
+            // Give a moment for Tone.context.state to update
+            await new Promise(resolve => setTimeout(resolve, 50));
         }
 
         // Re-check global audio readiness and initialization status after potential async operations
@@ -265,6 +271,7 @@ const useHumanizerSynth = () => {
         if (Tone.context.state === 'running' && !hasInitializedRef.current && !isAudioLoading) {
             console.log('togglePlay: Global audio ready but local nodes not initialized. Attempting to initialize them now...');
             await initAudioNodes();
+            // Give a moment for state to propagate
             await new Promise(resolve => setTimeout(resolve, 50));
         }
 
@@ -399,7 +406,7 @@ const HumanizerPanelContent = () => {
             {/* Floating Icons Background */}
             <div className="absolute inset-0 opacity-10 pointer-events-none"
                 style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%238a2be2' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
+                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%238a2be2' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 20h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
                     backgroundSize: '200px 200px'
                 }}
             ></div>
@@ -418,34 +425,34 @@ const HumanizerPanelContent = () => {
                 )}
                 {isAudioLoading && (
                     <p className="text-purple-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
-                        Loading click sound...
+                        Loading audio engine...
                     </p>
                 )}
             </div>
 
             <div className="bg-white/80 backdrop-blur-sm p-4 md:p-8 rounded-xl shadow-lg w-full max-w-4xl flex flex-col items-center space-y-4 md:space-y-8 z-10 border border-purple-200 mx-2">
 
-                {/* Play/Pause and Reset Buttons */}
-                <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 mb-4 md:mb-6 w-full">
+                {/* Play/Pause and Reset Buttons - Updated for better responsiveness */}
+                <div className="flex flex-col md:flex-row items-center gap-4 w-full">
                     <button
                         type="button"
                         onClick={togglePlay}
-                        className={`px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full
-                                    ${isPlaying
+                        className={`px-6 py-3 rounded-full font-bold text-lg flex items-center justify-center gap-3 transition-all duration-300 w-full md:w-auto
+                                ${isPlaying
                                     ? 'bg-purple-700 hover:bg-purple-800 text-white'
                                     : 'bg-purple-500 hover:bg-purple-600 text-white'}
-                                    ${(!isAudioReady && !isPlaying) || isAudioLoading ? 'opacity-50 cursor-not-allowed' : ''}
-                            `}
+                                ${(!isAudioReady && !isPlaying) || isAudioLoading ? 'opacity-50 cursor-not-allowed' : ''}
+                        `}
                         disabled={isAudioLoading}
                     >
                         {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-                        {isPlaying ? "Stop" : "Play Metronome"}
+                        {isPlaying ? "Stop Metronome" : "Play Metronome"}
                     </button>
 
                     <button
                         type="button"
                         onClick={resetParameters}
-                        className={`px-4 py-3 md:px-6 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full md:w-auto
+                        className={`px-6 py-3 rounded-full font-bold text-lg flex items-center justify-center gap-3 transition-all duration-300 w-full md:w-auto
                                 bg-gray-500 hover:bg-gray-600 text-white
                                 ${isAudioLoading ? 'opacity-50 cursor-not-allowed' : ''}
                         `}
@@ -524,7 +531,6 @@ const HumanizerPanelContent = () => {
                         ))}
                     </div>
                 </div>
-
             </div>
         </div>
     );
