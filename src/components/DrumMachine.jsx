@@ -286,7 +286,7 @@ const DrumMachineContent = () => {
 
     return (
         <div
-            className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
+            className="min-h-screen flex flex-col items-center justify-center p-3 sm:p-4 md:p-8 relative overflow-hidden w-full"
             style={{
                 background: 'linear-gradient(135deg, #e6ffe6 0%, #ccffcc 50%, #80ff80 100%)',
                 fontFamily: 'Inter, sans-serif',
@@ -300,78 +300,106 @@ const DrumMachineContent = () => {
                 }}
             ></div>
 
-            <div className="text-center mb-6 md:mb-10 z-10 w-full px-2">
-                <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
-                    <Drumstick size={36} className="text-green-700 md:mb-0 mb-2" />
-                    <h1 className="text-3xl md:text-5xl font-extrabold text-green-900 drop-shadow-lg">
-                        Drum Machine
-                    </h1>
+            <div className="text-center mb-4 sm:mb-6 md:mb-10 z-10 w-full max-w-4xl">
+                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-green-900 drop-shadow-lg mb-2 sm:mb-4 leading-tight">
+                    Drum Machine
+                </h1>
+                
+                {/* Status Messages */}
+                <div className="min-h-[1.5rem] flex items-center justify-center">
+                    {error && (
+                        <p className="text-red-600 text-sm sm:text-base font-semibold animate-pulse">
+                            Error: {error}
+                        </p>
+                    )}
+                    {!isAudioReady && isLoading && (
+                        <p className="text-green-700 text-sm sm:text-base animate-pulse">
+                            Loading samples...
+                        </p>
+                    )}
+                    {!isAudioReady && !isLoading && !error && (
+                        <p className="text-green-700 text-sm sm:text-base">
+                            Tap any pad to activate audio
+                        </p>
+                    )}
+                    {isAudioReady && !isLoading && (
+                        <p className="text-green-600 text-sm sm:text-base font-medium">
+                            🎵 Ready! Tap the pads
+                        </p>
+                    )}
                 </div>
-                {error && (
-                    <p className="text-red-600 text-xs md:text-sm mt-2 md:mt-4 font-semibold">
-                        Error: {error}
-                    </p>
-                )}
-                {!isAudioReady && isLoading && (
-                    <p className="text-green-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
-                        Loading samples...
-                    </p>
-                )}
-                {!isAudioReady && !isLoading && !error && (
-                    <p className="text-green-700 text-xs md:text-sm mt-2 md:mt-4">
-                        Tap any pad to activate audio
-                    </p>
-                )}
-                {isAudioReady && !isLoading && (
-                    <p className="text-green-600 text-xs md:text-sm mt-2 md:mt-4">
-                        Ready! Tap the pads
-                    </p>
-                )}
 
                 {/* Only show "Activate Audio" button if specifically suspended and not loading/erroring */}
                 {!isLoading && error && error.includes("suspended") && (
                     <button
                         onClick={startGlobalAudio} 
-                        className="mt-3 md:mt-4 px-4 py-2 md:px-6 md:py-3 bg-green-600 text-white rounded-lg font-bold shadow hover:bg-green-700 transition-all duration-200 text-sm md:text-base"
+                        className="mt-4 px-6 py-3 sm:px-8 sm:py-4 bg-green-600 text-white rounded-xl font-bold shadow-lg hover:bg-green-700 active:scale-95 transition-all duration-200 text-base sm:text-lg"
                     >
-                        Activate Audio
+                        🔊 Activate Audio
                     </button>
                 )}
             </div>
 
-            <div className="bg-white/80 backdrop-blur-sm p-4 md:p-8 rounded-xl shadow-lg w-full max-w-3xl flex flex-col items-center space-y-4 md:space-y-8 z-10 border border-green-200 mx-2">
+            <div className="bg-white/90 backdrop-blur-md p-4 sm:p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-2xl lg:max-w-4xl flex flex-col items-center space-y-6 sm:space-y-8 z-10 border border-green-200/50 mx-2">
 
-                {/* Drum Pads Grid - 2x2 on mobile, 4x1 on tablet, 2x2 on desktop */}
-                <div className="grid grid-cols-2 gap-3 w-full">
+                {/* Drum Pads Grid - Mobile First Design */}
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 w-full max-w-3xl">
                     {drumKeys.map(drumKey => (
                         <button
                             key={drumKey}
                             onClick={() => handleDrumPadInteraction(drumKey)} 
                             className={`
-                                py-6 md:py-8 rounded-lg text-sm md:text-base font-bold transition-all duration-75 ease-out transform
-                                ${activePad === drumKey ? 'scale-95 shadow-inner bg-green-700' : 'shadow-md'}
-                                ${!isLoading && !error // Enabled if not loading and no general error
-                                    ? 'bg-green-500 hover:bg-green-600 active:scale-95 text-white'
+                                relative overflow-hidden
+                                py-8 sm:py-10 md:py-12 lg:py-16
+                                rounded-xl sm:rounded-2xl 
+                                text-sm sm:text-base md:text-lg lg:text-xl 
+                                font-bold 
+                                transition-all duration-150 ease-out transform
+                                touch-manipulation select-none
+                                min-h-[80px] sm:min-h-[100px] md:min-h-[120px]
+                                ${activePad === drumKey 
+                                    ? 'scale-95 shadow-inner bg-green-700 text-white ring-4 ring-green-400' 
+                                    : 'shadow-lg hover:shadow-xl'}
+                                ${!isLoading && !error 
+                                    ? 'bg-green-500 hover:bg-green-600 active:scale-95 text-white hover:scale-105' 
                                     : 'bg-gray-400 cursor-not-allowed text-gray-700'}
                             `}
-                            disabled={isLoading || !!error} // Disabled if loading or if there's any error
+                            disabled={isLoading || !!error}
+                            style={{
+                                WebkitTapHighlightColor: 'transparent',
+                                touchAction: 'manipulation'
+                            }}
                         >
-                            {drumKey.replace(/_/g, ' ').toUpperCase()}
+                            {/* Ripple effect background */}
+                            <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-xl sm:rounded-2xl"></div>
+                            
+                            {/* Button text */}
+                            <span className="relative z-10 leading-tight">
+                                {drumKey.replace(/_/g, ' ').toUpperCase()}
+                            </span>
                         </button>
                     ))}
                 </div>
 
                 {/* Master Volume Slider */}
-                <div className="w-full mt-4 md:mt-6 pt-4 md:pt-6 border-t border-green-200 px-2">
+                <div className="w-full max-w-2xl mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-green-200 px-2">
                     <ParameterSlider
-                        label="Volume" value={masterVolume} setter={setMasterVolume}
-                        min="-40" max="0" step="1" unit=" dB"
+                        label="Volume" 
+                        value={masterVolume} 
+                        setter={setMasterVolume}
+                        min="-40" 
+                        max="0" 
+                        step="1" 
+                        unit=" dB"
                         explanation="Adjust overall loudness"
-                        isDisabled={isLoading || !!error} // Disabled if loading or if there's any error
+                        isDisabled={isLoading || !!error}
                         colorClass="accent-green-700 bg-green-200"
                     />
                 </div>
             </div>
+            
+            {/* Footer spacing for mobile */}
+            <div className="h-8 sm:h-4"></div>
         </div>
     );
 };
