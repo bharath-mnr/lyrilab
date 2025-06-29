@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "vite.config.js",
+      "src": "package.json",  // Changed from vite.config.js
       "use": "@vercel/static-build",
       "config": {
         "distDir": "dist"
@@ -12,16 +12,12 @@
   "routes": [
     {
       "src": "/assets/(.*)",
-      "headers": {
-        "Cache-Control": "public, max-age=31536000, immutable"
-      }
+      "headers": { "Cache-Control": "public, max-age=31536000, immutable" }
     },
     {
       "src": "/(.*)",
       "dest": "/index.html",
-      "headers": {
-        "Cache-Control": "no-cache"
-      }
+      "headers": { "Cache-Control": "no-cache" }
     }
   ]
 }
