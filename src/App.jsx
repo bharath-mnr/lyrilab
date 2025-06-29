@@ -11,28 +11,78 @@ import ContactPage from './pages/ContactPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsAndConditionsPage from './pages/TermsAndConditionsPage';
 
-// --- START: Enhanced Dynamic Import Logic ---
+// --- START: Fixed Dynamic Import Logic using Vite's import.meta.glob ---
+// Get all modules from both pages and components directories
+const allModules = {
+  ...import.meta.glob('./pages/*.jsx', { eager: false }),
+  ...import.meta.glob('./pages/*.js', { eager: false }),
+  ...import.meta.glob('./components/*.jsx', { eager: false }),
+  ...import.meta.glob('./components/*.js', { eager: false }),
+  ...import.meta.glob('./components/**/*.jsx', { eager: false }),
+  ...import.meta.glob('./components/**/*.js', { eager: false })
+};
+
+// Create a mapping function to resolve the correct module path
+const getModulePath = (importPath) => {
+  // Convert importPath like "./pages/HomePage.jsx" to the glob key format
+  const normalizedPath = importPath.startsWith('./') ? importPath : `./${importPath}`;
+  
+  // First try exact match
+  if (allModules[normalizedPath]) {
+    return allModules[normalizedPath];
+  }
+  
+  // If not found, try with different extensions
+  const pathWithoutExt = normalizedPath.replace(/\.(jsx?|tsx?)$/, '');
+  const possiblePaths = [
+    `${pathWithoutExt}.jsx`,
+    `${pathWithoutExt}.js`,
+    `${pathWithoutExt}.tsx`,
+    `${pathWithoutExt}.ts`
+  ];
+  
+  for (const path of possiblePaths) {
+    if (allModules[path]) {
+      return allModules[path];
+    }
+  }
+  
+  return null;
+};
+
 const preloadedComponents = Object.fromEntries(
   ALL_TOOLS.map(tool => [
     tool.component,
-    lazy(() =>
-      import(/* @vite-ignore */ `${tool.importPath}`)
-        .catch(error => {
-          console.error(`Failed to load component for ${tool.component} from ${tool.importPath}:`, error);
-          // Return a fallback component if the import fails
-          return {
-            default: () => (
-              <div className="flex items-center justify-center min-h-screen bg-red-900 text-white text-xl p-4 text-center">
-                <p>Error loading {tool.name || tool.component} page. Please try again later.</p>
-              </div>
-            )
-          };
-        })
-    )
+    lazy(() => {
+      const moduleLoader = getModulePath(tool.importPath);
+      
+      if (!moduleLoader) {
+        console.error(`Module not found for ${tool.component} at ${tool.importPath}`);
+        // Return a fallback component if the module is not found
+        return Promise.resolve({
+          default: () => (
+            <div className="flex items-center justify-center min-h-screen bg-red-900 text-white text-xl p-4 text-center">
+              <p>Error loading {tool.name || tool.component} page. Please try again later.</p>
+            </div>
+          )
+        });
+      }
+
+      return moduleLoader().catch(error => {
+        console.error(`Failed to load component for ${tool.component} from ${tool.importPath}:`, error);
+        // Return a fallback component if the import fails
+        return {
+          default: () => (
+            <div className="flex items-center justify-center min-h-screen bg-red-900 text-white text-xl p-4 text-center">
+              <p>Error loading {tool.name || tool.component} page. Please try again later.</p>
+            </div>
+          )
+        };
+      });
+    })
   ])
 );
-// --- END: Enhanced Dynamic Import Logic ---
-
+// --- END: Fixed Dynamic Import Logic ---
 
 const App = () => {
   const categorizedTools = getCategorizedTools(ALL_TOOLS);
