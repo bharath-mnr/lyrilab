@@ -7,7 +7,7 @@ export const TOOLS = [
     id: 'home',
     name: 'Home',
     path: '/',
-    importPath: './components/HomePage',
+    component: 'HomePage',
     description: 'Explore all the musical experiments and sound design tools.',
     icon: '',
     categories: ['Navigation']
@@ -16,7 +16,7 @@ export const TOOLS = [
     id: 'virtual-piano',
     name: 'Piano',
     path: '/virtual-piano',
-    importPath: './components/VirtualPiano',
+    component: 'VirtualPiano',
     description: 'Full-featured virtual piano with keyboard and mouse support. Play melodies and chords with realistic sound.',
     icon: '',
     categories: ['Instruments', 'Fun']
@@ -25,7 +25,7 @@ export const TOOLS = [
     id: 'guitar-fretboard',
     name: 'Guitar Fretboard',
     path: '/guitar-fretboard',
-    importPath: './components/GuitarFretboardApp',
+    component: 'GuitarFretboardApp',
     description: 'Interactive guitar neck visualization. Learn note positions, scales, and chord shapes across the fretboard.',
     icon: '',
     categories: ['Instruments', 'Theory']
@@ -34,7 +34,7 @@ export const TOOLS = [
     id: 'drum-machine',
     name: 'Drum Machine',
     path: '/drum-machine',
-    importPath: './components/DrumMachine',
+    component: 'DrumMachine',
     description: 'Step sequencer with multiple drum kits. Create beats, adjust tempo, and experiment with rhythm patterns.',
     icon: '',
     categories: ['Instruments', 'Rhythm', 'Fun']
@@ -43,7 +43,7 @@ export const TOOLS = [
     id: 'arpeggiator-sequencer',
     name: 'Arpeggiator',
     path: '/arpeggiator-sequencer',
-    importPath: './components/ArpeggiatorSequencer',
+    component: 'ArpeggiatorSequencer',
     description: 'Advanced arpeggio generator with customizable patterns, note length, and octave range controls.',
     icon: '',
     categories: ['Instruments', 'Rhythm', 'Theory', 'Synth']
@@ -52,7 +52,7 @@ export const TOOLS = [
     id: 'portamento-glide',
     name: 'Portamento',
     path: '/portamento-glide',
-    importPath: './components/PortamentoGlide',
+    component: 'PortamentoGlide',
     description: 'Experiment with smooth pitch transitions between notes. Adjust glide time and curve parameters.',
     icon: '',
     categories: ['Instruments', 'Synth']
@@ -61,7 +61,7 @@ export const TOOLS = [
     id: 'wavetable-editor',
     name: 'Wavetable',
     path: '/wavetable-editor',
-    importPath: './components/WavetableEditor',
+    component: 'WavetableEditor',
     description: 'Create and manipulate custom wavetables for unique synth sounds. Draw and morph waveforms.',
     icon: '',
     categories: ['Synth', 'Challenge']
@@ -70,7 +70,7 @@ export const TOOLS = [
     id: 'waveform-combiner',
     name: 'Waveform Mixer',
     path: '/waveform-combiner',
-    importPath: './components/WaveformCombiner',
+    component: 'WaveformCombiner',
     description: 'Combine multiple waveforms to create complex sounds. Adjust phase, volume, and harmonic content.',
     icon: '',
     categories: ['Synth']
@@ -79,7 +79,7 @@ export const TOOLS = [
     id: 'lfo-modulation',
     name: 'LFO',
     path: '/lfo-modulation',
-    importPath: './components/LFOModulation',
+    component: 'LFOModulation',
     description: 'Low Frequency Oscillator tool. Modulate parameters with various waveforms and speed controls.',
     icon: '',
     categories: ['Synth']
@@ -88,7 +88,7 @@ export const TOOLS = [
     id: 'adsr-envelope-tool',
     name: 'ADSR',
     path: '/adsr-envelope-tool',
-    importPath: './components/ADSREnvelopeTool',
+    component: 'ADSREnvelopeTool',
     description: 'Visual ADSR envelope editor. Shape attack, decay, sustain, and release parameters for dynamic sounds.',
     icon: '',
     categories: ['Synth', 'Theory']
@@ -97,7 +97,7 @@ export const TOOLS = [
     id: 'humanizer-panel',
     name: 'Humanizer',
     path: '/humanizer-panel',
-    importPath: './components/HumanizerPanel',
+    component: 'HumanizerPanel',
     description: 'Add human-like variations to your performances with timing, velocity, and micro-tuning controls.',
     icon: '',
     categories: ['Instruments', 'Rhythm']
@@ -106,7 +106,7 @@ export const TOOLS = [
     id: 'tap-tempo-tool',
     name: 'Tap Tempo',
     path: '/tap-tempo-tool',
-    importPath: './components/TapTempoTool',
+    component: 'TapTempoTool',
     description: 'Set your project tempo by tapping. Includes visual feedback and BPM calculation.',
     icon: '',
     categories: ['Rhythm']
@@ -115,7 +115,7 @@ export const TOOLS = [
     id: 'chord-explorer',
     name: 'Chord Finder',
     path: '/chord-explorer',
-    importPath: './components/ChordHighlightPage',
+    component: 'ChordHighlightPage',
     description: 'Interactive chord dictionary. Visualize chord structures and hear how they sound.',
     icon: '',
     categories: ['Theory']
@@ -124,7 +124,7 @@ export const TOOLS = [
     id: 'chord-progression-builder',
     name: 'Chord Progressions',
     path: '/chord-progression-builder',
-    importPath: './components/ChordProgressionBuilder',
+    component: 'ChordProgressionBuilder',
     description: 'Build and audition chord sequences. Explore common progressions in different keys.',
     icon: '',
     categories: ['Theory', 'Challenge']
@@ -133,7 +133,7 @@ export const TOOLS = [
     id: 'scale-explorer',
     name: 'Scales',
     path: '/scale-explorer',
-    importPath: './components/ScaleContent',
+    component: 'ScaleContent',
     description: 'Comprehensive scale library. Visualize scales across instruments with audio playback.',
     icon: '',
     categories: ['Theory']
@@ -142,7 +142,7 @@ export const TOOLS = [
     id: 'interval-training',
     name: 'Interval Trainer',
     path: '/interval-training',
-    importPath: './components/IntervalTrainingApp',
+    component: 'IntervalTrainingApp',
     description: 'Ear training for recognizing musical intervals. Includes multiple difficulty levels.',
     icon: '',
     categories: ['Theory', 'Games', 'Challenge']
@@ -151,7 +151,7 @@ export const TOOLS = [
     id: 'circle-of-fifths',
     name: 'Circle of Fifths',
     path: '/circle-of-fifths',
-    importPath: './components/CircleOfFifthsContent',
+    component: 'CircleOfFifthsContent',
     description: 'Interactive circle of fifths diagram. Explore key relationships and chord functions.',
     icon: '',
     categories: ['Theory']
@@ -160,7 +160,7 @@ export const TOOLS = [
     id: 'consonance-dissonance',
     name: 'Consonance',
     path: '/consonance-dissonance',
-    importPath: './components/ConsonanceDissonance',
+    component: 'ConsonanceDissonance',
     description: 'Experiment with harmonic tension. Compare consonant and dissonant intervals.',
     icon: '',
     categories: ['Theory']
@@ -169,7 +169,7 @@ export const TOOLS = [
     id: 'piano-roll-basics',
     name: 'Piano Roll',
     path: '/piano-roll',
-    importPath: './components/PianoRollBasics',
+    component: 'PianoRollBasics',
     description: 'Learn MIDI sequencing fundamentals with this interactive piano roll editor.',
     icon: '',
     categories: ['Theory']
@@ -178,7 +178,7 @@ export const TOOLS = [
     id: 'eq-explorer',
     name: 'EQ',
     path: '/eq-explorer',
-    importPath: './components/EQExplorer',
+    component: 'EQExplorer',
     description: 'Interactive equalizer. Learn how different frequency bands affect your sound.',
     icon: '',
     categories: ['Effects']
@@ -187,7 +187,7 @@ export const TOOLS = [
     id: 'compression-explorer',
     name: 'Compressor',
     path: '/compression-explorer',
-    importPath: './components/CompressionExplorer',
+    component: 'CompressionExplorer',
     description: 'Dynamic range processor. Adjust threshold, ratio, attack, and release parameters.',
     icon: '',
     categories: ['Effects']
@@ -196,7 +196,7 @@ export const TOOLS = [
     id: 'reverb-explorer',
     name: 'Reverb',
     path: '/reverb-explorer',
-    importPath: './components/ReverbExplorer',
+    component: 'ReverbExplorer',
     description: 'Space simulator. Adjust decay time, pre-delay, and room size parameters.',
     icon: '',
     categories: ['Effects']
@@ -205,7 +205,7 @@ export const TOOLS = [
     id: 'panner-tool',
     name: 'Panner',
     path: '/panner-tool',
-    importPath: './components/PannerTool',
+    component: 'PannerTool',
     description: 'Stereo imaging tool. Position sounds in the stereo field with automation options.',
     icon: '',
     categories: ['Effects']
@@ -214,7 +214,7 @@ export const TOOLS = [
     id: 'mid-side-explorer',
     name: 'Mid/Side',
     path: '/mid-side-explorer',
-    importPath: './components/MidSideExplorer',
+    component: 'MidSideExplorer',
     description: 'Mid/Side processing toolkit. Isolate and process center vs. side information separately.',
     icon: '',
     categories: ['Effects']
@@ -223,7 +223,7 @@ export const TOOLS = [
     id: 'delay-explorer',
     name: 'Delay',
     path: '/delay-explorer',
-    importPath: './components/DelayExplorer',
+    component: 'DelayExplorer',
     description: 'Time-based effects processor. Create echoes, slapbacks, and rhythmic patterns.',
     icon: '',
     categories: ['Effects']
@@ -232,7 +232,7 @@ export const TOOLS = [
     id: 'pitch-shift-explorer',
     name: 'Pitch Shifter',
     path: '/pitch-shift-explorer',
-    importPath: './components/PitchShiftExplorer',
+    component: 'PitchShiftExplorer',
     description: 'Real-time pitch manipulation. Experiment with formant-preserving shifts and harmonies.',
     icon: '',
     categories: ['Effects']
@@ -241,7 +241,7 @@ export const TOOLS = [
     id: 'stereo-imager-explorer',
     name: 'Stereo Imager',
     path: '/stereo-imager-explorer',
-    importPath: './components/StereoImagerExplorer',
+    component: 'StereoImagerExplorer',
     description: 'Stereo width controller. Adjust spatial characteristics of your mix.',
     icon: '',
     categories: ['Effects']
@@ -250,7 +250,7 @@ export const TOOLS = [
     id: 'limiter-explorer',
     name: 'Limiter',
     path: '/limiter-explorer',
-    importPath: './components/LimiterExplorer',
+    component: 'LimiterExplorer',
     description: 'Peak controller. Prevent clipping while maximizing loudness.',
     icon: '',
     categories: ['Effects']
@@ -259,7 +259,7 @@ export const TOOLS = [
     id: 'saturation-explorer',
     name: 'Saturation',
     path: '/saturation-explorer',
-    importPath: './components/SaturationExplor',
+    component: 'SaturationExplor',
     description: 'Harmonic exciter. Add warmth and distortion with various saturation algorithms.',
     icon: '',
     categories: ['Effects', 'Synth']
@@ -268,7 +268,7 @@ export const TOOLS = [
     id: 'chorus-explorer',
     name: 'Chorus',
     path: '/chorus-explorer',
-    importPath: './components/ChorusExplor',
+    component: 'ChorusExplor',
     description: 'Modulation effect. Create lush, animated textures with rate and depth controls.',
     icon: '',
     categories: ['Effects']
@@ -277,7 +277,7 @@ export const TOOLS = [
     id: 'tremolo-explorer',
     name: 'Tremolo',
     path: '/tremolo-explorer',
-    importPath: './components/TremoloExplorer',
+    component: 'TremoloExplorer',
     description: 'Amplitude modulator. Create rhythmic volume pulsations with shape controls.',
     icon: '',
     categories: ['Effects']
@@ -286,7 +286,7 @@ export const TOOLS = [
     id: 'granular-explorer',
     name: 'Granular',
     path: '/granular-explorer',
-    importPath: './components/GranularExplor',
+    component: 'GranularExplor',
     description: 'Granular synthesis engine. Manipulate sound at the microscopic level.',
     icon: '',
     categories: ['Effects', 'Synth']
@@ -295,7 +295,7 @@ export const TOOLS = [
     id: 'time-signature-metronome',
     name: 'Time Signatures',
     path: '/time-signature-metronome',
-    importPath: './components/TimeSignatureMetronome',
+    component: 'TimeSignatureMetronome',
     description: 'Metronome with flexible time signatures. Visualize different rhythmic divisions.',
     icon: '',
     categories: ['Rhythm']
@@ -304,7 +304,7 @@ export const TOOLS = [
     id: 'polyrhythm-sequencer',
     name: 'Polyrhythms',
     path: '/polyrhythm-sequencer',
-    importPath: './components/PolyrhythmSequencer',
+    component: 'PolyrhythmSequencer',
     description: 'Create complex rhythmic layers. Visualize and audition multiple concurrent patterns.',
     icon: '',
     categories: ['Rhythm', 'Challenge']
@@ -313,7 +313,7 @@ export const TOOLS = [
     id: 'euclidean-rhythm-generator',
     name: 'Euclidean Rhythms',
     path: '/euclidean-rhythm-generator',
-    importPath: './components/EuclideanRhythmGenerator',
+    component: 'EuclideanRhythmGenerator',
     description: 'Algorithmic rhythm generator. Create balanced patterns based on mathematical distributions.',
     icon: '',
     categories: ['Rhythm']
@@ -322,7 +322,7 @@ export const TOOLS = [
     id: 'beat-repeat-looper',
     name: 'Beat Repeater',
     path: '/beat-repeat-looper',
-    importPath: './components/BeatRepeatLooper',
+    component: 'BeatRepeatLooper',
     description: 'Creative looping tool. Capture and manipulate rhythmic fragments in real-time.',
     icon: '',
     categories: ['Rhythm', 'Effects', 'Fun']
@@ -331,7 +331,7 @@ export const TOOLS = [
     id: 'swing-groove-visualizer',
     name: 'Swing',
     path: '/swing-groove-visualizer',
-    importPath: './components/SwingGrooveVisualizer',
+    component: 'SwingGrooveVisualizer',
     description: 'Groove quantizer. Adjust swing percentage and visualize timing variations.',
     icon: '',
     categories: ['Rhythm', 'Theory']
@@ -340,7 +340,7 @@ export const TOOLS = [
     id: 'chord-training-quiz',
     name: 'Chord Quiz',
     path: '/chord-training-quiz',
-    importPath: './games/ChordTrainingQuiz',
+    component: 'ChordTrainingQuiz',
     description: 'Test your chord recognition skills. Multiple difficulty levels and feedback.',
     icon: '',
     categories: ['Games', 'Theory', 'Challenge']
@@ -349,7 +349,7 @@ export const TOOLS = [
     id: 'drum-sequencer-game',
     name: 'Drum Game',
     path: '/drum-sequencer-game',
-    importPath: './games/DrumSequencerGame',
+    component: 'DrumSequencerGame',
     description: 'Rhythm challenge game. Recreate drum patterns and test your timing.',
     icon: '',
     categories: ['Games', 'Rhythm', 'Fun']
@@ -358,7 +358,7 @@ export const TOOLS = [
     id: 'ear-training-quiz',
     name: 'Ear Trainer',
     path: '/ear-training-quiz',
-    importPath: './games/EarTrainingQuiz',
+    component: 'EarTrainingQuiz',
     description: 'Comprehensive ear training. Identify intervals, chords, and progressions by ear.',
     icon: '',
     categories: ['Games', 'Theory', 'Challenge']
@@ -367,7 +367,7 @@ export const TOOLS = [
     id: 'synthesis-challenge',
     name: 'Synth Challenge',
     path: '/synthesis-challenge',
-    importPath: './games/SynthesisChallenge',
+    component: 'SynthesisChallenge',
     description: 'Sound design puzzles. Recreate target sounds using provided synth parameters.',
     icon: '',
     categories: ['Games', 'Synth', 'Challenge']
@@ -383,8 +383,7 @@ const DEFAULT_CATEGORIES_ORDER = [
   'Rhythm',
   'Games',
   'Fun',
-  'Challenge',
-  'Tools'
+  'Challenge'
 ];
 
 // Helper to group tools by category for external use (e.g., in Navbar)
@@ -399,6 +398,8 @@ export const getCategorizedTools = (tools) => {
     if (tool.categories && Array.isArray(tool.categories)) {
       tool.categories.forEach(categoryName => {
         if (DEFAULT_CATEGORIES_ORDER.includes(categoryName) && tool.id !== 'home') {
+          // Check if the tool is already added to prevent duplicates, though Set below handles it too.
+          // This check is more for conceptual clarity with the push method.
           if (!categories[categoryName].some(existingTool => existingTool.id === tool.id)) {
             categories[categoryName].push(tool);
           }
@@ -407,18 +408,16 @@ export const getCategorizedTools = (tools) => {
     }
   });
 
-  for (const categoryName in categories) {
-    categories[categoryName].sort((a, b) => a.name.localeCompare(b.name));
-  }
-
-  const filteredCategories = {};
+  const filteredAndSortedCategories = {};
   DEFAULT_CATEGORIES_ORDER.forEach(categoryName => {
     if (categories[categoryName] && categories[categoryName].length > 0) {
-      filteredCategories[categoryName] = categories[categoryName];
+      // Use Set to ensure uniqueness and then sort
+      filteredAndSortedCategories[categoryName] = [...new Set(categories[categoryName])]
+        .sort((a, b) => a.name.localeCompare(b.name));
     }
   });
 
-  return filteredCategories;
+  return filteredAndSortedCategories;
 };
 
 export default TOOLS;
