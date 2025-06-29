@@ -3,170 +3,138 @@ import * as Tone from 'tone';
 import { Music, Play, Piano, Volume2, VolumeX, Volume1 } from 'lucide-react';
 
 // --- usePianoSynth Hook ---
-// Custom React hook for managing a Tone.js PolySynth instance.
-// Handles audio initialization, note playback, volume control, and muting.
 const usePianoSynth = (initialVolume = 0.7, initialMuteState = false) => {
-    const synthRef = useRef(null); // Ref to hold the Tone.PolySynth instance
-    const [isSynthMuted, setIsSynthMuted] = useState(initialMuteState); // State for mute status
-    const [synthVolume, setSynthVolume] = useState(initialVolume); // State for synth volume (0-1 range)
-    const [isPlaying, setIsPlaying] = useState(false); // State to track if any sound is actively playing
-    const [isAudioReady, setIsAudioReady] = useState(false); // State to track if Tone.js is initialized
-    const activeNotesRef = useRef(new Set()); // Ref to keep track of currently active (playing) notes
-    const initializationRef = useRef(false); // Ref to ensure audio context is initialized only once
+    const synthRef = useRef(null);
+    const [isSynthMuted, setIsSynthMuted] = useState(initialMuteState);
+    const [synthVolume, setSynthVolume] = useState(initialVolume);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [isAudioReady, setIsAudioReady] = useState(false);
+    const activeNotesRef = useRef(new Set());
+    const initializationRef = useRef(false);
 
-    // useCallback memoizes the initializeAudio function to prevent unnecessary re-creations.
-    // It starts the Tone.js audio context and creates the PolySynth.
     const initializeAudio = useCallback(async () => {
-        // Prevent re-initialization if already in progress or done
         if (initializationRef.current) return true;
-        initializationRef.current = true; // Mark as initializing
+        initializationRef.current = true;
 
         try {
-            // Ensure audio context is running. Tone.start() activates the Web Audio API.
             if (Tone.context.state !== 'running') {
                 await Tone.start();
-                // Add a small delay to ensure context is fully started and stable
                 await new Promise(resolve => setTimeout(resolve, 100));
             }
 
-            // Clean up any existing synth instance to prevent resource leaks
             if (synthRef.current) {
-                synthRef.current.dispose(); // Release audio resources
+                synthRef.current.dispose();
                 synthRef.current = null;
             }
 
-            // Create a new PolySynth (multiple voices for polyphony) with specific oscillator and envelope settings.
-            // These settings define the timbre (sound quality) of the piano-like instrument.
             synthRef.current = new Tone.PolySynth(Tone.Synth, {
                 oscillator: {
-                    partials: [1, 0, 2, 0, 3] // Harmonic content for a richer sound
+                    partials: [1, 0, 2, 0, 3]
                 },
                 envelope: {
-                    attack: 0.01, // Quick initial attack
-                    decay: 2,     // Long decay for a sustained sound
-                    sustain: 0.1, // Low sustain level
-                    release: 0.8, // Medium release for notes to fade out naturally
-                    attackCurve: "exponential" // Smoother attack
+                    attack: 0.01,
+                    decay: 2,
+                    sustain: 0.1,
+                    release: 0.8,
+                    attackCurve: "exponential"
                 }
-            }).toDestination(); // Connect the synth to the main audio output (speakers)
+            }).toDestination();
 
-            // Set the initial volume based on `synthVolume` and `isSynthMuted` states.
-            // Tone.js volume is in dB, so `Tone.gainToDb` converts linear gain to dB.
             synthRef.current.volume.value = isSynthMuted ? -Infinity : Tone.gainToDb(synthVolume);
-
-            setIsAudioReady(true); // Update state to indicate audio is ready
+            setIsAudioReady(true);
             return true;
         } catch (error) {
             console.error('Audio initialization failed:', error);
             setIsAudioReady(false);
-            initializationRef.current = false; // Reset if initialization fails
+            initializationRef.current = false;
             return false;
         }
-    }, [isSynthMuted, synthVolume]); // Dependencies: re-initialize if these change
+    }, [isSynthMuted, synthVolume]);
 
-    // Effect to update synth volume when `synthVolume` or `isSynthMuted` states change.
     useEffect(() => {
-        if (synthRef.current && initializationRef.current) { // Only update if synth exists and is initialized
+        if (synthRef.current && initializationRef.current) {
             try {
                 synthRef.current.volume.value = isSynthMuted ? -Infinity : Tone.gainToDb(synthVolume);
             } catch (error) {
                 console.error('Error updating volume:', error);
             }
         }
-    }, [synthVolume, isSynthMuted]); // Dependencies: re-run if volume or mute status changes
+    }, [synthVolume, isSynthMuted]);
 
-    // Cleanup effect: Runs when the component unmounts to release audio resources.
     useEffect(() => {
         return () => {
             if (synthRef.current) {
                 try {
-                    // Ensure all currently playing notes are stopped
                     activeNotesRef.current.forEach(note => {
                         synthRef.current.triggerRelease(note);
                     });
-                    activeNotesRef.current.clear(); // Clear the set of active notes
-
-                    // Dispose the synth instance to free up memory and audio context resources
+                    activeNotesRef.current.clear();
                     synthRef.current.dispose();
                     synthRef.current = null;
                 } catch (error) {
                     console.error('Error during cleanup:', error);
                 }
             }
-            initializationRef.current = false; // Reset initialization flag
+            initializationRef.current = false;
         };
-    }, []); // Empty dependency array means this runs only on mount and unmount
+    }, []);
 
-    // useCallback memoizes `playNote` to ensure stable function reference across renders.
-    // Plays a specific musical note.
     const playNote = useCallback(async (note) => {
         try {
-            // Initialize audio context if not already done
             const audioInitialized = await initializeAudio();
-            // If audio is not ready or muted, do not play note
             if (!audioInitialized || !synthRef.current || isSynthMuted) {
                 return false;
             }
 
-            // Basic validation for note format (e.g., "C4", "G#3")
-            if (typeof note !== 'string' || !note.match(/^[A-G]#?[0-9]$/)) {
+            if (typeof note !== 'string' || !note.match(/^[A-G][#b]?[0-9]$/)) {
                 console.error('Invalid note format:', note);
                 return false;
             }
 
-            // If the note is already active, release it first to re-trigger for a clear sound
             if (activeNotesRef.current.has(note)) {
                 synthRef.current.triggerRelease(note);
                 activeNotesRef.current.delete(note);
             }
 
-            synthRef.current.triggerAttack(note); // Start playing the note
-            activeNotesRef.current.add(note); // Add to active notes set
+            synthRef.current.triggerAttack(note);
+            activeNotesRef.current.add(note);
             return true;
         } catch (error) {
             console.error('Error playing note:', error);
             return false;
         }
-    }, [isSynthMuted, initializeAudio]); // Dependencies: re-create if mute state or init function changes
+    }, [isSynthMuted, initializeAudio]);
 
-    // useCallback memoizes `stopNote`.
-    // Stops a specific musical note.
     const stopNote = useCallback((note) => {
         try {
-            // Only stop if synth exists and the note is currently active
             if (synthRef.current && activeNotesRef.current.has(note)) {
-                synthRef.current.triggerRelease(note); // Release the note
-                activeNotesRef.current.delete(note); // Remove from active notes set
+                synthRef.current.triggerRelease(note);
+                activeNotesRef.current.delete(note);
                 return true;
             }
         } catch (error) {
             console.error('Error stopping note:', error);
         }
         return false;
-    }, []); // No dependencies, as it only interacts with refs and Tone.js instance
+    }, []);
 
-    // useCallback memoizes `stopAllNotes`.
-    // Stops all currently playing notes.
     const stopAllNotes = useCallback(() => {
         try {
             if (synthRef.current) {
                 activeNotesRef.current.forEach(note => {
-                    synthRef.current.triggerRelease(note); // Release each active note
+                    synthRef.current.triggerRelease(note);
                 });
-                activeNotesRef.current.clear(); // Clear the entire set
+                activeNotesRef.current.clear();
             }
         } catch (error) {
             console.error('Error stopping all notes:', error);
         }
-    }, []); // No dependencies
-
-    // useCallback memoizes `toggleMute`.
-    // Toggles the mute state of the synth.
-    const toggleMute = useCallback(() => {
-        setIsSynthMuted(prev => !prev); // Toggle the mute state
     }, []);
 
-    // Returns the functions and states provided by the hook.
+    const toggleMute = useCallback(() => {
+        setIsSynthMuted(prev => !prev);
+    }, []);
+
     return {
         playNote,
         stopNote,
@@ -178,15 +146,12 @@ const usePianoSynth = (initialVolume = 0.7, initialMuteState = false) => {
         setSynthVolume,
         isPlaying,
         setIsPlaying,
-        initializeAudio // Expose initializeAudio for manual triggering if needed
+        initializeAudio
     };
 };
 
 // --- useIntervalTrainer Hook ---
-// Custom React hook for the interval training logic.
-// Manages interval generation, playback, and state for the UI.
 const useIntervalTrainer = () => {
-    // Destructure necessary functions and states from usePianoSynth
     const {
         playNote,
         stopNote,
@@ -199,14 +164,13 @@ const useIntervalTrainer = () => {
         initializeAudio
     } = usePianoSynth();
 
-    const [currentIntervalNotes, setCurrentIntervalNotes] = useState([]); // Notes currently playing/highlighted
-    const [currentIntervalSemitones, setCurrentIntervalSemitones] = useState(0); // Semitone value of the current interval
-    const [randomIntervalName, setRandomIntervalName] = useState(''); // Name of the random interval played
-    const [playedNotes, setPlayedNotes] = useState([]); // Notes that were just played
-    const playbackTimeoutsRef = useRef([]); // Ref to store timeout IDs for cleanup
+    const [currentIntervalNotes, setCurrentIntervalNotes] = useState([]);
+    const [currentIntervalSemitones, setCurrentIntervalSemitones] = useState(0);
+    const [randomIntervalName, setRandomIntervalName] = useState('');
+    const [playedNotes, setPlayedNotes] = useState([]);
+    const [currentRootNote, setCurrentRootNote] = useState('C4');
+    const playbackTimeoutsRef = useRef([]);
 
-    // Define standard musical intervals and their semitone values.
-    // Using useRef for INTERVALS to ensure it's not recreated on every render.
     const INTERVALS = useRef([
         { name: 'Unison', semitones: 0 },
         { name: 'Minor 2nd', semitones: 1 },
@@ -223,16 +187,13 @@ const useIntervalTrainer = () => {
         { name: 'Octave', semitones: 12 },
     ]);
 
-    // Cleanup effect: Clears all scheduled timeouts when the component unmounts.
     useEffect(() => {
         return () => {
             playbackTimeoutsRef.current.forEach(timeout => clearTimeout(timeout));
             playbackTimeoutsRef.current = [];
         };
-    }, []); // Empty dependency array ensures it runs once on mount/unmount
+    }, []);
 
-    // useCallback memoizes `noteToMidi`.
-    // Converts a musical note string (e.g., "C4") to its MIDI number.
     const noteToMidi = useCallback((note) => {
         try {
             return Tone.Midi(note).toMidi();
@@ -240,10 +201,8 @@ const useIntervalTrainer = () => {
             console.error('Error converting note to MIDI:', note, error);
             return null;
         }
-    }, []); // No dependencies as Tone.Midi is a static conversion
+    }, []);
 
-    // useCallback memoizes `midiToNote`.
-    // Converts a MIDI number to its musical note string.
     const midiToNote = useCallback((midi) => {
         try {
             return Tone.Midi(midi).toNote();
@@ -251,52 +210,86 @@ const useIntervalTrainer = () => {
             console.error('Error converting MIDI to note:', midi, error);
             return null;
         }
-    }, []); // No dependencies as Tone.Midi is a static conversion
+    }, []);
 
-    // useCallback memoizes `clearPlaybackTimeouts`.
-    // Utility to clear all currently stored playback timeouts.
     const clearPlaybackTimeouts = useCallback(() => {
         playbackTimeoutsRef.current.forEach(timeout => clearTimeout(timeout));
         playbackTimeoutsRef.current = [];
-    }, []); // No dependencies, interacts only with ref
+    }, []);
 
-    // useCallback memoizes `playInterval`.
-    // Plays an interval (two notes) sequentially, handles state updates and error logging.
+    // Improved interval generation with better musical logic
+    const generateMusicallyValidInterval = useCallback((rootNote, intervalSemitones) => {
+        const rootMidi = noteToMidi(rootNote);
+        if (rootMidi === null) return null;
+
+        const targetMidi = rootMidi + intervalSemitones;
+        
+        // Ensure we stay within a reasonable range (C2 to C7)
+        if (targetMidi < 36 || targetMidi > 96) {
+            // Try different octaves of the root note
+            const noteWithoutOctave = rootNote.slice(0, -1);
+            for (let octave = 2; octave <= 6; octave++) {
+                const testRoot = noteWithoutOctave + octave;
+                const testRootMidi = noteToMidi(testRoot);
+                const testTargetMidi = testRootMidi + intervalSemitones;
+                
+                if (testTargetMidi >= 36 && testTargetMidi <= 96) {
+                    const secondNote = midiToNote(testTargetMidi);
+                    if (secondNote) {
+                        return {
+                            rootNote: testRoot,
+                            secondNote: secondNote,
+                            rootMidi: testRootMidi,
+                            secondMidi: testTargetMidi
+                        };
+                    }
+                }
+            }
+            return null;
+        }
+
+        const secondNote = midiToNote(targetMidi);
+        if (!secondNote) return null;
+
+        return {
+            rootNote: rootNote,
+            secondNote: secondNote,
+            rootMidi: rootMidi,
+            secondMidi: targetMidi
+        };
+    }, [noteToMidi, midiToNote]);
+
     const playInterval = useCallback(async (root, intervalSemitones, isRandom = false) => {
-        if (isPlaying) { // Prevent multiple simultaneous playbacks
+        if (isPlaying) {
             console.log('Already playing, skipping...');
             return;
         }
 
-        // Immediately clear any pending playback and stop all notes from previous actions.
         clearPlaybackTimeouts();
         stopAllNotes();
 
         try {
-            const audioReady = await initializeAudio(); // Ensure audio context is running
+            const audioReady = await initializeAudio();
             if (!audioReady) {
                 console.error('Audio not ready');
                 return;
             }
 
-            setIsPlaying(true); // Set playing state
-
-            // Convert root note to MIDI and calculate the second note's MIDI and name
-            const rootMidi = noteToMidi(root);
-            if (rootMidi === null) {
-                throw new Error('Invalid root note provided for interval playback');
+            // Generate musically valid interval
+            const intervalData = generateMusicallyValidInterval(root, intervalSemitones);
+            if (!intervalData) {
+                console.error('Could not generate valid interval');
+                return;
             }
 
-            const secondNoteMidi = rootMidi + intervalSemitones;
-            const secondNoteName = midiToNote(secondNoteMidi);
-            if (secondNoteName === null) {
-                throw new Error('Invalid second note generated for interval playback');
-            }
+            const { rootNote, secondNote } = intervalData;
 
-            setCurrentIntervalNotes([root, secondNoteName]); // Highlight notes on the piano
-            setPlayedNotes([root, secondNoteName]); // Store notes that were played for display
+            setIsPlaying(true);
+            setCurrentIntervalNotes([rootNote, secondNote]);
+            setPlayedNotes([rootNote, secondNote]);
+            setCurrentRootNote(rootNote);
+            setCurrentIntervalSemitones(intervalSemitones);
 
-            // If it's a random interval, set its name for display
             if (isRandom) {
                 const interval = INTERVALS.current.find(int => int.semitones === intervalSemitones);
                 if (interval) {
@@ -305,33 +298,31 @@ const useIntervalTrainer = () => {
                     setRandomIntervalName(`Unknown Interval (${intervalSemitones} semitones)`);
                 }
             } else {
-                setRandomIntervalName(''); // Clear for non-random intervals
+                setRandomIntervalName('');
             }
 
             // Play the first note
-            const firstNoteSuccess = await playNote(root);
+            const firstNoteSuccess = await playNote(rootNote);
             if (!firstNoteSuccess) {
                 throw new Error('Failed to play first note');
             }
 
-            // Schedule the second note playback after a delay (e.g., 800ms)
+            // Schedule the second note playback
             const timeout1 = setTimeout(async () => {
                 try {
-                    stopNote(root); // Stop the first note
-                    const secondNoteSuccess = await playNote(secondNoteName); // Play the second note
+                    stopNote(rootNote);
+                    const secondNoteSuccess = await playNote(secondNote);
 
                     if (secondNoteSuccess) {
-                        // Schedule stopping the second note and reset playing state
                         const timeout2 = setTimeout(() => {
-                            stopNote(secondNoteName);
+                            stopNote(secondNote);
                             setIsPlaying(false);
 
-                            // Schedule clearing highlight after notes have fully released
                             const timeout3 = setTimeout(() => {
                                 setCurrentIntervalNotes([]);
-                            }, 300); // Small delay to show highlight
+                            }, 500);
                             playbackTimeoutsRef.current.push(timeout3);
-                        }, 800); // Duration for second note
+                        }, 1000);
                         playbackTimeoutsRef.current.push(timeout2);
                     } else {
                         setIsPlaying(false);
@@ -343,55 +334,71 @@ const useIntervalTrainer = () => {
                     setIsPlaying(false);
                     setCurrentIntervalNotes([]);
                 }
-            }, 800); // Delay before playing the second note
+            }, 1000);
 
-            playbackTimeoutsRef.current.push(timeout1); // Store timeout for cleanup
+            playbackTimeoutsRef.current.push(timeout1);
 
         } catch (error) {
             console.error('Error playing interval:', error);
             setIsPlaying(false);
             setCurrentIntervalNotes([]);
-            clearPlaybackTimeouts(); // Ensure all timeouts are cleared on error
-            stopAllNotes(); // Ensure all notes are stopped on error
+            clearPlaybackTimeouts();
+            stopAllNotes();
         }
-    }, [isPlaying, noteToMidi, midiToNote, playNote, stopNote, stopAllNotes, setIsPlaying, initializeAudio, clearPlaybackTimeouts]); // Extensive dependencies
+    }, [isPlaying, generateMusicallyValidInterval, playNote, stopNote, stopAllNotes, setIsPlaying, initializeAudio, clearPlaybackTimeouts]);
 
-    // useCallback memoizes `generateRandomInterval`.
-    // Generates a random root note and a random interval, then plays it.
     const generateRandomInterval = useCallback(() => {
         if (isPlaying) {
             console.log('Already playing, skipping random interval generation...');
             return;
         }
 
-        const rootNotes = ['C3', 'C4', 'C5', 'G3', 'D4', 'A4']; // Expanded root notes for more variety
+        // More musical root note selection
+        const rootNotes = ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5'];
         const randomRoot = rootNotes[Math.floor(Math.random() * rootNotes.length)];
-        // Filter out Unison (0 semitones) for playable intervals
-        const playableIntervals = INTERVALS.current.filter(interval => interval.semitones > 0);
-        const randomIndex = Math.floor(Math.random() * playableIntervals.length);
-        const randomInterval = playableIntervals[randomIndex];
+        
+        // Include more intervals but weight them musically
+        const intervalWeights = [
+            { interval: INTERVALS.current[2], weight: 3 }, // Major 2nd
+            { interval: INTERVALS.current[3], weight: 4 }, // Minor 3rd
+            { interval: INTERVALS.current[4], weight: 4 }, // Major 3rd
+            { interval: INTERVALS.current[5], weight: 3 }, // Perfect 4th
+            { interval: INTERVALS.current[6], weight: 2 }, // Tritone
+            { interval: INTERVALS.current[7], weight: 4 }, // Perfect 5th
+            { interval: INTERVALS.current[8], weight: 3 }, // Minor 6th
+            { interval: INTERVALS.current[9], weight: 3 }, // Major 6th
+            { interval: INTERVALS.current[10], weight: 2 }, // Minor 7th
+            { interval: INTERVALS.current[11], weight: 2 }, // Major 7th
+            { interval: INTERVALS.current[12], weight: 3 }, // Octave
+        ];
 
-        setCurrentIntervalSemitones(randomInterval.semitones); // Store semitones for potential quiz logic
-        playInterval(randomRoot, randomInterval.semitones, true); // Play the random interval
-    }, [playInterval, isPlaying]); // Dependencies: playInterval and isPlaying state
+        // Create weighted array
+        const weightedIntervals = [];
+        intervalWeights.forEach(({ interval, weight }) => {
+            for (let i = 0; i < weight; i++) {
+                weightedIntervals.push(interval);
+            }
+        });
 
-    // useCallback memoizes `stopPlayback`.
-    // Stops any ongoing interval playback and resets states.
+        const randomInterval = weightedIntervals[Math.floor(Math.random() * weightedIntervals.length)];
+        playInterval(randomRoot, randomInterval.semitones, true);
+    }, [playInterval, isPlaying]);
+
     const stopPlayback = useCallback(() => {
-        clearPlaybackTimeouts(); // Clear all pending timeouts
-        stopAllNotes(); // Stop any currently playing notes
-        setIsPlaying(false); // Reset playing state
-        setCurrentIntervalNotes([]); // Clear note highlights
-        setRandomIntervalName(''); // Clear random interval display
-        setPlayedNotes([]); // Clear played notes display
-    }, [clearPlaybackTimeouts, stopAllNotes, setIsPlaying]); // Dependencies: cleanup functions
+        clearPlaybackTimeouts();
+        stopAllNotes();
+        setIsPlaying(false);
+        setCurrentIntervalNotes([]);
+        setRandomIntervalName('');
+        setPlayedNotes([]);
+    }, [clearPlaybackTimeouts, stopAllNotes, setIsPlaying]);
 
-    // Returns the functions and states provided by the hook.
     return {
         isAudioReady,
-        INTERVALS: INTERVALS.current, // Expose the intervals array
+        INTERVALS: INTERVALS.current,
         currentIntervalNotes,
         currentIntervalSemitones,
+        currentRootNote,
         playInterval,
         generateRandomInterval,
         randomIntervalName,
@@ -404,121 +411,125 @@ const useIntervalTrainer = () => {
 };
 
 // --- Piano Visualizer Component ---
-// Renders a visual representation of a piano keyboard, highlighting specified notes.
 const PianoVisualizer = ({ highlightedNotes }) => {
-    // Define the note names for white and black keys.
-    const WHITE_KEYS_NOTES = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
-    const BLACK_KEYS_NOTES = ['C#', 'D#', 'F#', 'G#', 'A#'];
+    const WHITE_KEYS = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+    const BLACK_KEYS = ['C#', 'D#', 'F#', 'G#', 'A#'];
 
-    // Utility to convert a note name to its MIDI number (0-127).
-    const noteToMidi = useCallback((noteName) => {
+    // Improved note comparison that handles enharmonic equivalents
+    const normalizeNote = useCallback((note) => {
+        if (!note) return null;
+        
         try {
-            return Tone.Midi(noteName).toMidi();
+            const midi = Tone.Midi(note).toMidi();
+            // Convert back to note to get consistent naming
+            return Tone.Midi(midi).toNote();
         } catch (e) {
-            console.warn(`Invalid note name for MIDI conversion: ${noteName}`, e);
-            return null; // Return null for invalid notes instead of 0
+            console.warn(`Invalid note: ${note}`);
+            return null;
         }
     }, []);
 
-    // Checks if a given note should be highlighted based on the `highlightedNotes` array.
     const isNoteHighlighted = useCallback((noteToCheck) => {
         if (!highlightedNotes || highlightedNotes.length === 0) return false;
 
-        // Iterate through highlighted notes to find a match
+        const normalizedCheck = normalizeNote(noteToCheck);
+        if (!normalizedCheck) return false;
+
         return highlightedNotes.some(highlightedNote => {
-            // Direct string comparison first for efficiency
-            if (noteToCheck === highlightedNote) return true;
-
-            // If no direct match, try MIDI conversion for equivalent notes (e.g., C# vs Db)
-            try {
-                const noteToCheckMidi = noteToMidi(noteToCheck);
-                const highlightedNoteMidi = noteToMidi(highlightedNote);
-                return noteToCheckMidi !== null && highlightedNoteMidi !== null && noteToCheckMidi === highlightedNoteMidi;
-            } catch (e) {
-                return false;
-            }
+            const normalizedHighlighted = normalizeNote(highlightedNote);
+            return normalizedHighlighted === normalizedCheck;
         });
-    }, [highlightedNotes, noteToMidi]); // Dependencies: highlightedNotes and noteToMidi
+    }, [highlightedNotes, normalizeNote]);
 
-    // Determine the octave range to display based on highlighted notes.
-    // Default to C3-C5 if no notes are highlighted or if they are out of typical range.
+    // Determine octave range based on highlighted notes
     let minOctave = 3;
     let maxOctave = 5;
+    
     if (highlightedNotes && highlightedNotes.length > 0) {
-        const midiNumbers = highlightedNotes.map(noteToMidi).filter(num => num !== null && !isNaN(num));
-        if (midiNumbers.length > 0) {
-            // Calculate min/max octaves from highlighted notes, adjusting to common range
-            minOctave = Math.min(...midiNumbers.map(m => Math.floor(m / 12) - 1)); // MIDI to octave number
-            maxOctave = Math.max(...midiNumbers.map(m => Math.floor(m / 12) - 1));
-            // Extend view to show a bit more of the keyboard around the highlighted notes
-            minOctave = Math.max(minOctave - 1, 1); // Ensure min is not below octave 1
-            maxOctave = Math.min(maxOctave + 1, 7); // Ensure max is not above octave 7
+        const octaves = highlightedNotes
+            .map(note => {
+                const normalized = normalizeNote(note);
+                if (normalized) {
+                    const match = normalized.match(/(\d+)$/);
+                    return match ? parseInt(match[1]) : null;
+                }
+                return null;
+            })
+            .filter(octave => octave !== null);
+
+        if (octaves.length > 0) {
+            minOctave = Math.max(Math.min(...octaves) - 1, 2);
+            maxOctave = Math.min(Math.max(...octaves) + 1, 6);
         }
     }
 
-    // Renders a single octave (white and black keys).
     const renderOctave = useCallback((octaveNum) => {
         const octaveElements = [];
 
-        // Render White Keys
-        WHITE_KEYS_NOTES.forEach(noteName => {
+        // Render white keys
+        WHITE_KEYS.forEach((noteName, index) => {
             const fullNoteName = noteName + octaveNum;
             const isHighlighted = isNoteHighlighted(fullNoteName);
 
             octaveElements.push(
                 <div
                     key={fullNoteName}
-                    className={`relative w-8 md:w-10 h-24 md:h-40 border border-gray-300 bg-white rounded-b-md shadow-md flex items-end justify-center pb-1 md:pb-2 text-xs font-semibold
-                                ${isHighlighted ? 'bg-blue-300 scale-y-95 shadow-lg border-blue-500' : ''}
-                                transition-all duration-200 ease-out flex-shrink-0`} // flex-shrink-0 to prevent shrinking
-                    style={{ zIndex: 0 }} // White keys are behind black keys
-                >
-                    <span className="hidden sm:block text-gray-700">{fullNoteName}</span>
-                    <span className="block sm:hidden text-gray-700">{noteName}</span>
-                </div>
-            );
-        });
-
-        // Render Black Keys (positioned absolutely over white keys)
-        // Corrected pixel positioning for black keys for standard piano layout
-        const baseKeyWidth = 40; // width for md:w-10
-        const blackKeyPositions = {
-            'C#': baseKeyWidth * 0.75, // Between C and D
-            'D#': baseKeyWidth * 1.75, // Between D and E
-            'F#': baseKeyWidth * 3.25, // Between F and G
-            'G#': baseKeyWidth * 4.25, // Between G and A
-            'A#': baseKeyWidth * 5.25  // Between A and B
-        };
-
-        BLACK_KEYS_NOTES.forEach(noteName => {
-            const fullNoteName = noteName + octaveNum;
-            const isHighlighted = isNoteHighlighted(fullNoteName);
-
-            // Calculate 'left' position dynamically based on baseKeyWidth
-            const leftOffset = blackKeyPositions[noteName] || 0; // Fallback to 0 if not found
-
-            octaveElements.push(
-                <div
-                    key={fullNoteName}
-                    className={`absolute w-5 md:w-6 h-16 md:h-24 bg-black text-white rounded-b-md shadow-lg flex items-end justify-center pb-1 md:pb-2 text-xs font-semibold
-                                ${isHighlighted ? 'bg-purple-600 scale-y-95 shadow-xl border-purple-900' : ''}
-                                transition-all duration-200 ease-out`}
-                    style={{
-                        left: `${leftOffset}px`,
-                        zIndex: 10, // Black keys are always on top
+                    className={`relative w-10 h-32 border-2 border-gray-400 bg-white rounded-b-lg shadow-md flex items-end justify-center pb-2 text-xs font-bold transition-all duration-300 ease-out
+                                ${isHighlighted 
+                                    ? 'bg-gradient-to-b from-blue-200 to-blue-400 border-blue-600 shadow-xl transform scale-105 z-20' 
+                                    : 'hover:bg-gray-50'}
+                                `}
+                    style={{ 
+                        zIndex: isHighlighted ? 20 : 1,
+                        marginLeft: index > 0 ? '-1px' : '0' // Slight overlap for cleaner look
                     }}
                 >
-                    <span className="text-white hidden sm:block">{isHighlighted ? noteName : ''}</span> {/* Only show name if highlighted */}
+                    <span className={`${isHighlighted ? 'text-blue-900' : 'text-gray-600'} font-semibold`}>
+                        {noteName}{octaveNum}
+                    </span>
                 </div>
             );
         });
+
+        // Render black keys with proper positioning
+        const blackKeyPositions = [
+            { note: 'C#', leftOffset: 30 },  // Between C and D
+            { note: 'D#', leftOffset: 70 },  // Between D and E
+            { note: 'F#', leftOffset: 150 }, // Between F and G
+            { note: 'G#', leftOffset: 190 }, // Between G and A
+            { note: 'A#', leftOffset: 230 }  // Between A and B
+        ];
+
+        blackKeyPositions.forEach(({ note, leftOffset }) => {
+            const fullNoteName = note + octaveNum;
+            const isHighlighted = isNoteHighlighted(fullNoteName);
+
+            octaveElements.push(
+                <div
+                    key={fullNoteName}
+                    className={`absolute w-6 h-20 rounded-b-md shadow-lg flex items-end justify-center pb-1 text-xs font-bold transition-all duration-300 ease-out
+                                ${isHighlighted 
+                                    ? 'bg-gradient-to-b from-purple-400 to-purple-700 shadow-2xl transform scale-110 z-30' 
+                                    : 'bg-gradient-to-b from-gray-800 to-black hover:from-gray-700'}
+                                `}
+                    style={{
+                        left: `${leftOffset}px`,
+                        zIndex: isHighlighted ? 30 : 10,
+                    }}
+                >
+                    <span className={`${isHighlighted ? 'text-white font-bold' : 'text-gray-300'} text-xs`}>
+                        {isHighlighted ? note : ''}
+                    </span>
+                </div>
+            );
+        });
+
         return octaveElements;
-    }, [isNoteHighlighted]); // Dependencies: isNoteHighlighted, ensures re-render on highlight changes
+    }, [isNoteHighlighted]);
 
     const allOctaveRender = [];
     for (let octave = minOctave; octave <= maxOctave; octave++) {
         allOctaveRender.push(
-            // The relative flex container for each octave group of keys
             <div key={`octave-${octave}`} className="flex relative" style={{ width: '280px' }}>
                 {renderOctave(octave)}
             </div>
@@ -526,64 +537,67 @@ const PianoVisualizer = ({ highlightedNotes }) => {
     }
 
     return (
-        <div className="flex flex-col items-center p-2 md:p-4 bg-gray-50 rounded-lg shadow-inner border border-gray-200 w-full overflow-x-auto">
-            <h3 className="text-lg md:text-xl font-semibold mb-2 md:mb-4 text-gray-800 flex items-center gap-2">
-                <Piano size={16} className="md:h-5 md:w-5" /> Piano Visualizer
+        <div className="flex flex-col items-center p-6 bg-gradient-to-b from-gray-100 to-gray-200 rounded-xl shadow-inner border-2 border-gray-300 w-full overflow-x-auto">
+            <h3 className="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-3">
+                <Piano size={24} /> Piano Visualizer
             </h3>
-            {/* Main container for all octaves, allowing horizontal scroll */}
-            <div className="flex relative justify-center overflow-x-auto w-full pb-2">
-                {allOctaveRender}
+            <div className="flex relative justify-center overflow-x-auto w-full pb-4">
+                <div className="flex bg-gray-800 p-4 rounded-lg shadow-lg">
+                    {allOctaveRender}
+                </div>
             </div>
+            {highlightedNotes && highlightedNotes.length > 0 && (
+                <div className="mt-4 text-center">
+                    <p className="text-sm text-gray-600 font-medium">
+                        Playing: {highlightedNotes.join(' → ')}
+                    </p>
+                </div>
+            )}
         </div>
     );
 };
 
-
 // --- Main App Component ---
-// The primary component for the Interval Training application.
 const IntervalTrainingApp = () => {
-    // State to store the semitone value of the interval selected by the user.
-    const [selectedIntervalSemitones, setSelectedIntervalSemitones] = useState(7); // Default to Perfect 5th
+    const [selectedIntervalSemitones, setSelectedIntervalSemitones] = useState(7);
 
-    // Destructure properties from the custom interval training hook.
     const {
         isAudioReady,
         INTERVALS,
         currentIntervalNotes,
+        currentRootNote,
         playInterval,
         generateRandomInterval,
+        randomIntervalName,
         isSynthMuted,
         toggleMute,
         isPlaying,
         stopPlayback
     } = useIntervalTrainer();
 
-    // Handler for when the user selects a new interval from the dropdown.
     const handleIntervalSelect = (event) => {
-        const semitones = parseInt(event.target.value, 10); // Parse value to integer
+        const semitones = parseInt(event.target.value, 10);
         setSelectedIntervalSemitones(semitones);
     };
 
-    // Handler for playing a random interval.
     const handlePlayRandom = () => {
-        if (isPlaying) { // If audio is already playing, stop it first
+        if (isPlaying) {
             stopPlayback();
         } else {
-            generateRandomInterval(); // Otherwise, generate and play a random interval
+            generateRandomInterval();
         }
     };
 
-    // Handler for playing the currently selected fixed interval.
     const handlePlayInterval = () => {
-        if (isPlaying) { // If audio is already playing, stop it first
+        if (isPlaying) {
             stopPlayback();
         } else {
-            // Play the selected interval with a fixed root note (C4)
-            playInterval('C4', selectedIntervalSemitones, false);
+            playInterval(currentRootNote, selectedIntervalSemitones, false);
         }
     };
 
-    // Main application UI.
+    const selectedInterval = INTERVALS.find(interval => interval.semitones === selectedIntervalSemitones);
+
     return (
         <div
             className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
@@ -592,7 +606,7 @@ const IntervalTrainingApp = () => {
                 fontFamily: 'Inter, sans-serif',
             }}
         >
-            {/* Background Pattern (subtle SVG) */}
+            {/* Background Pattern */}
             <div className="absolute inset-0 opacity-10 pointer-events-none"
                 style={{
                     backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%2303a9f4' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
@@ -600,28 +614,24 @@ const IntervalTrainingApp = () => {
                 }}
             ></div>
 
-            {/* Header Section */}
+            {/* Header */}
             <div className="text-center mb-6 md:mb-10 z-10 w-full">
                 <div className="flex items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
                     <Music size={32} className="text-blue-700 md:h-12 md:w-12" />
                     <h1 className="text-3xl md:text-5xl font-extrabold text-blue-900 drop-shadow-lg">Interval Training</h1>
                 </div>
-                <p className="text-blue-600 text-xs md:text-sm mt-2 md:mt-4">
-                    Click any play button to enable audio and start learning intervals!
-                </p>
+                
             </div>
 
-            {/* Main Content Card */}
-            <div className="bg-white/80 backdrop-blur-sm p-4 md:p-6 lg:p-8 rounded-xl shadow-lg w-full max-w-4xl flex flex-col items-center space-y-4 md:space-y-6 lg:space-y-8 z-10 border border-blue-200">
+            {/* Main Content */}
+            <div className="bg-white/80 backdrop-blur-sm p-4 md:p-6 lg:p-8 rounded-xl shadow-lg w-full max-w-5xl flex flex-col items-center space-y-4 md:space-y-6 lg:space-y-8 z-10 border border-blue-200">
 
                 {/* Audio Controls */}
                 <section className="w-full flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-4 md:mb-6">
                     <div className="flex items-center gap-2 md:gap-4">
-                        {/* Audio Ready/Not Initialized Status */}
                         <span className={`px-2 py-1 md:px-3 md:py-1 rounded-full text-xs md:text-sm font-medium ${isAudioReady ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
                             {isAudioReady ? '🔊 Audio Ready' : '🔇 Audio Not Initialized'}
                         </span>
-                        {/* Mute/Unmute Button */}
                         <button
                             onClick={toggleMute}
                             className="px-3 py-1 md:px-4 md:py-2 rounded-full font-bold text-xs md:text-sm flex items-center gap-1 md:gap-2 transition-all duration-300 bg-blue-500 hover:bg-blue-600 text-white"
@@ -629,7 +639,6 @@ const IntervalTrainingApp = () => {
                             {isSynthMuted ? <VolumeX size={16} className="md:h-5 md:w-5" /> : <Volume1 size={16} className="md:h-5 md:w-5" />}
                             {isSynthMuted ? 'Unmute' : 'Mute'}
                         </button>
-                        {/* Stop Playback Button (conditionally rendered) */}
                         {isPlaying && (
                             <button
                                 onClick={stopPlayback}
@@ -641,28 +650,34 @@ const IntervalTrainingApp = () => {
                     </div>
                 </section>
 
-                {/* Interval Selector Section */}
+                {/* Current Interval Display */}
+                {randomIntervalName && (
+                    <section className="w-full bg-green-50 p-4 rounded-lg border border-green-200">
+                        <h3 className="text-lg font-bold text-green-800 text-center">
+                            Random Interval: {randomIntervalName}
+                        </h3>
+                    </section>
+                )}
+
+                {/* Interval Selector */}
                 <section className="w-full">
                     <h2 className="text-xl md:text-2xl font-bold text-blue-800 mb-2 md:mb-4 flex items-center gap-2">
                         <Music size={20} className="md:h-6 md:w-6" /> Interval Selector
                     </h2>
                     <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
-                        {/* Dropdown for selecting an interval */}
                         <select
                             className="p-2 md:p-3 border border-gray-300 rounded-md shadow-sm w-full md:w-1/2 focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
                             onChange={handleIntervalSelect}
                             value={selectedIntervalSemitones}
                             aria-label="Select interval"
-                            disabled={isPlaying} // Disable selector while playing
+                            disabled={isPlaying}
                         >
-                            {/* Map over the INTERVALS array to create options */}
                             {INTERVALS.map(interval => (
                                 <option key={interval.name} value={interval.semitones}>
                                     {interval.name} ({interval.semitones} semitones)
                                 </option>
                             ))}
                         </select>
-                        {/* Button to play the selected interval */}
                         <button
                             onClick={handlePlayInterval}
                             className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-bold text-sm md:text-lg flex items-center gap-1 md:gap-2 transition-all duration-300 w-full md:w-auto justify-center
@@ -671,36 +686,58 @@ const IntervalTrainingApp = () => {
                                     : 'bg-orange-500 hover:bg-orange-600 text-white'}
                                       `}
                         >
-                            {isPlaying ? 'Stop' : <><Play size={16} className="md:h-5 md:w-5" /> Play Interval</>}
+                            {isPlaying ? 'Stop' : <><Play size={16} className="md:h-5 md:w-5" /> Play {selectedInterval?.name}</>}
                         </button>
-                    </div>
+
+			</div>
                 </section>
 
-                {/* Random Interval Explorer Section */}
-                <section className="w-full bg-blue-50 p-4 md:p-6 rounded-lg border border-blue-200">
-                    <h2 className="text-xl md:text-2xl font-bold text-blue-800 mb-2 md:mb-4 flex items-center gap-2">
-                        <Volume2 size={20} className="md:h-6 md:w-6" /> Random Interval Explorer
-                    </h2>
-                    <div className="flex flex-col items-center justify-center gap-2 md:gap-4">
-                        {/* Button to play a random interval */}
-                        <button
-                            onClick={handlePlayRandom}
-                            className={`px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-base md:text-xl flex items-center gap-1 md:gap-2 transition-all duration-300 w-full justify-center
-                                         ${!isPlaying
-                                    ? 'bg-green-500 hover:bg-green-600 text-white'
-                                    : 'bg-orange-500 hover:bg-orange-600 text-white'}
-                                      `}
-                        >
-                            {isPlaying ? 'Stop' : <><Play size={20} className="md:h-6 md:w-6" /> Play Random Interval</>}
-                        </button>
-                    </div>
+                {/* Random Interval Button */}
+                <section className="w-full">
+                    <button
+                        onClick={handlePlayRandom}
+                        className={`w-full px-4 py-3 md:px-6 md:py-4 rounded-full font-bold text-lg md:text-xl flex items-center justify-center gap-2 md:gap-3 transition-all duration-300
+                                   ${!isPlaying
+                                ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg'
+                                : 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg'}
+                                `}
+                    >
+                        {isPlaying ? 'Stop Random' : <>🎲 Play Random Interval</>}
+                    </button>
                 </section>
 
-                {/* Piano Visualizer Section */}
+                {/* Piano Visualizer */}
                 <section className="w-full">
                     <PianoVisualizer highlightedNotes={currentIntervalNotes} />
                 </section>
+
+                {/* Instructions */}
+                <section className="w-full bg-blue-50 p-4 md:p-6 rounded-lg border border-blue-200">
+                    <h3 className="text-lg md:text-xl font-bold text-blue-800 mb-2 md:mb-3">How to Use:</h3>
+                    <ul className="text-blue-700 space-y-1 md:space-y-2 text-sm md:text-base">
+                        <li>• <strong>Select an interval</strong> from the dropdown and click "Play" to hear it</li>
+                        <li>• <strong>Click "Play Random Interval"</strong> to test your interval recognition skills</li>
+                        <li>• <strong>Watch the piano visualizer</strong> to see which notes are being played</li>
+                        <li>• <strong>Use the mute button</strong> to control audio output</li>
+                    </ul>
+                </section>
+
+                {/* Interval Reference */}
+                <section className="w-full bg-gray-50 p-4 md:p-6 rounded-lg border border-gray-200">
+                    <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-2 md:mb-3">Interval Reference:</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-3 text-sm md:text-base">
+                        {INTERVALS.map(interval => (
+                            <div key={interval.name} className="flex justify-between items-center p-2 md:p-3 bg-white rounded border border-gray-200 hover:bg-gray-100 transition-colors">
+                                <span className="font-medium text-gray-800">{interval.name}</span>
+                                <span className="text-gray-600 text-xs md:text-sm">{interval.semitones} semitones</span>
+                            </div>
+                        ))}
+                    </div>
+                </section>
             </div>
+
+            {/* Footer */}
+            
         </div>
     );
 };
