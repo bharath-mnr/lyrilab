@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import * as Tone from 'tone';
-import { Play, RotateCcw, Volume2, Music, CheckCircle2, XCircle } from 'lucide-react';
+import { Play, RotateCcw, Volume2, Music } from 'lucide-react';
 
 // --- AUDIO CONTEXT ---
 export const AudioContext = createContext(null);
@@ -74,6 +74,7 @@ const AudioContextProvider = ({ children }) => {
 const useEarTraining = () => {
     const { isAudioGloballyReady, startGlobalAudio, error: audioContextError } = useContext(AudioContext);
     const synthRef = useRef(null);
+    const reverbRef = useRef(null);
     const [score, setScore] = useState(0);
     const [questionCount, setQuestionCount] = useState(0);
     const [currentInterval, setCurrentInterval] = useState(null);
@@ -104,8 +105,12 @@ const useEarTraining = () => {
         if (synthRef.current) {
             synthRef.current.dispose();
             synthRef.current = null;
-            setIsSynthReady(false);
         }
+        if (reverbRef.current) {
+            reverbRef.current.dispose();
+            reverbRef.current = null;
+        }
+        setIsSynthReady(false);
     }, []);
 
     useEffect(() => {
@@ -113,15 +118,45 @@ const useEarTraining = () => {
 
         if (isAudioGloballyReady) {
             try {
-                const synth = new Tone.Synth({
-                    oscillator: { type: "sine" },
+                // Create a more musical reverb effect
+                const reverb = new Tone.Reverb({
+                    decay: 2.5,
+                    wet: 0.3
+                }).toDestination();
+                reverbRef.current = reverb;
+
+                // Create a more musical synthesizer with richer harmonics
+                const synth = new Tone.PolySynth(Tone.Synth, {
+                    oscillator: { 
+                        type: "fatsawtooth",
+                        partials: [1, 0.5, 0.3, 0.25, 0.2, 0.15, 0.1, 0.05]
+                    },
                     envelope: {
+                        attack: 0.05,
+                        decay: 0.3,
+                        sustain: 0.4,
+                        release: 1.2,
+                    },
+                    filter: {
+                        frequency: 3000,
+                        type: "lowpass",
+                        rolloff: -12
+                    },
+                    filterEnvelope: {
                         attack: 0.02,
                         decay: 0.1,
-                        sustain: 0.05,
-                        release: 0.5,
-                    },
-                }).toDestination();
+                        sustain: 0.8,
+                        release: 0.8,
+                        baseFrequency: 800,
+                        octaves: 2
+                    }
+                }).connect(reverb);
+
+                // Add a subtle gain control for dynamics
+                const gain = new Tone.Gain(0.7).connect(reverb);
+                synth.disconnect();
+                synth.connect(gain);
+
                 synthRef.current = synth;
                 setIsSynthReady(true);
             } catch (error) {
@@ -161,10 +196,19 @@ const useEarTraining = () => {
 
         const synth = synthRef.current;
         const now = Tone.now();
-        const duration = 0.5;
+        const noteDuration = 1.0;
+        const gap = 0.2;
 
-        synth.triggerAttackRelease(currentInterval.root, duration, now);
-        synth.triggerAttackRelease(currentInterval.second, duration, now + 0.6);
+        // Play notes with more musical timing and dynamics
+        synth.triggerAttackRelease(currentInterval.root, noteDuration, now, 0.8);
+        synth.triggerAttackRelease(currentInterval.second, noteDuration, now + noteDuration + gap, 0.8);
+        
+        // Also play them together harmonically after the melodic interval
+        setTimeout(() => {
+            if (synthRef.current) {
+                synth.triggerAttackRelease([currentInterval.root, currentInterval.second], noteDuration * 1.5, Tone.now(), 0.6);
+            }
+        }, (noteDuration + gap + noteDuration + 0.3) * 1000);
         
         setIntervalPlayedForCurrentQuestion(true);
     }, [currentInterval, isSynthReady, startGlobalAudio]);
@@ -305,7 +349,7 @@ const EarTrainingQuizContent = () => {
                 {!quizStarted ? (
                     <>
                         <p className="text-sm md:text-base lg:text-lg text-gray-800 mb-2 md:mb-4 text-center">
-                            Test your musical ear! Identify common intervals played.
+                            Test your musical ear! Identify common intervals played melodically and harmonically.
                         </p>
                         <button
                             onClick={startQuiz}
@@ -368,7 +412,7 @@ const EarTrainingQuizContent = () => {
                                     onClick={generateNewQuestion}
                                     className="px-4 py-2 md:px-6 md:py-3 bg-green-500 text-white rounded-lg font-bold shadow hover:bg-green-600 transition-all duration-200 flex items-center justify-center gap-1 md:gap-2 text-sm md:text-base"
                                 >
-                                    <CheckCircle2 size={16} className="md:h-5 md:w-5" /> Next Question
+                                    Next Question
                                 </button>
                                 <button
                                     onClick={resetQuiz}

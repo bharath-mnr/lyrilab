@@ -3,324 +3,262 @@ import * as Tone from 'tone';
 import { Play, Pause, Drumstick, Volume2, Plus, Minus, Shuffle, Trash2 } from 'lucide-react';
 
 // --- AUDIO CONTEXT ---
-// This context manages the global Tone.js audio state, ensuring only one audio context.
 export const AudioContext = createContext(null);
 
 const AudioContextProvider = ({ children }) => {
     const [isAudioGloballyReady, setIsAudioGloballyReady] = useState(false);
-    const [error, setError] = useState(null); // Global audio context error
+    const [error, setError] = useState(null);
 
-    // handleToneContextChange function is now the primary mechanism for setting state
-    // based on Tone.context.state. The startGlobalAudio is no longer needed here
-    // as the togglePlay in useDrumSequencer will handle Tone.start directly.
     const handleToneContextChange = useCallback(() => {
         const currentState = Tone.context.state;
         if (currentState === 'running') {
             setIsAudioGloballyReady(true);
-            setError(null); // Clear any previous error if context is running
+            setError(null);
         } else {
             setIsAudioGloballyReady(false);
-            // Set error only if it's suspended and not already a critical error
             if (currentState === 'suspended') {
                 setError("Audio requires activation - click the Play button to start");
             } else if (currentState === 'closed') {
                 setError("Audio system closed - please refresh the page");
             } else {
-                setError(null); // Clear error if state is neither running, suspended, nor closed
+                setError(null);
             }
         }
-        console.log(`AudioContext: Tone.context state changed to '${currentState}'. isAudioGloballyReady set to ${currentState === 'running'}.`);
-    }, []); // No dependencies for this callback as it only reads Tone.context.state
+        console.log(`AudioContext: Tone.context state changed to '${currentState}'.`);
+    }, []);
 
     useEffect(() => {
-        // Add listener for state changes
         Tone.context.on('statechange', handleToneContextChange);
-        handleToneContextChange(); // Initial check on mount
+        handleToneContextChange();
 
         return () => {
-            // Clean up listener on unmount
             Tone.context.off('statechange', handleToneContextChange);
-            console.log('AudioContext: Cleaning up Tone.context statechange listener.');
         };
-    }, [handleToneContextChange]); // Depend on the memoized callback
+    }, [handleToneContextChange]);
 
-    // The value provided by this context no longer needs startGlobalAudio
-    // as togglePlay will handle Tone.start directly.
     return (
         <AudioContext.Provider value={{ isAudioGloballyReady, error }}>
             {children}
         </AudioContext.Provider>
     );
 };
-// --- END AUDIO CONTEXT ---
-
 
 // --- useDrumSequencer Hook ---
 const useDrumSequencer = () => {
-    // We only need isAudioGloballyReady and the error from AudioContext now.
-    // startGlobalAudio is NOT directly used here anymore.
-    const { isAudioGloballyReady, error: audioContextError } = useContext(AudioContext); 
-    const samplerRef = useRef(null);
-    const fallbackOscillatorsRef = useRef({});
+    const { isAudioGloballyReady, error: audioContextError } = useContext(AudioContext);
+    const synthsRef = useRef({});
     const sequenceRef = useRef(null);
     
     const STEPS_PER_MEASURE = 16;
 
     const [isPlaying, setIsPlaying] = useState(false);
     const [bpm, setBpm] = useState(120);
-    const [masterVolume, setMasterVolume] = useState(0);
+    const [masterVolume, setMasterVolume] = useState(-12);
     const [currentStep, setCurrentStep] = useState(-1);
+    const [isAudioReady, setIsAudioReady] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const [isAudioReady, setIsAudioReady] = useState(false); 
-    const [isLoading, setIsLoading] = useState(false);
-    const [isSamplesLoaded, setIsSamplesLoaded] = useState(false);
-    const [loadError, setLoadError] = useState(null);
-
-    const drumKeyToNoteMap = useRef({
-        'kick': 'C1', 'snare': 'D1', 'hihat': 'E1', 'clap': 'F1',
-        'rimshot': 'G1', 'open_hihat': 'A1', 'ride': 'B1', 'crash': 'C2',
-    });
-
-    const drumKeyToFallbackOscSettings = useRef({
-        'kick': { type: 'sine', frequency: 60, envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.2 } },
-        'snare': { type: 'square', frequency: 200, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 }, noise: true },
-        'hihat': { type: 'sawtooth', frequency: 8000, envelope: { attack: 0.001, decay: 0.05, sustain: 0, release: 0.05 } },
-        'clap': { type: 'triangle', frequency: 1000, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 } },
-        'rimshot': { type: 'triangle', frequency: 500, envelope: { attack: 0.01, decay: 0.08, sustain: 0, release: 0.08 } },
-        'open_hihat': { type: 'sawtooth', frequency: 7000, envelope: { attack: 0.001, decay: 0.2, sustain: 0.1, release: 0.3 } },
-        'ride': { type: 'sine', frequency: 4000, envelope: { attack: 0.01, decay: 0.5, sustain: 0.2, release: 1 } },
-        'crash': { type: 'sine', frequency: 5000, envelope: { attack: 0.01, decay: 1, sustain: 0.1, release: 2 } },
-    });
+    // Define drum sounds with synthesizer settings
+    const drumSounds = {
+        'kick': { 
+            oscillator: { type: 'sine' },
+            envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.2 },
+            filter: { frequency: 100, type: 'lowpass' },
+            frequency: 60
+        },
+        'snare': { 
+            oscillator: { type: 'triangle' },
+            envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 },
+            filter: { frequency: 2000, type: 'highpass' },
+            frequency: 200
+        },
+        'hihat': { 
+            oscillator: { type: 'square' },
+            envelope: { attack: 0.001, decay: 0.05, sustain: 0, release: 0.05 },
+            filter: { frequency: 8000, type: 'highpass' },
+            frequency: 8000
+        },
+        'clap': { 
+            oscillator: { type: 'sawtooth' },
+            envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 },
+            filter: { frequency: 1000, type: 'bandpass' },
+            frequency: 1000
+        },
+        'rimshot': { 
+            oscillator: { type: 'triangle' },
+            envelope: { attack: 0.01, decay: 0.08, sustain: 0, release: 0.08 },
+            filter: { frequency: 500, type: 'bandpass' },
+            frequency: 500
+        },
+        'crash': { 
+            oscillator: { type: 'sawtooth' },
+            envelope: { attack: 0.01, decay: 1, sustain: 0.1, release: 2 },
+            filter: { frequency: 5000, type: 'highpass' },
+            frequency: 5000
+        }
+    };
 
     const initialPattern = useMemo(() => {
         const pattern = {};
-        for (const drumKey in drumKeyToNoteMap.current) {
+        for (const drumKey in drumSounds) {
             pattern[drumKey] = Array(STEPS_PER_MEASURE).fill(false);
         }
+        // Add a simple default pattern
+        pattern.kick[0] = true;
+        pattern.kick[8] = true;
+        pattern.snare[4] = true;
+        pattern.snare[12] = true;
+        pattern.hihat[2] = true;
+        pattern.hihat[6] = true;
+        pattern.hihat[10] = true;
+        pattern.hihat[14] = true;
         return pattern;
     }, []);
 
     const [pattern, setPattern] = useState(initialPattern);
     const patternRef = useRef(pattern);
+    
     useEffect(() => {
         patternRef.current = pattern;
     }, [pattern]);
 
-    const getSamplerUrls = useCallback(() => {
-        const urls = {};
-        for (const drumKey in drumKeyToNoteMap.current) {
-            const note = drumKeyToNoteMap.current[drumKey];
-            const fileExtension = drumKey === 'open_hihat' ? 'wav' : 'mp3';
-            urls[note] = `${drumKey}.${fileExtension}`; 
-        }
-        return urls;
-    }, []);
+    const createSynths = useCallback(() => {
+        console.log('Creating synthesizers...');
+        
+        // Dispose existing synths
+        Object.values(synthsRef.current).forEach(synth => {
+            if (synth) synth.dispose();
+        });
+        synthsRef.current = {};
 
-    const disposeSequencer = useCallback(() => {
+        // Create new synths for each drum sound
+        for (const [drumKey, config] of Object.entries(drumSounds)) {
+            try {
+                const synth = new Tone.MonoSynth({
+                    oscillator: config.oscillator,
+                    envelope: config.envelope,
+                    filter: config.filter
+                }).toDestination();
+                
+                synth.volume.value = masterVolume;
+                synthsRef.current[drumKey] = synth;
+            } catch (error) {
+                console.error(`Failed to create synth for ${drumKey}:`, error);
+            }
+        }
+        
+        console.log('Synthesizers created:', Object.keys(synthsRef.current));
+    }, [masterVolume]);
+
+    const setupSequence = useCallback(() => {
+        console.log('Setting up sequence...');
+        
         if (sequenceRef.current) {
-            sequenceRef.current.stop();
             sequenceRef.current.dispose();
-            sequenceRef.current = null;
         }
-        if (samplerRef.current) {
-            samplerRef.current.dispose();
-            samplerRef.current = null;
-        }
-        for (const drumKey in fallbackOscillatorsRef.current) {
-            if (fallbackOscillatorsRef.current[drumKey]) {
-                fallbackOscillatorsRef.current[drumKey].dispose();
-            }
-        }
-        fallbackOscillatorsRef.current = {};
-        Tone.Transport.stop();
-        setIsPlaying(false);
-        setCurrentStep(-1);
-        setIsSamplesLoaded(false);
-        console.log('useDrumSequencer: Sequencer, Sampler, and fallback oscillators disposed.');
-    }, []);
 
-    // MAIN EFFECT: Initializes Tone.js instruments and sequence. Should run only once.
-    useEffect(() => {
-        console.log('useDrumSequencer: Setting up Tone.js Sampler and Sequence...');
-        setIsLoading(true);
-        setIsSamplesLoaded(false);
-        setLoadError(null);
+        Tone.Transport.bpm.value = bpm;
+        Tone.Transport.loop = true;
+        Tone.Transport.loopStart = 0;
+        Tone.Transport.loopEnd = "1m";
 
-        disposeSequencer(); 
+        const sequence = new Tone.Sequence(
+            (time, stepIndex) => {
+                // Update current step indicator
+                Tone.Draw.schedule(() => {
+                    setCurrentStep(stepIndex);
+                }, time);
 
-        let localSampler = null;
-        let localSequence = null;
-
-        try {
-            localSampler = new Tone.Sampler({
-                urls: getSamplerUrls(),
-                baseUrl: "/drum_samples/",
-                onload: () => {
-                    console.log('useDrumSequencer: Drum samples loaded successfully!');
-                    setIsSamplesLoaded(true);
-                    setIsLoading(false); 
-                },
-                onerror: (error) => {
-                    console.error('useDrumSequencer: Error loading drum samples:', error);
-                    setLoadError(`Failed to load samples. Using synthesized sounds.`);
-                    setIsSamplesLoaded(false);
-                    setIsLoading(false); 
-                },
-            }).toDestination();
-            samplerRef.current = localSampler;
-
-            for (const drumKey in drumKeyToFallbackOscSettings.current) {
-                const settings = drumKeyToFallbackOscSettings.current[drumKey];
-                let osc;
-                if (settings.noise) {
-                    osc = new Tone.Synth({
-                        oscillator: { type: settings.type, frequency: settings.frequency },
-                        envelope: settings.envelope,
-                        noise: { type: 'white' },
-                    }).toDestination();
-                } else {
-                    osc = new Tone.Synth({
-                        oscillator: { type: settings.type, frequency: settings.frequency },
-                        envelope: settings.envelope,
-                    }).toDestination();
-                }
-                fallbackOscillatorsRef.current[drumKey] = osc;
-            }
-            console.log('useDrumSequencer: Fallback oscillators created.');
-
-            Tone.Transport.bpm.value = bpm;
-            Tone.Transport.loop = true;
-            Tone.Transport.loopStart = 0;
-            Tone.Transport.loopEnd = `${STEPS_PER_MEASURE}n`;
-
-            localSequence = new Tone.Sequence(
-                (time, stepIndex) => {
-                    Tone.Draw.schedule(() => {
-                        setCurrentStep(stepIndex);
-                    }, time);
-
-                    for (const drumKey in patternRef.current) {
-                        if (patternRef.current[drumKey][stepIndex]) {
-                            const note = drumKeyToNoteMap.current[drumKey];
-                            if (isSamplesLoaded && samplerRef.current && samplerRef.current.loaded) {
-                                samplerRef.current.triggerAttack(note, time);
-                            } else {
-                                const fallbackSynth = fallbackOscillatorsRef.current[drumKey];
-                                if (fallbackSynth) {
-                                    fallbackSynth.triggerAttackRelease(note, "16n", time);
-                                }
-                            }
-                        }
+                // Trigger sounds for active steps
+                for (const [drumKey, steps] of Object.entries(patternRef.current)) {
+                    if (steps[stepIndex] && synthsRef.current[drumKey]) {
+                        const frequency = drumSounds[drumKey].frequency;
+                        synthsRef.current[drumKey].triggerAttackRelease(frequency, "16n", time);
                     }
-                },
-                Array.from({ length: STEPS_PER_MEASURE }, (_, i) => i),
-                "16n"
-            ).start(0);
-            sequenceRef.current = localSequence;
-            console.log('useDrumSequencer: Tone.js Sequence created and configured.');
+                }
+            },
+            Array.from({ length: STEPS_PER_MEASURE }, (_, i) => i),
+            "16n"
+        );
 
-        } catch (err) {
-            console.error("useDrumSequencer: Critical error during Tone.js setup:", err);
-            setLoadError('Failed to initialize audio engine. Check console for details.');
-            setIsLoading(false);
-            samplerRef.current = null;
-            sequenceRef.current = null;
-        } finally {
-            if (loadError) setIsLoading(false); 
-        }
+        sequence.start(0);
+        sequenceRef.current = sequence;
+        console.log('Sequence setup complete');
+    }, [bpm]);
+
+    // Initialize audio components
+    useEffect(() => {
+        const initializeAudio = async () => {
+            setIsLoading(true);
+            try {
+                createSynths();
+                setupSequence();
+                setIsAudioReady(true);
+                console.log('Audio initialization complete');
+            } catch (error) {
+                console.error('Audio initialization failed:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        initializeAudio();
 
         return () => {
-            console.log('useDrumSequencer Cleanup: Disposing sequencer and sampler.');
-            disposeSequencer();
+            if (sequenceRef.current) {
+                sequenceRef.current.dispose();
+            }
+            Object.values(synthsRef.current).forEach(synth => {
+                if (synth) synth.dispose();
+            });
+            Tone.Transport.stop();
         };
-    }, [disposeSequencer, getSamplerUrls, bpm]); 
+    }, [createSynths, setupSequence]);
 
-    // Effect to update master volume
+    // Update master volume
     useEffect(() => {
-        if (!isLoading && (isSamplesLoaded || Object.keys(fallbackOscillatorsRef.current).length > 0)) {
-            if (samplerRef.current) {
-                samplerRef.current.volume.value = masterVolume;
+        Object.values(synthsRef.current).forEach(synth => {
+            if (synth && synth.volume) {
+                synth.volume.value = masterVolume;
             }
-            for (const drumKey in fallbackOscillatorsRef.current) {
-                if (fallbackOscillatorsRef.current[drumKey].volume) {
-                    fallbackOscillatorsRef.current[drumKey].volume.value = masterVolume;
-                }
-            }
-            console.log(`Master volume updated to: ${masterVolume} dB`);
-        }
-    }, [masterVolume, isLoading, isSamplesLoaded]);
+        });
+    }, [masterVolume]);
 
-    // isAudioReady: True when instruments are ready for interaction
+    // Handle play/pause
     useEffect(() => {
-        setIsAudioReady(
-            !isLoading && 
-            !loadError && 
-            (isSamplesLoaded || Object.keys(fallbackOscillatorsRef.current).length > 0) 
-        );
-        console.log(`useDrumSequencer: isLoading: ${isLoading}, loadError: ${!!loadError}, isSamplesLoaded: ${isSamplesLoaded}, fallbackOscillators exist: ${Object.keys(fallbackOscillatorsRef.current).length > 0} => isAudioReady: ${isAudioReady}`);
-    }, [isSamplesLoaded, isLoading, loadError]);
-
-    // Effect to manage Tone.Transport play/pause
-    useEffect(() => {
-        if (!sequenceRef.current || !isAudioReady) { 
-            Tone.Transport.stop();
-            setCurrentStep(-1);
-            return;
-        }
-
-        if (isPlaying) {
+        if (isPlaying && isAudioReady) {
             Tone.Transport.start();
-            console.log('Sequencer started.');
         } else {
-            Tone.Transport.stop();
+            Tone.Transport.pause();
             setCurrentStep(-1);
-            console.log('Sequencer stopped.');
         }
     }, [isPlaying, isAudioReady]);
 
-    // Effect to sync BPM from state to Tone.Transport
+    // Update BPM
     useEffect(() => {
-        if (Tone.Transport && !isLoading) {
+        if (Tone.Transport) {
             Tone.Transport.bpm.value = bpm;
-            console.log(`Tone.Transport BPM set to: ${bpm}`);
         }
-    }, [bpm, isLoading]);
+    }, [bpm]);
 
     const togglePlay = useCallback(async () => {
-        // First, check if our *internal instruments* are ready to go.
         if (!isAudioReady || isLoading) {
-            console.warn('togglePlay: Audio system components not ready or still loading. Cannot toggle play.');
+            console.warn('Audio not ready');
             return;
         }
 
-        // Then, ensure the global browser AudioContext is running.
-        // This is the crucial step that requires a user gesture.
         if (Tone.context.state !== 'running') {
-            console.log('togglePlay: Audio context not running, attempting to start globally.');
             try {
-                await Tone.start(); // This is the key call that resumes the audio context
-                // Wait for the context state to actually become 'running'
-                await new Promise(resolve => {
-                    const check = () => {
-                        if (Tone.context.state === 'running') {
-                            resolve();
-                        } else {
-                            // Give it a little time, but not too long to avoid blocking UI
-                            setTimeout(check, 50); 
-                        }
-                    };
-                    check();
-                });
+                await Tone.start();
+                console.log('Audio context started');
             } catch (err) {
-                console.error('togglePlay: Failed to start audio context:', err);
-                // Optionally set a user-facing error here if starting context fails
+                console.error('Failed to start audio context:', err);
                 return;
             }
         }
         
-        // Only if everything is initialized and the context is running, toggle playback.
         setIsPlaying(prev => !prev);
-    }, [isAudioReady, isLoading]); // startGlobalAudio is removed from deps as Tone.start() is called directly.
+    }, [isAudioReady, isLoading]);
 
     const toggleStep = useCallback((drumKey, stepIndex) => {
         setPattern(prevPattern => {
@@ -335,42 +273,48 @@ const useDrumSequencer = () => {
         setPattern(prevPattern => {
             const newPattern = {};
             for (const drumKey in prevPattern) {
-                newPattern[drumKey] = Array(STEPS_PER_MEASURE).fill(false).map(() => Math.random() > 0.7);
+                newPattern[drumKey] = Array(STEPS_PER_MEASURE).fill(false).map(() => Math.random() > 0.75);
             }
             return newPattern;
         });
-        console.log('Pattern randomized!');
     }, []);
 
     const clearPattern = useCallback(() => {
-        setPattern(initialPattern);
-        console.log('Pattern cleared!');
-    }, [initialPattern]);
+        setPattern(prevPattern => {
+            const newPattern = {};
+            for (const drumKey in prevPattern) {
+                newPattern[drumKey] = Array(STEPS_PER_MEASURE).fill(false);
+            }
+            return newPattern;
+        });
+    }, []);
 
     return {
         isPlaying,
         togglePlay,
-        bpm, setBpm,
-        masterVolume, setMasterVolume,
+        bpm, 
+        setBpm,
+        masterVolume, 
+        setMasterVolume,
         currentStep,
-        pattern, toggleStep,
-        drumKeys: Object.keys(drumKeyToNoteMap.current),
+        pattern, 
+        toggleStep,
+        drumKeys: Object.keys(drumSounds),
         STEPS_PER_MEASURE,
-        isAudioReady, 
+        isAudioReady,
         isLoading,
-        isSamplesLoaded, 
-        error: audioContextError || loadError, // Combined error for display
+        error: audioContextError,
         randomizePattern,
         clearPattern,
     };
 };
-// --- End useDrumSequencer Hook ---
-
 
 // --- ParameterSlider Component ---
 const ParameterSlider = ({ label, value, setter, min, max, step, explanation, unit = '', isDisabled, colorClass = 'accent-green-600 bg-green-100' }) => (
     <div className="flex flex-col items-center w-full">
-        <label className="text-gray-800 font-medium mb-2 text-center">{label}: {typeof value === 'number' ? value.toFixed(value < 1 && value !== 0 ? 3 : 1) : value}{unit}</label>
+        <label className="text-gray-800 font-medium mb-2 text-center">
+            {label}: {typeof value === 'number' ? value.toFixed(value < 1 && value !== 0 ? 3 : 0) : value}{unit}
+        </label>
         <input
             type="range"
             min={min}
@@ -385,7 +329,6 @@ const ParameterSlider = ({ label, value, setter, min, max, step, explanation, un
     </div>
 );
 
-
 // --- DrumSequencerContent (Main UI Logic) ---
 const DrumSequencerContent = () => {
     const {
@@ -396,17 +339,14 @@ const DrumSequencerContent = () => {
         pattern, toggleStep,
         drumKeys,
         STEPS_PER_MEASURE,
-        isAudioReady, 
+        isAudioReady,
         isLoading,
-        isSamplesLoaded,
-        error, 
+        error,
         randomizePattern,
         clearPattern,
     } = useDrumSequencer();
 
-    // areControlsDisabled: Determines if any control (except Play) should be non-interactive.
-    // This is true during initial setup (isLoading) or if there's any critical error.
-    const areControlsDisabled = isLoading || !!error; 
+    const areControlsDisabled = isLoading || !!error;
 
     return (
         <div
@@ -437,7 +377,7 @@ const DrumSequencerContent = () => {
                 )}
                 {!isAudioReady && isLoading && (
                     <p className="text-green-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
-                        Loading samples...
+                        Loading audio system...
                     </p>
                 )}
                 {!isAudioReady && !isLoading && !error && (
@@ -447,14 +387,14 @@ const DrumSequencerContent = () => {
                 )}
                 {isAudioReady && !isLoading && !error && (
                     <p className="text-green-600 text-xs md:text-sm mt-2 md:mt-4">
-                        Ready! {isSamplesLoaded ? '(Using samples)' : '(Using fallback sounds)'}
+                        Ready! Using synthesized drum sounds
                     </p>
                 )}
             </div>
 
             <div className="bg-white/80 backdrop-blur-sm p-4 md:p-8 rounded-xl shadow-lg w-full max-w-5xl flex flex-col items-center space-y-4 md:space-y-8 z-10 border border-green-200 mx-2">
 
-                {/* Sequencer Controls (Play/Stop, Randomize, Clear) */}
+                {/* Sequencer Controls */}
                 <div className="flex flex-wrap justify-center gap-3 md:gap-4 mb-4 md:mb-6 w-full">
                     <button
                         type="button"
@@ -466,7 +406,7 @@ const DrumSequencerContent = () => {
                                         ? 'bg-green-500 hover:bg-green-600 text-white'
                                         : 'bg-gray-400 cursor-not-allowed text-gray-700'}
                                 `}
-                        disabled={isLoading || !!error} 
+                        disabled={isLoading || !!error}
                     >
                         {isPlaying ? <Pause size={20} className="md:w-6 md:h-6 w-5 h-5" /> : <Play size={20} className="md:w-6 md:h-6 w-5 h-5" />}
                         {isPlaying ? 'Stop' : 'Play'}
@@ -479,7 +419,7 @@ const DrumSequencerContent = () => {
                                 bg-blue-100 text-blue-800 hover:bg-blue-200
                                 ${areControlsDisabled ? 'cursor-not-allowed opacity-50' : ''}
                             `}
-                        disabled={areControlsDisabled} 
+                        disabled={areControlsDisabled}
                     >
                         <Shuffle size={18} className="md:w-5 md:h-5 w-4 h-4" />
                         Random
@@ -492,7 +432,7 @@ const DrumSequencerContent = () => {
                                 bg-orange-100 text-orange-800 hover:bg-orange-200
                                 ${areControlsDisabled ? 'cursor-not-allowed opacity-50' : ''}
                             `}
-                        disabled={areControlsDisabled} 
+                        disabled={areControlsDisabled}
                     >
                         <Trash2 size={18} className="md:w-5 md:h-5 w-4 h-4" />
                         Clear
@@ -505,7 +445,7 @@ const DrumSequencerContent = () => {
                         {Array.from({ length: STEPS_PER_MEASURE }).map((_, idx) => (
                             <div
                                 key={idx}
-                                className={`w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center font-bold text-xxs md:text-xs mx-0.5
+                                className={`w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center font-bold text-xs mx-0.5
                                     ${currentStep === idx ? 'bg-green-600 text-white shadow-lg' : 'bg-gray-200 text-gray-600'}
                                     transition-all duration-100 ease-linear
                                 `}
@@ -518,11 +458,11 @@ const DrumSequencerContent = () => {
 
                 {/* Drum Sequencer Grid */}
                 <div className="w-full overflow-x-auto p-1 md:p-2 border border-green-100 rounded-lg bg-green-50/50">
-                    <div className="inline-grid gap-0.5 md:gap-1 py-1 md:py-2" style={{ gridTemplateColumns: `60px repeat(${STEPS_PER_MEASURE}, minmax(30px, 1fr))` }}>
+                    <div className="inline-grid gap-0.5 md:gap-1 py-1 md:py-2" style={{ gridTemplateColumns: `80px repeat(${STEPS_PER_MEASURE}, minmax(30px, 1fr))` }}>
                         {/* Header for steps */}
                         <div className="text-right pr-1 md:pr-2 font-bold text-gray-700"></div>
                         {Array.from({ length: STEPS_PER_MEASURE }).map((_, stepIdx) => (
-                            <div key={`header-${stepIdx}`} className="text-center font-semibold text-green-700 text-xxs md:text-xs px-0.5 md:px-1">
+                            <div key={`header-${stepIdx}`} className="text-center font-semibold text-green-700 text-xs px-0.5 md:px-1">
                                 {stepIdx + 1}
                             </div>
                         ))}
@@ -542,8 +482,9 @@ const DrumSequencerContent = () => {
                                                 ? 'bg-green-600 shadow-md transform scale-105'
                                                 : 'bg-green-200 hover:bg-green-300'}
                                             ${currentStep === stepIdx ? 'border-2 border-yellow-400' : ''}
+                                            ${areControlsDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
                                         `}
-                                        disabled={areControlsDisabled} 
+                                        disabled={areControlsDisabled}
                                         aria-label={`Toggle ${drumKey} on step ${stepIdx + 1}`}
                                     ></button>
                                 ))}
@@ -556,7 +497,7 @@ const DrumSequencerContent = () => {
                 <div className="w-full mt-4 md:mt-6 pt-4 md:pt-6 border-t border-green-200">
                     <ParameterSlider
                         label="Tempo" value={bpm} setter={setBpm}
-                        min="40" max="240" step="1" unit=" BPM"
+                        min="60" max="180" step="1" unit=" BPM"
                         explanation="Adjust sequence speed"
                         isDisabled={areControlsDisabled}
                         colorClass="accent-green-700 bg-green-200"
@@ -575,7 +516,7 @@ const DrumSequencerContent = () => {
                 </div>
 
                 <div className="text-center text-gray-700 text-xs md:text-sm mt-4 md:mt-6 italic px-2">
-                    Tap squares to create beats. Samples load from `/drum_samples/`. Use "Random" for new patterns.
+                    Click squares to create beats. Use "Random" for new patterns or "Clear" to start fresh.
                 </div>
             </div>
         </div>
@@ -619,6 +560,6 @@ const DrumSequencer = () => {
             </ErrorBoundary>
         </AudioContextProvider>
     );
-}
+};
 
 export default DrumSequencer;
