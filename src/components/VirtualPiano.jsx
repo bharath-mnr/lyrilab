@@ -1,5 +1,5 @@
 // src/components/VirtualPiano.jsx
-import React, { useState, useEffect, useCallback, useMemo } from 'react'; // Import useMemo
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Volume2, VolumeX, Music, RotateCw } from 'lucide-react';
 import usePianoSynth from '../hooks/usePianoSynth';
 import PianoUI from './PianoUI';
@@ -62,11 +62,11 @@ const VirtualPiano = () => {
         { note: 'A5', type: 'white', key: ';' },
         { note: 'A#5', type: 'black', key: '\'' },
         { note: 'B5', type: 'white', key: 'l' }
-    ]), []); // useMemo to prevent re-creation on every render
+    ]), []);
 
-    // Define 2-octave range for mobile
-    const twoOctaveKeys = useMemo(() => ([
-        // C4 to B4 (1st Octave for mobile focus)
+    // Define 1-octave range for mobile
+    // Centered around C4-B4 for common use
+    const oneOctaveKeys = useMemo(() => ([
         { note: 'C4', type: 'white', key: 'q' },
         { note: 'C#4', type: 'black', key: '2' },
         { note: 'D4', type: 'white', key: 'w' },
@@ -78,25 +78,11 @@ const VirtualPiano = () => {
         { note: 'G#4', type: 'black', key: '6' },
         { note: 'A4', type: 'white', key: 'y' },
         { note: 'A#4', type: 'black', key: '7' },
-        { note: 'B4', type: 'white', key: 'u' },
-
-        // C5 to B5 (2nd Octave for mobile focus)
-        { note: 'C5', type: 'white', key: 'i' },
-        { note: 'C#5', type: 'black', key: '9' },
-        { note: 'D5', type: 'white', key: 'o' },
-        { note: 'D#5', type: 'black', key: '0' },
-        { note: 'E5', type: 'white', key: 'p' },
-        { note: 'F5', type: 'white', key: '[' },
-        { note: 'F#5', type: 'black', key: '=' },
-        { note: 'G5', type: 'white', key: ']' },
-        { note: 'G#5', type: 'black', key: '\\' },
-        { note: 'A5', type: 'white', key: ';' },
-        { note: 'A#5', type: 'black', key: '\'' },
-        { note: 'B5', type: 'white', key: 'l' }
+        { note: 'B4', type: 'white', key: 'u' }
     ]), []);
 
     // Conditionally select piano keys based on device
-    const pianoKeys = isMobile ? twoOctaveKeys : fullPianoKeys;
+    const pianoKeys = isMobile ? oneOctaveKeys : fullPianoKeys;
 
     const handleKeyPress = useCallback((note) => {
         setPressedKeys(prev => {
@@ -242,7 +228,7 @@ const VirtualPiano = () => {
 
                         {/* Piano Keyboard Container */}
                         <PianoUI
-                            pianoKeys={pianoKeys} // This will now be 2 or 3 octaves based on isMobile
+                            pianoKeys={pianoKeys} // This will now be 1 or 3 octaves based on isMobile
                             pressedKeys={pressedKeys}
                             handleKeyPress={handleKeyPress}
                             handleKeyRelease={handleKeyRelease}
@@ -303,7 +289,7 @@ const VirtualPiano = () => {
                         {/* Right Side - Piano */}
                         <div className="flex-1 flex items-center justify-center overflow-hidden">
                             <PianoUI
-                                pianoKeys={pianoKeys} // This will now be 2 or 3 octaves based on isMobile
+                                pianoKeys={pianoKeys} // This will now be 1 or 3 octaves based on isMobile
                                 pressedKeys={pressedKeys}
                                 handleKeyPress={handleKeyPress}
                                 handleKeyRelease={handleKeyRelease}
