@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import * as Tone from 'tone';
-import { Play, Music } from 'lucide-react'; // Icons for play, music notes
+import { Play, Music, Volume2, VolumeX, TrendingUp, TrendingDown } from 'lucide-react'; // Added TrendingUp/Down for glide toggle
 
 // --- AUDIO CONTEXT ---
 // This context manages the global Tone.js audio state, ensuring only one audio context.
@@ -69,6 +69,7 @@ const usePortamentoSynth = () => {
     const { isAudioGloballyReady, startGlobalAudio } = useContext(AudioContext);
     const synthRef = useRef(null); // The Tone.Synth instance
     const [portamentoTime, setPortamentoTime] = useState(0.05); // Default glide time in seconds
+    const [isPortamentoEnabled, setIsPortamentoEnabled] = useState(true); // State for glide on/off
 
     const [isAudioReady, setIsAudioReady] = useState(false); // Overall audio system readiness
     const [isLoading, setIsLoading] = useState(true); // Indicates if audio setup is in progress, initially true
@@ -89,9 +90,9 @@ const usePortamentoSynth = () => {
 
         let localSynth = null;
         try {
-            // Dispose any existing synth instance if effect re-runs
-            disposeSynth();
+            disposeSynth(); // Ensure any existing synth is disposed
 
+            // Initialize synth with portamento set based on the current `isPortamentoEnabled` state.
             localSynth = new Tone.Synth({
                 oscillator: { type: 'sine' }, // Simple sine wave
                 envelope: {
@@ -100,10 +101,10 @@ const usePortamentoSynth = () => {
                     sustain: 0.5,
                     release: 0.8,
                 },
-                portamento: portamentoTime, // Set initial portamento
+                portamento: (isPortamentoEnabled && portamentoTime > 0) ? portamentoTime : 0, // APPLYING INITIAL LOGIC HERE
             }).toDestination();
             synthRef.current = localSynth;
-            console.log('usePortamentoSynth: Tone.js synth created.');
+            console.log('usePortamentoSynth: Tone.js synth created with initial portamento:', localSynth.portamento);
 
         } catch (error) {
             console.error("usePortamentoSynth: Error during Tone.js synth setup:", error);
@@ -111,11 +112,9 @@ const usePortamentoSynth = () => {
             synthRef.current = null; // Ensure ref is null on error
         } finally {
             setIsLoading(false); // Set loading false after setup, regardless of success
-            // Set audioReady based on global audio context and synth existence
             setIsAudioReady(isAudioGloballyReady && synthRef.current !== null);
         }
 
-        // Cleanup function for this effect
         return () => {
             console.log('usePortamentoSynth Cleanup: Disposing synth on unmount.');
             if (localSynth) {
@@ -124,19 +123,22 @@ const usePortamentoSynth = () => {
             synthRef.current = null; // Ensure ref is cleared
             setIsAudioReady(false); // Mark as not ready
         };
-    }, [disposeSynth, isAudioGloballyReady]); // Re-create synth if global audio context changes. portamentoTime will be updated by a separate effect.
+    }, [disposeSynth, isAudioGloballyReady, isPortamentoEnabled]); // Keep isPortamentoEnabled here for initial synth creation logic
 
-    // Effect to update portamento time if only the value changes, without re-creating synth
+    // Effect to dynamically update portamento time or enable/disable glide AFTER synth is created
     useEffect(() => {
         // Only update if synthRef.current exists AND is not currently loading
         if (synthRef.current && !isLoading) {
-            // Only update if the portamentoTime has changed from the current synth setting
-            if (synthRef.current.portamento !== portamentoTime) {
-                synthRef.current.portamento = portamentoTime;
-                console.log(`Portamento time updated to: ${portamentoTime}s`);
+            // When portamento is disabled OR time is 0, set portamento to 0
+            const newPortamentoValue = (isPortamentoEnabled && portamentoTime > 0) ? portamentoTime : 0;
+            
+            // Only update if the synth's current portamento is different from the desired value
+            if (synthRef.current.portamento !== newPortamentoValue) {
+                synthRef.current.portamento = newPortamentoValue;
+                console.log(`Synth portamento dynamically updated to: ${newPortamentoValue}s (Glide ${isPortamentoEnabled && portamentoTime > 0 ? 'ON' : 'OFF'})`);
             }
         }
-    }, [portamentoTime, isLoading]); // Depend on portamentoTime and isLoading
+    }, [portamentoTime, isPortamentoEnabled, isLoading]);
 
 
     // Effect to observe global audio readiness and update local state
@@ -147,33 +149,34 @@ const usePortamentoSynth = () => {
 
     // Function to play a note
     const playNote = useCallback(async (note, duration = '8n') => {
-        // First, ensure the global audio context is running due to user interaction
         if (Tone.context.state !== 'running') {
             console.log('playNote: AudioContext is suspended, attempting to start global audio...');
-            await startGlobalAudio(); // This will attempt to resume context on user click
+            await startGlobalAudio();
             if (Tone.context.state !== 'running') {
                 console.warn('Audio context not running after interaction. Cannot play note.');
                 return;
             }
         }
 
-        if (!synthRef.current || isLoading) { // Check isLoading here
+        if (!synthRef.current || isLoading) {
             console.warn('Synth not initialized or audio is still loading. Cannot play note.');
             return;
         }
 
         try {
             synthRef.current.triggerAttackRelease(note, duration);
-            console.log(`Playing note: ${note} with portamento: ${portamentoTime}s`);
         } catch (e) {
             console.error("Error playing note:", e);
         }
-    }, [startGlobalAudio, portamentoTime, isLoading]); // Include portamentoTime and isLoading in deps
+    }, [startGlobalAudio, isLoading]);
+
 
     return {
         playNote,
         portamentoTime,
         setPortamentoTime,
+        isPortamentoEnabled,
+        setIsPortamentoEnabled,
         isAudioReady,
         isLoading,
     };
@@ -181,7 +184,7 @@ const usePortamentoSynth = () => {
 // --- End usePortamentoSynth Hook ---
 
 
-// --- ParameterSlider Component (reused from previous docs) ---
+// --- ParameterSlider Component ---
 const ParameterSlider = ({ label, value, setter, min, max, step, explanation, unit = '', isDisabled, colorClass = 'accent-purple-600 bg-purple-100' }) => (
     <div className="flex flex-col items-center w-full">
         <label className="text-gray-800 font-medium mb-2 text-center">{label}: {typeof value === 'number' ? value.toFixed(value < 1 && value !== 0 ? 3 : 1) : value}{unit}</label>
@@ -193,7 +196,7 @@ const ParameterSlider = ({ label, value, setter, min, max, step, explanation, un
             value={value}
             onChange={(e) => setter(parseFloat(e.target.value))}
             className={`w-full h-2 rounded-lg appearance-none cursor-pointer ${colorClass}`}
-            disabled={isDisabled} // Now correctly uses the isDisabled prop
+            disabled={isDisabled}
         />
         <p className="text-gray-700 text-sm mt-1 italic text-center px-2">{explanation}</p>
     </div>
@@ -206,6 +209,7 @@ const PortamentoGlideContent = () => {
     const {
         playNote,
         portamentoTime, setPortamentoTime,
+        isPortamentoEnabled, setIsPortamentoEnabled,
         isAudioReady, isLoading,
     } = usePortamentoSynth();
 
@@ -219,7 +223,7 @@ const PortamentoGlideContent = () => {
 
     return (
         <div
-            className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
+            className="min-h-screen flex flex-col items-center justify-center p-3 sm:p-4 md:p-8 relative overflow-hidden w-full"
             style={{
                 background: 'linear-gradient(135deg, #e6e6fa 0%, #d8bfd8 50%, #c084fc 100%)',
                 fontFamily: 'Inter, sans-serif',
@@ -233,74 +237,118 @@ const PortamentoGlideContent = () => {
                 }}
             ></div>
 
-            <div className="text-center mb-6 md:mb-10 z-10 w-full px-2">
-                <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
-                    <Music size={36} className="text-purple-700 md:mb-0 mb-2" />
-                    <h1 className="text-3xl md:text-5xl font-extrabold text-purple-900 drop-shadow-lg">
-                        Glide Synthesizer
-                    </h1>
+            <div className="text-center mb-4 sm:mb-6 md:mb-10 z-10 w-full max-w-5xl">
+                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-purple-900 drop-shadow-lg mb-2 sm:mb-4 leading-tight">
+                    Glide Synthesizer
+                </h1>
+
+                {/* Status Messages */}
+                <div className="min-h-[1.5rem] flex items-center justify-center">
+                    {isLoading && (
+                        <p className="text-purple-700 text-sm sm:text-base animate-pulse">
+                            Setting up audio...
+                        </p>
+                    )}
+                    {!isLoading && !isAudioReady && (
+                        <p className="text-purple-700 text-sm sm:text-base">
+                            Tap any note to activate audio.
+                        </p>
+                    )}
+                    {!isLoading && isAudioReady && (
+                        <p className="text-purple-600 text-sm sm:text-base font-medium">
+                            🎵 Ready! Tap notes and adjust glide.
+                        </p>
+                    )}
                 </div>
-                {isLoading && (
-                    <p className="text-purple-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
-                        Setting up audio...
-                    </p>
-                )}
-                {!isLoading && !isAudioReady && (
-                    <p className="text-purple-700 text-xs md:text-sm mt-2 md:mt-4">
-                        Tap any note to activate audio.
-                    </p>
-                )}
-                {!isLoading && isAudioReady && (
-                    <p className="text-purple-600 text-xs md:text-sm mt-2 md:mt-4">
-                        Ready. Tap notes and adjust glide!
-                    </p>
-                )}
             </div>
 
-            <div className="bg-white/80 backdrop-blur-sm p-4 md:p-8 rounded-xl shadow-lg w-full max-w-4xl flex flex-col items-center space-y-4 md:space-y-8 z-10 border border-purple-200 mx-2">
+            <div className="bg-white/90 backdrop-blur-md p-4 sm:p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-4xl flex flex-col items-center space-y-6 sm:space-y-8 z-10 border border-purple-200/50 mx-2">
+
+                {/* Glide ON/OFF Toggle Button */}
+                <button
+                    onClick={() => {
+                        setIsPortamentoEnabled(prev => !prev);
+                        // Immediately set portamentoTime to 0 when disabling, for clear UX
+                        // The useEffect will then correctly set synth.portamento to 0.
+                        if (isPortamentoEnabled) { // If it was enabled, we are now disabling it
+                            setPortamentoTime(0);
+                        }
+                    }}
+                    className={`flex items-center justify-center gap-2 py-2 px-4 rounded-full text-sm font-semibold transition-colors duration-200 ease-in-out
+                        ${isPortamentoEnabled
+                            ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-md hover:from-purple-600 hover:to-indigo-600'
+                            : 'bg-gray-200 text-gray-700 shadow-md hover:bg-gray-300'
+                        }
+                        ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
+                    `}
+                    disabled={isLoading}
+                >
+                    {isPortamentoEnabled ? (
+                        <>
+                            <TrendingUp size={20} /> Glide ON
+                        </>
+                    ) : (
+                        <>
+                            <TrendingDown size={20} /> Glide OFF
+                        </>
+                    )}
+                </button>
 
                 {/* Portamento Time Slider */}
-                <div className="w-full mb-4 md:mb-6 px-2">
+                <div className="w-full px-2">
                     <ParameterSlider
-                        label="Glide Time" value={portamentoTime} setter={setPortamentoTime}
-                        min="0" max="2" step="0.01" unit=" s"
+                        label="Glide Time"
+                        value={portamentoTime}
+                        setter={setPortamentoTime}
+                        min="0"
+                        max="3" // Max to 3 seconds
+                        step="0.01"
+                        unit=" s"
                         explanation={getExplanation('portamentoTime')}
-                        isDisabled={isLoading} // Changed to isLoading
+                        isDisabled={isLoading || !isPortamentoEnabled} // Disable slider when loading or glide is off
                         colorClass="accent-purple-600 bg-purple-100"
                     />
                 </div>
 
-                {/* Note Play Buttons - 2 rows on mobile */}
+                {/* Note Play Buttons */}
                 <div className="w-full">
-                    <div className="grid grid-cols-4 gap-2 md:gap-3">
+                    <div className="grid grid-cols-4 gap-3 sm:gap-4 md:gap-5">
                         {notesToPlay.slice(0, 4).map(note => (
                             <button
                                 key={note}
                                 onMouseDown={() => playNote(note)}
                                 onTouchStart={(e) => { e.preventDefault(); playNote(note); }}
-                                className={`py-4 md:py-6 px-1 md:px-2 rounded-lg text-base md:text-lg font-bold transition-all duration-100 ease-out transform
-                                    ${!isLoading // Enabled if not loading
-                                        ? 'bg-purple-500 hover:bg-purple-600 active:scale-95 text-white shadow-md'
+                                className={`py-4 sm:py-5 md:py-6 rounded-xl text-base sm:text-lg md:text-xl font-bold transition-all duration-100 ease-out transform shadow-lg hover:shadow-xl
+                                    ${!isLoading
+                                        ? 'bg-purple-500 hover:bg-purple-600 active:scale-95 text-white'
                                         : 'bg-gray-400 cursor-not-allowed text-gray-700'}
-                                    `}
-                                disabled={isLoading} // Changed to isLoading
+                                `}
+                                disabled={isLoading}
+                                style={{
+                                    WebkitTapHighlightColor: 'transparent',
+                                    touchAction: 'manipulation'
+                                }}
                             >
                                 {note}
                             </button>
                         ))}
                     </div>
-                    <div className="grid grid-cols-4 gap-2 md:gap-3 mt-2 md:mt-3">
+                    <div className="grid grid-cols-4 gap-3 sm:gap-4 md:gap-5 mt-3 sm:mt-4 md:mt-5">
                         {notesToPlay.slice(4).map(note => (
                             <button
                                 key={note}
                                 onMouseDown={() => playNote(note)}
                                 onTouchStart={(e) => { e.preventDefault(); playNote(note); }}
-                                className={`py-4 md:py-6 px-1 md:px-2 rounded-lg text-base md:text-lg font-bold transition-all duration-100 ease-out transform
-                                    ${!isLoading // Enabled if not loading
-                                        ? 'bg-purple-500 hover:bg-purple-600 active:scale-95 text-white shadow-md'
+                                className={`py-4 sm:py-5 md:py-6 rounded-xl text-base sm:text-lg md:text-xl font-bold transition-all duration-100 ease-out transform shadow-lg hover:shadow-xl
+                                    ${!isLoading
+                                        ? 'bg-purple-500 hover:bg-purple-600 active:scale-95 text-white'
                                         : 'bg-gray-400 cursor-not-allowed text-gray-700'}
-                                    `}
-                                disabled={isLoading} // Changed to isLoading
+                                `}
+                                disabled={isLoading}
+                                style={{
+                                    WebkitTapHighlightColor: 'transparent',
+                                    touchAction: 'manipulation'
+                                }}
                             >
                                 {note}
                             </button>
@@ -308,10 +356,13 @@ const PortamentoGlideContent = () => {
                     </div>
                 </div>
 
-                <div className="text-center text-gray-700 text-xs md:text-sm mt-4 md:mt-6 italic px-2">
-                    Portamento creates smooth pitch slides between notes. Adjust glide time to control the transition speed.
+                <div className="text-center text-gray-600 text-xs sm:text-sm italic max-w-md px-2">
+                    **Portamento** creates smooth pitch slides between notes. Adjust the **Glide Time** to control the transition speed for a more fluid sound. Use the "Glide ON/OFF" button to enable or disable this effect.
                 </div>
             </div>
+
+            {/* Footer spacing for mobile */}
+            <div className="h-8 sm:h-4"></div>
         </div>
     );
 };
