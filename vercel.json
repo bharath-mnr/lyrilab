@@ -18,6 +18,25 @@
       }
     },
     {
+      "src": "/(.*\\.(mp3|wav|ogg|flac|m4a|aac|wma|opus))$",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000",
+        "Content-Type": "$1"
+      }
+    },
+    {
+      "src": "/(.*\\.(jpg|jpeg|png|gif|svg|webp|ico|bmp))$",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000"
+      }
+    },
+    {
+      "src": "/samples/(.*)",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000"
+      }
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html",
       "headers": {
