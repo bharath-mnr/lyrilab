@@ -1,3 +1,51 @@
+// {
+//   "version": 2,
+//   "builds": [
+//     {
+//       "src": "package.json",
+//       "use": "@vercel/static-build",
+//       "config": {
+//         "distDir": "dist",
+//         "cleanUrls": true
+//       }
+//     }
+//   ],
+//   "routes": [
+//     {
+//       "src": "/assets/(.*)",
+//       "headers": {
+//         "Cache-Control": "public, max-age=31536000, immutable"
+//       }
+//     },
+//     {
+//       "src": "/(.*\\.(mp3|wav|ogg|flac|m4a|aac|wma|opus))$",
+//       "headers": {
+//         "Cache-Control": "public, max-age=31536000",
+//         "Content-Type": "$1"
+//       }
+//     },
+//     {
+//       "src": "/(.*\\.(jpg|jpeg|png|gif|svg|webp|ico|bmp))$",
+//       "headers": {
+//         "Cache-Control": "public, max-age=31536000"
+//       }
+//     },
+//     {
+//       "src": "/samples/(.*)",
+//       "headers": {
+//         "Cache-Control": "public, max-age=31536000"
+//       }
+//     },
+//     {
+//       "src": "/(.*)",
+//       "dest": "/index.html",
+//       "headers": {
+//         "Cache-Control": "no-cache"
+//       }
+//     }
+//   ]
+// }
+
 {
   "version": 2,
   "builds": [
@@ -6,7 +54,8 @@
       "use": "@vercel/static-build",
       "config": {
         "distDir": "dist",
-        "cleanUrls": true
+        "cleanUrls": true,
+        "buildCommand": "npm install --legacy-peer-deps && npm run build"
       }
     }
   ],
