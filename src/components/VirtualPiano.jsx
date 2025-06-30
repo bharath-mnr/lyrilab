@@ -1,8 +1,10 @@
 // src/components/VirtualPiano.jsx
+
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Volume2, VolumeX, Music, RotateCw } from 'lucide-react';
 import usePianoSynth from '../hooks/usePianoSynth';
 import PianoUI from './PianoUI';
+import SEOHead from './SEOHead';
 
 const VirtualPiano = () => {
     const [pressedKeys, setPressedKeys] = useState(new Set());
@@ -19,9 +21,28 @@ const VirtualPiano = () => {
         setSynthVolume
     } = usePianoSynth(0.7, false);
 
-    // Original full piano keys configuration (3 octaves)
+    // Define the tool object for SEO structured data
+    const virtualPianoTool = {
+        id: 'virtual-piano',
+        name: 'Virtual Piano',
+        description: 'Play a full-featured virtual piano with realistic sounds. Perfect for composing melodies, learning piano, and music practice.',
+        path: '/virtual-piano',
+        categories: [
+            'Piano Practice',
+            'Music Composition', 
+            'Virtual Instrument',
+            'Music Education',
+            'Sound Synthesis'
+        ]
+    };
+
+    // DEBUG: Log the tool and pageId
+    console.log('🎹 VirtualPiano component mounted');
+    console.log('🎹 pageId:', 'virtual-piano');
+    console.log('🎹 tool object:', virtualPianoTool);
+
+    // Rest of your component logic...
     const fullPianoKeys = useMemo(() => ([
-        // C3 to B3 (1st Octave)
         { note: 'C3', type: 'white', key: 'z' },
         { note: 'C#3', type: 'black', key: 's' },
         { note: 'D3', type: 'white', key: 'x' },
@@ -34,8 +55,6 @@ const VirtualPiano = () => {
         { note: 'A3', type: 'white', key: 'n' },
         { note: 'A#3', type: 'black', key: 'j' },
         { note: 'B3', type: 'white', key: 'm' },
-
-        // C4 to B4 (2nd Octave)
         { note: 'C4', type: 'white', key: 'q' },
         { note: 'C#4', type: 'black', key: '2' },
         { note: 'D4', type: 'white', key: 'w' },
@@ -48,8 +67,6 @@ const VirtualPiano = () => {
         { note: 'A4', type: 'white', key: 'y' },
         { note: 'A#4', type: 'black', key: '7' },
         { note: 'B4', type: 'white', key: 'u' },
-
-        // C5 to B5 (3rd Octave)
         { note: 'C5', type: 'white', key: 'i' },
         { note: 'C#5', type: 'black', key: '9' },
         { note: 'D5', type: 'white', key: 'o' },
@@ -64,7 +81,6 @@ const VirtualPiano = () => {
         { note: 'B5', type: 'white', key: 'l' }
     ]), []);
 
-    // Define 1-octave range for mobile
     const oneOctaveKeys = useMemo(() => ([
         { note: 'C4', type: 'white', key: 'q' },
         { note: 'C#4', type: 'black', key: '2' },
@@ -80,7 +96,6 @@ const VirtualPiano = () => {
         { note: 'B4', type: 'white', key: 'u' }
     ]), []);
 
-    // Conditionally select piano keys based on device
     const pianoKeys = isMobile ? oneOctaveKeys : fullPianoKeys;
 
     const handleKeyPress = useCallback((note) => {
@@ -105,7 +120,6 @@ const VirtualPiano = () => {
         });
     }, [stopNote]);
 
-    // Check device orientation and screen size
     useEffect(() => {
         const checkDeviceState = () => {
             const isCurrentLandscape = window.innerWidth > window.innerHeight;
@@ -121,7 +135,6 @@ const VirtualPiano = () => {
         };
     }, []);
 
-    // Keyboard event handlers
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.repeat) return;
@@ -151,6 +164,13 @@ const VirtualPiano = () => {
 
     return (
         <>
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="virtual-piano" 
+                tool={virtualPianoTool}
+                customData={{}}
+            />
+
             <div
                 className={`min-h-screen relative flex font-inter overflow-hidden ${
                     isMobile && isLandscape ? 'flex-row' : 'flex-col'
