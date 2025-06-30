@@ -1,5 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, ChevronLeft, Play, Pause, RotateCcw, Volume2, BookOpen, Zap, Music } from 'lucide-react';
+import SEOHead from './SEOHead';
+
+// Define the tool object for SEO structured data
+const circleOfFifthsTool = {
+    id: 'circle-of-fifths',
+    name: 'Circle of Fifths',
+    description: 'Interactive circle of fifths tool to explore key relationships and music theory concepts.',
+    path: '/circle-of-fifths',
+    categories: [
+        'Music Theory',
+        'Key Signatures',
+        'Harmony',
+        'Music Education',
+        'Composition'
+    ]
+};
 
 const CircleOfFifths = () => {
     const [selectedKey, setSelectedKey] = useState(null);
@@ -159,330 +175,341 @@ const CircleOfFifths = () => {
     };
 
     return (
-        <div className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #e0f2f7 0%, #b3e5fc 50%, #81d4fa 100%)',
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Floating Music Notes Background */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+        <>
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="circle-of-fifths" 
+                tool={circleOfFifthsTool}
+                customData={{}}
+            />
+
+
+            <div className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
                 style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%2303a9f4' d='M25 0l-5 5v15l5 5h15v-5h-10l5-5V5l-5-5H25zm50 0l5 5v15l-5 5h-15v-5h10l-5-5V5l5-5h-50zM0 75l5 5h15l5-5v-15l-5-5H5l-5 5v15zm75 0l-5 5h-15l-5-5v-15l5-5h15l5 5v15z'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
+                    background: 'linear-gradient(135deg, #e0f2f7 0%, #b3e5fc 50%, #81d4fa 100%)',
+                    fontFamily: 'Inter, sans-serif',
                 }}
-            ></div>
+            >
+                {/* Floating Music Notes Background */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%2303a9f4' d='M25 0l-5 5v15l5 5h15v-5h-10l5-5V5l-5-5H25zm50 0l5 5v15l-5 5h-15v-5h10l-5-5V5l5-5h-50zM0 75l5 5h15l5-5v-15l-5-5H5l-5 5v15zm75 0l-5 5h-15l-5-5v-15l5-5h15l5 5v15z'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
+                    }}
+                ></div>
 
-            <div className="text-center mb-6 md:mb-10 z-10 w-full">
-                <div className="flex items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
-                    <Music size={32} className="text-blue-700 md:h-12 md:w-12" />
-                    <h1 className="text-3xl md:text-5xl font-extrabold text-blue-900 drop-shadow-lg">Circle of Fifths</h1>
-                </div>
-                <p className="text-blue-600 text-xs md:text-sm mt-2 md:mt-4">
-                    Master music theory through interactive exploration
-                </p>
-            </div>
-
-            {/* Main content container with relative positioning */}
-            <div className="relative w-full max-w-6xl">
-                {/* Desktop controls - positioned absolutely on left side */}
-                <div className="absolute left-0 top-0 z-20 hidden lg:flex flex-col gap-3">
-                    <button
-                        onClick={toggleAnimation}
-                        className="flex items-center justify-center gap-2 px-4 py-2 md:px-6 md:py-3 bg-blue-600 text-white rounded-lg font-bold text-sm md:text-base shadow-md hover:bg-blue-700 transition-all duration-200"
-                    >
-                        {isAnimating ? <Pause size={16} className="md:h-5 md:w-5" /> : <Play size={16} className="md:h-5 md:w-5" />}
-                        {isAnimating ? 'Pause Tour' : 'Start Tour'}
-                    </button>
-                    <button
-                        onClick={resetSelection}
-                        className="flex items-center justify-center gap-2 px-4 py-2 md:px-6 md:py-3 bg-gray-600 text-white rounded-lg font-bold text-sm md:text-base shadow-md hover:bg-gray-700 transition-all duration-200"
-                    >
-                        <RotateCcw size={16} className="md:h-5 md:w-5" /> Reset
-                    </button>
-                    <button
-                        onClick={() => setShowAdvanced(!showAdvanced)}
-                        className="flex items-center justify-center gap-2 px-4 py-2 md:px-6 md:py-3 bg-purple-600 text-white rounded-lg font-bold text-sm md:text-base shadow-md hover:bg-purple-700 transition-all duration-200"
-                    >
-                        <Zap size={16} className="md:h-5 md:w-5" /> {showAdvanced ? 'Basic' : 'Advanced'}
-                    </button>
+                <div className="text-center mb-6 md:mb-10 z-10 w-full">
+                    <div className="flex items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
+                        <Music size={32} className="text-blue-700 md:h-12 md:w-12" />
+                        <h1 className="text-3xl md:text-5xl font-extrabold text-blue-900 drop-shadow-lg">Circle of Fifths</h1>
+                    </div>
+                    <p className="text-blue-600 text-xs md:text-sm mt-2 md:mt-4">
+                        Master music theory through interactive exploration
+                    </p>
                 </div>
 
-                {/* Mobile controls - shown only on small screens */}
-                <div className="flex justify-center gap-3 mb-4 lg:hidden">
-                    <button
-                        onClick={toggleAnimation}
-                        className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-bold text-sm shadow-md hover:bg-blue-700 transition-all duration-200"
-                    >
-                        {isAnimating ? <Pause size={16} /> : <Play size={16} />}
-                    </button>
-                    <button
-                        onClick={resetSelection}
-                        className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg font-bold text-sm shadow-md hover:bg-gray-700 transition-all duration-200"
-                    >
-                        <RotateCcw size={16} />
-                    </button>
-                    <button
-                        onClick={() => setShowAdvanced(!showAdvanced)}
-                        className="flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg font-bold text-sm shadow-md hover:bg-purple-700 transition-all duration-200"
-                    >
-                        <Zap size={16} />
-                    </button>
-                </div>
-
-                {/* Circle and info panel container */}
-                <div className="bg-white/80 backdrop-blur-sm p-4 md:p-6 lg:p-8 rounded-xl shadow-lg w-full flex flex-col lg:flex-row items-center justify-center gap-6 md:gap-8 z-10 border border-blue-200">
-                    {/* Circle Container */}
-                    <div className="w-full max-w-md">
-                        <svg className="w-full h-auto" viewBox="0 0 400 400">
-                            <defs>
-                                <radialGradient id="circleGradient" cx="50%" cy="50%" r="50%">
-                                    <stop offset="0%" stopColor="#1e3a8a" stopOpacity="0.3" />
-                                    <stop offset="100%" stopColor="#312e81" stopOpacity="0.1" />
-                                </radialGradient>
-                                <filter id="glow">
-                                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                                    <feMerge> 
-                                        <feMergeNode in="coloredBlur"/>
-                                        <feMergeNode in="SourceGraphic"/>
-                                    </feMerge>
-                                </filter>
-                            </defs>
-
-                            <circle cx={center.x} cy={center.y} r={radius + 35} fill="url(#circleGradient)" />
-                            <circle cx={center.x} cy={center.y} r={radius + 30} fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="2" />
-                            <circle cx={center.x} cy={center.y} r={innerRadius + 15} fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
-                            <circle cx={center.x} cy={center.y} r={accidentalRadius - 10} fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
-
-                            {circleData.map((_, index) => {
-                                const { x1, y1, x2, y2 } = getLineCoordinates(index, numSegments, radius + 30, accidentalRadius - 10);
-                                return (
-                                    <line
-                                        key={`line-${index}`}
-                                        x1={x1} y1={y1} x2={x2} y2={y2}
-                                        stroke="rgba(0,0,0,0.2)"
-                                        strokeWidth="1"
-                                    />
-                                );
-                            })}
-
-                            {circleData.map((data, index) => {
-                                const isSelected = selectedKey?.major === data.major;
-                                const isHovered = hoveredKey === data.major;
-                                const angle = (index * (360 / numSegments)) - 90;
-                                const nextAngle = ((index + 1) * (360 / numSegments)) - 90;
-                                const angleRad = angle * Math.PI / 180;
-                                const nextAngleRad = nextAngle * Math.PI / 180;
-                                
-                                const outerRadius = radius + 30;
-                                const innerRadius = accidentalRadius - 10;
-                                
-                                const pathData = `
-                                    M ${center.x + innerRadius * Math.cos(angleRad)} ${center.y + innerRadius * Math.sin(angleRad)}
-                                    L ${center.x + outerRadius * Math.cos(angleRad)} ${center.y + outerRadius * Math.sin(angleRad)}
-                                    A ${outerRadius} ${outerRadius} 0 0 1 ${center.x + outerRadius * Math.cos(nextAngleRad)} ${center.y + outerRadius * Math.sin(nextAngleRad)}
-                                    L ${center.x + innerRadius * Math.cos(nextAngleRad)} ${center.y + innerRadius * Math.sin(nextAngleRad)}
-                                    A ${innerRadius} ${innerRadius} 0 0 0 ${center.x + innerRadius * Math.cos(angleRad)} ${center.y + innerRadius * Math.sin(angleRad)}
-                                    Z
-                                `;
-
-                                return (
-                                    <path
-                                        key={`segment-${index}`}
-                                        d={pathData}
-                                        fill={isSelected ? "rgba(59, 130, 246, 0.3)" : isHovered ? "rgba(59, 130, 246, 0.1)" : "transparent"}
-                                        stroke={isSelected ? "#3b82f6" : "transparent"}
-                                        strokeWidth="2"
-                                        className="cursor-pointer transition-all duration-300"
-                                        onClick={() => handleKeyClick(data)}
-                                        onMouseEnter={() => setHoveredKey(data.major)}
-                                        onMouseLeave={() => setHoveredKey(null)}
-                                    />
-                                );
-                            })}
-
-                            {circleData.map((data, index) => {
-                                const { x, y } = getCoordinates(index, numSegments, radius + 5);
-                                const isSelected = selectedKey?.major === data.major;
-                                return (
-                                    <text
-                                        key={`major-${data.major}`}
-                                        x={x} y={y + 2}
-                                        textAnchor="middle"
-                                        dominantBaseline="middle"
-                                        className={`text-lg font-bold cursor-pointer transition-all duration-300 ${
-                                            isSelected ? 'fill-blue-700' : 'fill-blue-900'
-                                        }`}
-                                        filter={isSelected ? "url(#glow)" : "none"}
-                                        onClick={() => handleKeyClick(data)}
-                                    >
-                                        {data.major}
-                                    </text>
-                                );
-                            })}
-
-                            {circleData.map((data, index) => {
-                                const { x, y } = getCoordinates(index, numSegments, innerRadius - 5);
-                                const isSelected = selectedKey?.major === data.major;
-                                return (
-                                    <text
-                                        key={`minor-${data.minor}`}
-                                        x={x} y={y + 1}
-                                        textAnchor="middle"
-                                        dominantBaseline="middle"
-                                        className={`text-sm font-semibold cursor-pointer transition-all duration-300 ${
-                                            isSelected ? 'fill-purple-700' : 'fill-purple-900'
-                                        }`}
-                                        onClick={() => handleKeyClick(data)}
-                                    >
-                                        {data.minor}
-                                    </text>
-                                );
-                            })}
-
-                            {circleData.map((data, index) => {
-                                const { x, y } = getCoordinates(index, numSegments, accidentalRadius - 25);
-                                const isSelected = selectedKey?.major === data.major;
-                                return (
-                                    <text
-                                        key={`acc-${data.major}`}
-                                        x={x} y={y + 1}
-                                        textAnchor="middle"
-                                        dominantBaseline="middle"
-                                        className={`text-xs font-mono transition-all duration-300 ${
-                                            isSelected ? 'fill-yellow-600' : 'fill-gray-600'
-                                        }`}
-                                    >
-                                        {data.accidentals}
-                                    </text>
-                                );
-                            })}
-
-                            <text
-                                x={center.x} y={center.y}
-                                textAnchor="middle"
-                                dominantBaseline="middle"
-                                className="text-xl font-bold fill-blue-900"
-                            >
-                                Keys
-                            </text>
-
-                            <g className="fill-blue-600">
-                                <text x={center.x + radius + 50} y={center.y - 15} textAnchor="middle" className="text-sm font-bold">♯</text>
-                                <text x={center.x + radius + 50} y={center.y + 5} textAnchor="middle" className="text-xs">SHARPS</text>
-                                <g transform={`translate(${center.x + radius + 35}, ${center.y - 10})`}>
-                                    <ChevronRight size={16} />
-                                </g>
-                            </g>
-                            <g className="fill-purple-600">
-                                <text x={center.x - radius - 50} y={center.y - 15} textAnchor="middle" className="text-sm font-bold">♭</text>
-                                <text x={center.x - radius - 50} y={center.y + 5} textAnchor="middle" className="text-xs">FLATS</text>
-                                <g transform={`translate(${center.x - radius - 35}, ${center.y - 10})`}>
-                                    <ChevronLeft size={16} />
-                                </g>
-                            </g>
-                        </svg>
+                {/* Main content container with relative positioning */}
+                <div className="relative w-full max-w-6xl">
+                    {/* Desktop controls - positioned absolutely on left side */}
+                    <div className="absolute left-0 top-0 z-20 hidden lg:flex flex-col gap-3">
+                        <button
+                            onClick={toggleAnimation}
+                            className="flex items-center justify-center gap-2 px-4 py-2 md:px-6 md:py-3 bg-blue-600 text-white rounded-lg font-bold text-sm md:text-base shadow-md hover:bg-blue-700 transition-all duration-200"
+                        >
+                            {isAnimating ? <Pause size={16} className="md:h-5 md:w-5" /> : <Play size={16} className="md:h-5 md:w-5" />}
+                            {isAnimating ? 'Pause Tour' : 'Start Tour'}
+                        </button>
+                        <button
+                            onClick={resetSelection}
+                            className="flex items-center justify-center gap-2 px-4 py-2 md:px-6 md:py-3 bg-gray-600 text-white rounded-lg font-bold text-sm md:text-base shadow-md hover:bg-gray-700 transition-all duration-200"
+                        >
+                            <RotateCcw size={16} className="md:h-5 md:w-5" /> Reset
+                        </button>
+                        <button
+                            onClick={() => setShowAdvanced(!showAdvanced)}
+                            className="flex items-center justify-center gap-2 px-4 py-2 md:px-6 md:py-3 bg-purple-600 text-white rounded-lg font-bold text-sm md:text-base shadow-md hover:bg-purple-700 transition-all duration-200"
+                        >
+                            <Zap size={16} className="md:h-5 md:w-5" /> {showAdvanced ? 'Basic' : 'Advanced'}
+                        </button>
                     </div>
 
-                    {/* Information Panel */}
-                    <div className="bg-white/90 rounded-xl p-4 md:p-6 shadow-lg border border-blue-200 w-full max-w-md">
-                        {selectedKey ? (
-                            <div className="space-y-4 md:space-y-6">
-                                <div className="text-center">
-                                    <h2 className="text-2xl md:text-3xl font-bold text-blue-800 mb-1 md:mb-2">
-                                        {selectedKey.major} Major
-                                    </h2>
-                                    <p className="text-lg text-blue-600">
-                                        {selectedKey.minor} Minor
-                                    </p>
-                                    <p className="text-sm text-gray-600 mt-1 md:mt-2">
-                                        {selectedKey.description}
-                                    </p>
-                                </div>
+                    {/* Mobile controls - shown only on small screens */}
+                    <div className="flex justify-center gap-3 mb-4 lg:hidden">
+                        <button
+                            onClick={toggleAnimation}
+                            className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-bold text-sm shadow-md hover:bg-blue-700 transition-all duration-200"
+                        >
+                            {isAnimating ? <Pause size={16} /> : <Play size={16} />}
+                        </button>
+                        <button
+                            onClick={resetSelection}
+                            className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg font-bold text-sm shadow-md hover:bg-gray-700 transition-all duration-200"
+                        >
+                            <RotateCcw size={16} />
+                        </button>
+                        <button
+                            onClick={() => setShowAdvanced(!showAdvanced)}
+                            className="flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg font-bold text-sm shadow-md hover:bg-purple-700 transition-all duration-200"
+                        >
+                            <Zap size={16} />
+                        </button>
+                    </div>
 
-                                <div className="grid grid-cols-2 gap-3 md:gap-4">
-                                    <div className="bg-blue-50 rounded-lg p-3 md:p-4">
-                                        <h3 className="text-xs md:text-sm font-bold text-blue-600 mb-1 md:mb-2 flex items-center gap-1 md:gap-2">
-                                            <Music size={14} className="md:h-4 md:w-4" />
-                                            Key Signature
-                                        </h3>
-                                        <p className="text-base md:text-lg font-mono text-blue-800">{selectedKey.accidentals}</p>
-                                        {selectedKey.sharps.length > 0 && (
-                                            <p className="text-xs text-gray-500 mt-1">
-                                                Sharps: {selectedKey.sharps.join(', ')}
-                                            </p>
-                                        )}
-                                        {selectedKey.flats.length > 0 && (
-                                            <p className="text-xs text-gray-500 mt-1">
-                                                Flats: {selectedKey.flats.join(', ')}
-                                            </p>
-                                        )}
-                                    </div>
+                    {/* Circle and info panel container */}
+                    <div className="bg-white/80 backdrop-blur-sm p-4 md:p-6 lg:p-8 rounded-xl shadow-lg w-full flex flex-col lg:flex-row items-center justify-center gap-6 md:gap-8 z-10 border border-blue-200">
+                        {/* Circle Container */}
+                        <div className="w-full max-w-md">
+                            <svg className="w-full h-auto" viewBox="0 0 400 400">
+                                <defs>
+                                    <radialGradient id="circleGradient" cx="50%" cy="50%" r="50%">
+                                        <stop offset="0%" stopColor="#1e3a8a" stopOpacity="0.3" />
+                                        <stop offset="100%" stopColor="#312e81" stopOpacity="0.1" />
+                                    </radialGradient>
+                                    <filter id="glow">
+                                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                        <feMerge> 
+                                            <feMergeNode in="coloredBlur"/>
+                                            <feMergeNode in="SourceGraphic"/>
+                                        </feMerge>
+                                    </filter>
+                                </defs>
+
+                                <circle cx={center.x} cy={center.y} r={radius + 35} fill="url(#circleGradient)" />
+                                <circle cx={center.x} cy={center.y} r={radius + 30} fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="2" />
+                                <circle cx={center.x} cy={center.y} r={innerRadius + 15} fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
+                                <circle cx={center.x} cy={center.y} r={accidentalRadius - 10} fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
+
+                                {circleData.map((_, index) => {
+                                    const { x1, y1, x2, y2 } = getLineCoordinates(index, numSegments, radius + 30, accidentalRadius - 10);
+                                    return (
+                                        <line
+                                            key={`line-${index}`}
+                                            x1={x1} y1={y1} x2={x2} y2={y2}
+                                            stroke="rgba(0,0,0,0.2)"
+                                            strokeWidth="1"
+                                        />
+                                    );
+                                })}
+
+                                {circleData.map((data, index) => {
+                                    const isSelected = selectedKey?.major === data.major;
+                                    const isHovered = hoveredKey === data.major;
+                                    const angle = (index * (360 / numSegments)) - 90;
+                                    const nextAngle = ((index + 1) * (360 / numSegments)) - 90;
+                                    const angleRad = angle * Math.PI / 180;
+                                    const nextAngleRad = nextAngle * Math.PI / 180;
                                     
-                                    <div className="bg-purple-50 rounded-lg p-3 md:p-4">
-                                        <h3 className="text-xs md:text-sm font-bold text-purple-600 mb-1 md:mb-2 flex items-center gap-1 md:gap-2">
-                                            <Volume2 size={14} className="md:h-4 md:w-4" />
-                                            Scale Chords
-                                        </h3>
-                                        <div className="text-xs space-y-1">
-                                            {selectedKey.chords.map((chord, i) => (
-                                                <div key={i} className="flex justify-between">
-                                                    <span className="text-gray-500">{['I', 'ii', 'iii', 'IV', 'V', 'vi', 'vii°'][i]}:</span>
-                                                    <span className="font-mono text-purple-800">{chord}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
+                                    const outerRadius = radius + 30;
+                                    const innerRadius = accidentalRadius - 10;
+                                    
+                                    const pathData = `
+                                        M ${center.x + innerRadius * Math.cos(angleRad)} ${center.y + innerRadius * Math.sin(angleRad)}
+                                        L ${center.x + outerRadius * Math.cos(angleRad)} ${center.y + outerRadius * Math.sin(angleRad)}
+                                        A ${outerRadius} ${outerRadius} 0 0 1 ${center.x + outerRadius * Math.cos(nextAngleRad)} ${center.y + outerRadius * Math.sin(nextAngleRad)}
+                                        L ${center.x + innerRadius * Math.cos(nextAngleRad)} ${center.y + innerRadius * Math.sin(nextAngleRad)}
+                                        A ${innerRadius} ${innerRadius} 0 0 0 ${center.x + innerRadius * Math.cos(angleRad)} ${center.y + innerRadius * Math.sin(angleRad)}
+                                        Z
+                                    `;
 
-                                {showAdvanced && (
-                                    <div className="bg-yellow-50 rounded-lg p-3 md:p-4">
-                                        <h3 className="text-xs md:text-sm font-bold text-yellow-600 mb-1 md:mb-2 flex items-center gap-1 md:gap-2">
-                                            <BookOpen size={14} className="md:h-4 md:w-4" />
-                                            Advanced Info
-                                        </h3>
-                                        <div className="text-xs space-y-2">
-                                            <div>
-                                                <p className="text-gray-500 mb-1">Modal Names:</p>
-                                                <div className="grid grid-cols-1 gap-1">
-                                                    {selectedKey.modes.slice(0, 4).map((mode, i) => (
-                                                        <span key={i} className="font-mono text-gray-700">{mode}</span>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <p className="text-gray-500 mb-1">Common Songs:</p>
-                                                {selectedKey.commonSongs.map((song, i) => (
-                                                    <p key={i} className="text-gray-700 italic">"{song}"</p>
+                                    return (
+                                        <path
+                                            key={`segment-${index}`}
+                                            d={pathData}
+                                            fill={isSelected ? "rgba(59, 130, 246, 0.3)" : isHovered ? "rgba(59, 130, 246, 0.1)" : "transparent"}
+                                            stroke={isSelected ? "#3b82f6" : "transparent"}
+                                            strokeWidth="2"
+                                            className="cursor-pointer transition-all duration-300"
+                                            onClick={() => handleKeyClick(data)}
+                                            onMouseEnter={() => setHoveredKey(data.major)}
+                                            onMouseLeave={() => setHoveredKey(null)}
+                                        />
+                                    );
+                                })}
+
+                                {circleData.map((data, index) => {
+                                    const { x, y } = getCoordinates(index, numSegments, radius + 5);
+                                    const isSelected = selectedKey?.major === data.major;
+                                    return (
+                                        <text
+                                            key={`major-${data.major}`}
+                                            x={x} y={y + 2}
+                                            textAnchor="middle"
+                                            dominantBaseline="middle"
+                                            className={`text-lg font-bold cursor-pointer transition-all duration-300 ${
+                                                isSelected ? 'fill-blue-700' : 'fill-blue-900'
+                                            }`}
+                                            filter={isSelected ? "url(#glow)" : "none"}
+                                            onClick={() => handleKeyClick(data)}
+                                        >
+                                            {data.major}
+                                        </text>
+                                    );
+                                })}
+
+                                {circleData.map((data, index) => {
+                                    const { x, y } = getCoordinates(index, numSegments, innerRadius - 5);
+                                    const isSelected = selectedKey?.major === data.major;
+                                    return (
+                                        <text
+                                            key={`minor-${data.minor}`}
+                                            x={x} y={y + 1}
+                                            textAnchor="middle"
+                                            dominantBaseline="middle"
+                                            className={`text-sm font-semibold cursor-pointer transition-all duration-300 ${
+                                                isSelected ? 'fill-purple-700' : 'fill-purple-900'
+                                            }`}
+                                            onClick={() => handleKeyClick(data)}
+                                        >
+                                            {data.minor}
+                                        </text>
+                                    );
+                                })}
+
+                                {circleData.map((data, index) => {
+                                    const { x, y } = getCoordinates(index, numSegments, accidentalRadius - 25);
+                                    const isSelected = selectedKey?.major === data.major;
+                                    return (
+                                        <text
+                                            key={`acc-${data.major}`}
+                                            x={x} y={y + 1}
+                                            textAnchor="middle"
+                                            dominantBaseline="middle"
+                                            className={`text-xs font-mono transition-all duration-300 ${
+                                                isSelected ? 'fill-yellow-600' : 'fill-gray-600'
+                                            }`}
+                                        >
+                                            {data.accidentals}
+                                        </text>
+                                    );
+                                })}
+
+                                <text
+                                    x={center.x} y={center.y}
+                                    textAnchor="middle"
+                                    dominantBaseline="middle"
+                                    className="text-xl font-bold fill-blue-900"
+                                >
+                                    Keys
+                                </text>
+
+                                <g className="fill-blue-600">
+                                    <text x={center.x + radius + 50} y={center.y - 15} textAnchor="middle" className="text-sm font-bold">♯</text>
+                                    <text x={center.x + radius + 50} y={center.y + 5} textAnchor="middle" className="text-xs">SHARPS</text>
+                                    <g transform={`translate(${center.x + radius + 35}, ${center.y - 10})`}>
+                                        <ChevronRight size={16} />
+                                    </g>
+                                </g>
+                                <g className="fill-purple-600">
+                                    <text x={center.x - radius - 50} y={center.y - 15} textAnchor="middle" className="text-sm font-bold">♭</text>
+                                    <text x={center.x - radius - 50} y={center.y + 5} textAnchor="middle" className="text-xs">FLATS</text>
+                                    <g transform={`translate(${center.x - radius - 35}, ${center.y - 10})`}>
+                                        <ChevronLeft size={16} />
+                                    </g>
+                                </g>
+                            </svg>
+                        </div>
+
+                        {/* Information Panel */}
+                        <div className="bg-white/90 rounded-xl p-4 md:p-6 shadow-lg border border-blue-200 w-full max-w-md">
+                            {selectedKey ? (
+                                <div className="space-y-4 md:space-y-6">
+                                    <div className="text-center">
+                                        <h2 className="text-2xl md:text-3xl font-bold text-blue-800 mb-1 md:mb-2">
+                                            {selectedKey.major} Major
+                                        </h2>
+                                        <p className="text-lg text-blue-600">
+                                            {selectedKey.minor} Minor
+                                        </p>
+                                        <p className="text-sm text-gray-600 mt-1 md:mt-2">
+                                            {selectedKey.description}
+                                        </p>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-3 md:gap-4">
+                                        <div className="bg-blue-50 rounded-lg p-3 md:p-4">
+                                            <h3 className="text-xs md:text-sm font-bold text-blue-600 mb-1 md:mb-2 flex items-center gap-1 md:gap-2">
+                                                <Music size={14} className="md:h-4 md:w-4" />
+                                                Key Signature
+                                            </h3>
+                                            <p className="text-base md:text-lg font-mono text-blue-800">{selectedKey.accidentals}</p>
+                                            {selectedKey.sharps.length > 0 && (
+                                                <p className="text-xs text-gray-500 mt-1">
+                                                    Sharps: {selectedKey.sharps.join(', ')}
+                                                </p>
+                                            )}
+                                            {selectedKey.flats.length > 0 && (
+                                                <p className="text-xs text-gray-500 mt-1">
+                                                    Flats: {selectedKey.flats.join(', ')}
+                                                </p>
+                                            )}
+                                        </div>
+                                        
+                                        <div className="bg-purple-50 rounded-lg p-3 md:p-4">
+                                            <h3 className="text-xs md:text-sm font-bold text-purple-600 mb-1 md:mb-2 flex items-center gap-1 md:gap-2">
+                                                <Volume2 size={14} className="md:h-4 md:w-4" />
+                                                Scale Chords
+                                            </h3>
+                                            <div className="text-xs space-y-1">
+                                                {selectedKey.chords.map((chord, i) => (
+                                                    <div key={i} className="flex justify-between">
+                                                        <span className="text-gray-500">{['I', 'ii', 'iii', 'IV', 'V', 'vi', 'vii°'][i]}:</span>
+                                                        <span className="font-mono text-purple-800">{chord}</span>
+                                                    </div>
                                                 ))}
                                             </div>
                                         </div>
                                     </div>
-                                )}
-                            </div>
-                        ) : (
-                            <div className="text-center space-y-3 md:space-y-4">
-                                <div className="text-4xl md:text-6xl mb-2 md:mb-4">🎵</div>
-                                <h2 className="text-xl md:text-2xl font-bold text-blue-800">Select a Key</h2>
-                                <p className="text-sm md:text-base text-gray-600">
-                                    Click on any key in the circle to explore its properties, chords, and musical relationships.
-                                </p>
-                                <div className="bg-blue-50 rounded-lg p-3 md:p-4 mt-4 md:mt-6">
-                                    <h3 className="text-base md:text-lg font-bold text-blue-600 mb-2 md:mb-3">Quick Guide</h3>
-                                    <div className="text-xs md:text-sm text-gray-700 space-y-1 md:space-y-2">
-                                        <p>• <span className="text-blue-600">Outer ring:</span> Major keys</p>
-                                        <p>• <span className="text-purple-600">Inner ring:</span> Relative minor keys</p>
-                                        <p>• <span className="text-yellow-600">Center:</span> Number of sharps/flats</p>
-                                        <p>• <span className="text-green-600">Clockwise:</span> Add sharps</p>
-                                        <p>• <span className="text-orange-600">Counter-clockwise:</span> Add flats</p>
+
+                                    {showAdvanced && (
+                                        <div className="bg-yellow-50 rounded-lg p-3 md:p-4">
+                                            <h3 className="text-xs md:text-sm font-bold text-yellow-600 mb-1 md:mb-2 flex items-center gap-1 md:gap-2">
+                                                <BookOpen size={14} className="md:h-4 md:w-4" />
+                                                Advanced Info
+                                            </h3>
+                                            <div className="text-xs space-y-2">
+                                                <div>
+                                                    <p className="text-gray-500 mb-1">Modal Names:</p>
+                                                    <div className="grid grid-cols-1 gap-1">
+                                                        {selectedKey.modes.slice(0, 4).map((mode, i) => (
+                                                            <span key={i} className="font-mono text-gray-700">{mode}</span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <p className="text-gray-500 mb-1">Common Songs:</p>
+                                                    {selectedKey.commonSongs.map((song, i) => (
+                                                        <p key={i} className="text-gray-700 italic">"{song}"</p>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="text-center space-y-3 md:space-y-4">
+                                    <div className="text-4xl md:text-6xl mb-2 md:mb-4">🎵</div>
+                                    <h2 className="text-xl md:text-2xl font-bold text-blue-800">Select a Key</h2>
+                                    <p className="text-sm md:text-base text-gray-600">
+                                        Click on any key in the circle to explore its properties, chords, and musical relationships.
+                                    </p>
+                                    <div className="bg-blue-50 rounded-lg p-3 md:p-4 mt-4 md:mt-6">
+                                        <h3 className="text-base md:text-lg font-bold text-blue-600 mb-2 md:mb-3">Quick Guide</h3>
+                                        <div className="text-xs md:text-sm text-gray-700 space-y-1 md:space-y-2">
+                                            <p>• <span className="text-blue-600">Outer ring:</span> Major keys</p>
+                                            <p>• <span className="text-purple-600">Inner ring:</span> Relative minor keys</p>
+                                            <p>• <span className="text-yellow-600">Center:</span> Number of sharps/flats</p>
+                                            <p>• <span className="text-green-600">Clockwise:</span> Add sharps</p>
+                                            <p>• <span className="text-orange-600">Counter-clockwise:</span> Add flats</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+
+        </>
     );
 };
 

@@ -1,6 +1,23 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import * as Tone from 'tone';
 import { Play, Pause, SquareDot } from 'lucide-react'; // Only SquareDot needed for Saturation icon
+import SEOHead from './SEOHead';
+
+
+// Define the tool object for SEO structured data
+const saturationExplorerTool = {
+    id: 'saturation-explorer',
+    name: 'Saturation Explorer',
+    description: 'Learn audio saturation techniques for harmonic enhancement and analog warmth.',
+    path: '/saturation-explorer',
+    categories: [
+        'Saturation',
+        'Harmonic Distortion',
+        'Analog Emulation',
+        'Music Production',
+        'Sound Design'
+    ]
+};
 
 // Define the path to your C4 piano sample.
 const C4_PIANO_MP3_PATH = '/piano_samples/C4.mp3';
@@ -386,102 +403,111 @@ const SaturationExplorerContent = () => {
     };
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center p-8 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #f7e0f2 0%, #e0c9f0 50%, #dabbda 100%)', // Light pink/purple gradient
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Floating Icons Background */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+        <>
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead    
+                pageId="saturation-explorer" 
+                tool={saturationExplorerTool}
+                customData={{}}
+            />
+
+            <div
+                className="min-h-screen flex flex-col items-center p-8 relative overflow-hidden w-full"
                 style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%23a78bfa' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
+                    background: 'linear-gradient(135deg, #f7e0f2 0%, #e0c9f0 50%, #dabbda 100%)', // Light pink/purple gradient
+                    fontFamily: 'Inter, sans-serif',
                 }}
-            ></div>
+            >
+                {/* Floating Icons Background */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%23a78bfa' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
+                    }}
+                ></div>
 
-            <div className="text-center mb-10 z-10">
-                <div className="flex items-center justify-center gap-4 mb-4">
-                    <SquareDot size={48} className="text-purple-700" />
-                    <h1 className="text-5xl font-extrabold text-purple-900 drop-shadow-lg">Saturation Explorer</h1>
-                </div>
-                {!isAudioReady && (
-                    <p className="text-purple-700 text-sm mt-4 animate-pulse">
-                        Click "Play Piano Loop" to activate audio and begin.
-                    </p>
-                )}
-            </div>
-
-            <div className="bg-white/80 backdrop-blur-sm p-8 rounded-xl shadow-lg w-full max-w-3xl flex flex-col items-center space-y-8 z-10 border border-purple-200">
-
-                {/* Play/Pause Button */}
-                <button
-                    type="button"
-                    onClick={togglePlay}
-                    className={`px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3 transition-all duration-300
-                                ${isPlaying
-                                ? 'bg-purple-700 hover:bg-purple-800 text-white'
-                                : 'bg-purple-500 hover:bg-purple-600 text-white'}
-                                ${!isAudioReady && !isPlaying ? 'opacity-50 cursor-not-allowed' : ''}
-                    `}
-                >
-                    {isPlaying ? <Pause size={24} /> : <Play size={24} />}
-                    {isPlaying ? "Stop Piano Loop" : "Play Piano Loop"}
-                </button>
-
-                {/* Waveform Visualizer */}
-                <div className="w-full flex justify-center mt-8">
-                    {isAudioReady && getWaveformData ? (
-                        <WaveformVisualizer
-                            analyser={getWaveformData}
-                            width={700}
-                            height={150}
-                            scale={1.5} // Adjust scale for 'zoom' effect
-                        />
-                    ) : (
-                        <div className="w-full bg-white/60 rounded-lg shadow-inner border border-purple-200 flex items-center justify-center"
-                            style={{ width: 700, height: 150 }}>
-                            <p className="text-purple-500">Waveform Visualizer will appear after audio starts.</p>
-                        </div>
+                <div className="text-center mb-10 z-10">
+                    <div className="flex items-center justify-center gap-4 mb-4">
+                        <SquareDot size={48} className="text-purple-700" />
+                        <h1 className="text-5xl font-extrabold text-purple-900 drop-shadow-lg">Saturation Explorer</h1>
+                    </div>
+                    {!isAudioReady && (
+                        <p className="text-purple-700 text-sm mt-4 animate-pulse">
+                            Click "Play Piano Loop" to activate audio and begin.
+                        </p>
                     )}
                 </div>
 
-                {/* Saturation Controls */}
-                <EffectSection
-                    title="Saturation"
-                    icon={<SquareDot size={28} className="text-purple-600 opacity-70" />}
-                    isAudioReady={isAudioReady} // isEnabled and setIsEnabled are no longer passed
-                >
-                    <ParameterSlider
-                        label="Amount" value={saturationAmount} setter={setSaturationAmount}
-                        min="0" max="0.5" step="0.01" // Lower max for saturation
-                        explanation={getExplanation('amount')}
-                        isAudioReady={isAudioReady}
-                    />
-                     <div className="flex flex-col items-center w-full">
-                        <label className="text-purple-800 font-medium mb-2">Oversample: {saturationOversample}</label>
-                        <select
-                            value={saturationOversample}
-                            onChange={(e) => setSaturationOversample(e.target.value)}
-                            className="w-full p-2 rounded-md bg-purple-100 text-purple-800 border border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            disabled={!isAudioReady}
-                        >
-                            <option value="none">None</option>
-                            <option value="2x">2x</option>
-                            <option value="4x">4x</option>
-                        </select>
-                        <p className="text-purple-700 text-sm mt-1 italic text-center">{getExplanation('oversample')}</p>
+                <div className="bg-white/80 backdrop-blur-sm p-8 rounded-xl shadow-lg w-full max-w-3xl flex flex-col items-center space-y-8 z-10 border border-purple-200">
+
+                    {/* Play/Pause Button */}
+                    <button
+                        type="button"
+                        onClick={togglePlay}
+                        className={`px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3 transition-all duration-300
+                                    ${isPlaying
+                                    ? 'bg-purple-700 hover:bg-purple-800 text-white'
+                                    : 'bg-purple-500 hover:bg-purple-600 text-white'}
+                                    ${!isAudioReady && !isPlaying ? 'opacity-50 cursor-not-allowed' : ''}
+                        `}
+                    >
+                        {isPlaying ? <Pause size={24} /> : <Play size={24} />}
+                        {isPlaying ? "Stop Piano Loop" : "Play Piano Loop"}
+                    </button>
+
+                    {/* Waveform Visualizer */}
+                    <div className="w-full flex justify-center mt-8">
+                        {isAudioReady && getWaveformData ? (
+                            <WaveformVisualizer
+                                analyser={getWaveformData}
+                                width={700}
+                                height={150}
+                                scale={1.5} // Adjust scale for 'zoom' effect
+                            />
+                        ) : (
+                            <div className="w-full bg-white/60 rounded-lg shadow-inner border border-purple-200 flex items-center justify-center"
+                                style={{ width: 700, height: 150 }}>
+                                <p className="text-purple-500">Waveform Visualizer will appear after audio starts.</p>
+                            </div>
+                        )}
                     </div>
-                    <ParameterSlider
-                        label="Wet/Dry" value={saturationWet} setter={setSaturationWet}
-                        min="0" max="1" step="0.01"
-                        explanation={getExplanation('wet')}
-                        isAudioReady={isAudioReady}
-                    />
-                </EffectSection>
+
+                    {/* Saturation Controls */}
+                    <EffectSection
+                        title="Saturation"
+                        icon={<SquareDot size={28} className="text-purple-600 opacity-70" />}
+                        isAudioReady={isAudioReady} // isEnabled and setIsEnabled are no longer passed
+                    >
+                        <ParameterSlider
+                            label="Amount" value={saturationAmount} setter={setSaturationAmount}
+                            min="0" max="0.5" step="0.01" // Lower max for saturation
+                            explanation={getExplanation('amount')}
+                            isAudioReady={isAudioReady}
+                        />
+                        <div className="flex flex-col items-center w-full">
+                            <label className="text-purple-800 font-medium mb-2">Oversample: {saturationOversample}</label>
+                            <select
+                                value={saturationOversample}
+                                onChange={(e) => setSaturationOversample(e.target.value)}
+                                className="w-full p-2 rounded-md bg-purple-100 text-purple-800 border border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                disabled={!isAudioReady}
+                            >
+                                <option value="none">None</option>
+                                <option value="2x">2x</option>
+                                <option value="4x">4x</option>
+                            </select>
+                            <p className="text-purple-700 text-sm mt-1 italic text-center">{getExplanation('oversample')}</p>
+                        </div>
+                        <ParameterSlider
+                            label="Wet/Dry" value={saturationWet} setter={setSaturationWet}
+                            min="0" max="1" step="0.01"
+                            explanation={getExplanation('wet')}
+                            isAudioReady={isAudioReady}
+                        />
+                    </EffectSection>
+                </div>
             </div>
-        </div>
+        </>
     );
 };
 

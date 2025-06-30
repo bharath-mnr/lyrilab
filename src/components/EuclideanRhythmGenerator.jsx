@@ -1,11 +1,30 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import * as Tone from 'tone';
 import { Play, Pause, Drum, Shuffle } from 'lucide-react'; // Drum icon for rhythm, Shuffle for Euclidean
+import SEOHead from './SEOHead';
+
 
 // Define dummy sample paths. In a real application, you'd replace these with actual MP3 files.
 // For example: /samples/kick.mp3, /samples/snare.mp3
 const KICK_MP3_PATH = '/drum_samples/kick.mp3'; // Placeholder drum sample
 const SNARE_MP3_PATH = '/drum_samples/snare.mp3'; // Placeholder drum sample
+
+
+// Define the tool object for SEO structured data
+const euclideanRhythmTool = {
+    id: 'euclidean-rhythm-generator',
+    name: 'Euclidean Rhythm Generator',
+    description: 'Generate mathematically perfect rhythms using Euclidean algorithms for balanced patterns.',
+    path: '/euclidean-rhythm-generator',
+    categories: [
+        'Algorithmic Music',
+        'Rhythm Generation',
+        'Euclidean Patterns',
+        'Music Mathematics',
+        'Percussion'
+    ]
+};
+
 
 // --- AUDIO CONTEXT ---
 // This context manages the global Tone.js audio state.
@@ -483,102 +502,111 @@ const EuclideanRhythmGeneratorContent = () => {
     } = useEuclideanSequencer();
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #e6f7e0 0%, #c9f0c9 50%, #b3e4b3 100%)',
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Floating Icons Background */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+        <>
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="euclidean-rhythm-generator" 
+                tool={euclideanRhythmTool}
+                customData={{}}
+            />
+
+            <div
+                className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
                 style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%234b5563' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
+                    background: 'linear-gradient(135deg, #e6f7e0 0%, #c9f0c9 50%, #b3e4b3 100%)',
+                    fontFamily: 'Inter, sans-serif',
                 }}
-            ></div>
+            >
+                {/* Floating Icons Background */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%234b5563' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
+                    }}
+                ></div>
 
-            <div className="text-center mb-6 md:mb-10 z-10 w-full px-2">
-                <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
-                    <Shuffle size={36} className="text-green-700 md:mb-0 mb-2" />
-                    <h1 className="text-3xl md:text-5xl font-extrabold text-green-900 drop-shadow-lg">
-                        Euclidean Rhythm Generator
-                    </h1>
+                <div className="text-center mb-6 md:mb-10 z-10 w-full px-2">
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
+                        <Shuffle size={36} className="text-green-700 md:mb-0 mb-2" />
+                        <h1 className="text-3xl md:text-5xl font-extrabold text-green-900 drop-shadow-lg">
+                            Euclidean Rhythm Generator
+                        </h1>
+                    </div>
+                    {!isAudioReady && !isAudioLoading && (
+                        <p className="text-green-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
+                            Click "Play Rhythms" to activate audio and begin.
+                        </p>
+                    )}
+                    {isAudioLoading && (
+                        <p className="text-green-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
+                            Loading drum samples... Please wait.
+                        </p>
+                    )}
                 </div>
-                {!isAudioReady && !isAudioLoading && (
-                    <p className="text-green-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
-                        Click "Play Rhythms" to activate audio and begin.
-                    </p>
-                )}
-                {isAudioLoading && (
-                    <p className="text-green-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
-                        Loading drum samples... Please wait.
-                    </p>
-                )}
-            </div>
 
-            <div className="bg-white/80 backdrop-blur-sm p-4 md:p-8 rounded-xl shadow-lg w-full max-w-5xl flex flex-col items-center space-y-4 md:space-y-8 z-10 border border-green-200 mx-2">
+                <div className="bg-white/80 backdrop-blur-sm p-4 md:p-8 rounded-xl shadow-lg w-full max-w-5xl flex flex-col items-center space-y-4 md:space-y-8 z-10 border border-green-200 mx-2">
 
-                {/* Global Controls: Play/Pause, BPM */}
-                <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 mb-4 md:mb-6 w-full">
-                    <button
-                        type="button"
-                        onClick={togglePlay}
-                        className={`px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full md:w-auto
-                                ${isPlaying
-                                ? 'bg-green-700 hover:bg-green-800 text-white'
-                                : 'bg-green-500 hover:bg-green-600 text-white'}
-                                ${(!isAudioReady && !isPlaying) || isAudioLoading ? 'opacity-50 cursor-not-allowed' : ''}
-                        `}
-                        disabled={isAudioLoading}
-                    >
-                        {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-                        {isPlaying ? "Stop" : "Play Rhythms"}
-                    </button>
+                    {/* Global Controls: Play/Pause, BPM */}
+                    <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 mb-4 md:mb-6 w-full">
+                        <button
+                            type="button"
+                            onClick={togglePlay}
+                            className={`px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full md:w-auto
+                                    ${isPlaying
+                                    ? 'bg-green-700 hover:bg-green-800 text-white'
+                                    : 'bg-green-500 hover:bg-green-600 text-white'}
+                                    ${(!isAudioReady && !isPlaying) || isAudioLoading ? 'opacity-50 cursor-not-allowed' : ''}
+                            `}
+                            disabled={isAudioLoading}
+                        >
+                            {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+                            {isPlaying ? "Stop" : "Play Rhythms"}
+                        </button>
 
-                    <div className="flex flex-col items-center w-full md:w-auto">
-                        <label className="text-green-800 font-medium mb-1 md:mb-2 text-sm md:text-base">
-                            BPM: {bpm.toFixed(0)}
-                        </label>
-                        <input
-                            type="range"
-                            min="60"
-                            max="240"
-                            step="1"
-                            value={bpm}
-                            onChange={(e) => setBpm(parseFloat(e.target.value))}
-                            className="w-full md:w-48 accent-green-600 h-2 rounded-lg appearance-none cursor-pointer bg-green-100"
-                            disabled={!isAudioReady}
+                        <div className="flex flex-col items-center w-full md:w-auto">
+                            <label className="text-green-800 font-medium mb-1 md:mb-2 text-sm md:text-base">
+                                BPM: {bpm.toFixed(0)}
+                            </label>
+                            <input
+                                type="range"
+                                min="60"
+                                max="240"
+                                step="1"
+                                value={bpm}
+                                onChange={(e) => setBpm(parseFloat(e.target.value))}
+                                className="w-full md:w-48 accent-green-600 h-2 rounded-lg appearance-none cursor-pointer bg-green-100"
+                                disabled={!isAudioReady}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Euclidean Rhythm Controls */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 w-full mt-4 md:mt-8">
+                        {/* Rhythm 1 Controls */}
+                        <RhythmControls
+                            label="Rhythm 1 (Kick)"
+                            beats={beats1} setBeats={setBeats1}
+                            steps={steps1} setSteps={setSteps1}
+                            pattern={rhythm1Pattern}
+                            activeStep={activeStep1}
+                            colorClass="text-purple-700"
+                            isAudioReady={isAudioReady}
+                        />
+
+                        {/* Rhythm 2 Controls */}
+                        <RhythmControls
+                            label="Rhythm 2 (Snare)"
+                            beats={beats2} setBeats={setBeats2}
+                            steps={steps2} setSteps={setSteps2}
+                            pattern={rhythm2Pattern}
+                            activeStep={activeStep2}
+                            colorClass="text-indigo-700"
+                            isAudioReady={isAudioReady}
                         />
                     </div>
                 </div>
-
-                {/* Euclidean Rhythm Controls */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 w-full mt-4 md:mt-8">
-                    {/* Rhythm 1 Controls */}
-                    <RhythmControls
-                        label="Rhythm 1 (Kick)"
-                        beats={beats1} setBeats={setBeats1}
-                        steps={steps1} setSteps={setSteps1}
-                        pattern={rhythm1Pattern}
-                        activeStep={activeStep1}
-                        colorClass="text-purple-700"
-                        isAudioReady={isAudioReady}
-                    />
-
-                    {/* Rhythm 2 Controls */}
-                    <RhythmControls
-                        label="Rhythm 2 (Snare)"
-                        beats={beats2} setBeats={setBeats2}
-                        steps={steps2} setSteps={setSteps2}
-                        pattern={rhythm2Pattern}
-                        activeStep={activeStep2}
-                        colorClass="text-indigo-700"
-                        isAudioReady={isAudioReady}
-                    />
-                </div>
             </div>
-        </div>
+        </>
     );
 };
 // Error Boundary for robust application

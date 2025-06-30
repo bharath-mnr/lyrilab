@@ -1,6 +1,22 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import * as Tone from 'tone';
 import { Play, Pause, Clock } from 'lucide-react'; // Using Clock icon for Delay
+import SEOHead from './SEOHead';
+
+// Define the tool object for SEO structured data
+const delayExplorerTool = {
+    id: 'delay-explorer',
+    name: 'Delay Explorer',
+    description: 'Experiment with delay and echo effects through hands-on audio processing.',
+    path: '/delay-explorer',
+    categories: [
+        'Delay Effects',
+        'Time Processing',
+        'Sound Design',
+        'Audio Effects',
+        'Echo'
+    ]
+};
 
 // Define the path to your C4 piano sample.
 const C4_PIANO_MP3_PATH = '/piano_samples/C4.mp3';
@@ -261,102 +277,111 @@ const DelayExplorerContent = () => {
     };
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center p-8 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #f7e0d4 0%, #e0d4b9 50%, #c9c99c 100%)', // Warm, earthy gradient
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Floating Icons Background */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+        <>
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="delay-explorer" 
+                tool={delayExplorerTool}
+                customData={{}}
+            />
+
+            <div
+                className="min-h-screen flex flex-col items-center p-8 relative overflow-hidden w-full"
                 style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ccircle cx='25' cy='25' r='3' fill='%238a6a4a'/%3E%3Ccircle cx='75' cy='25' r='3' fill='%238a6a4a'/%3E%3Ccircle cx='50' cy='50' r='3' fill='%238a6a4a'/%3E%3Ccircle cx='25' cy='75' r='3' fill='%238a6a4a'/%3E%3Ccircle cx='75' cy='75' r='3' fill='%238a6a4a'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
+                    background: 'linear-gradient(135deg, #f7e0d4 0%, #e0d4b9 50%, #c9c99c 100%)', // Warm, earthy gradient
+                    fontFamily: 'Inter, sans-serif',
                 }}
-            ></div>
+            >
+                {/* Floating Icons Background */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ccircle cx='25' cy='25' r='3' fill='%238a6a4a'/%3E%3Ccircle cx='75' cy='25' r='3' fill='%238a6a4a'/%3E%3Ccircle cx='50' cy='50' r='3' fill='%238a6a4a'/%3E%3Ccircle cx='25' cy='75' r='3' fill='%238a6a4a'/%3E%3Ccircle cx='75' cy='75' r='3' fill='%238a6a4a'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
+                    }}
+                ></div>
 
-            <div className="text-center mb-10 z-10">
-                <div className="flex items-center justify-center gap-4 mb-4">
-                    <Clock size={48} className="text-orange-700" />
-                    <h1 className="text-5xl font-extrabold text-orange-900 drop-shadow-lg">Delay Explorer</h1>
+                <div className="text-center mb-10 z-10">
+                    <div className="flex items-center justify-center gap-4 mb-4">
+                        <Clock size={48} className="text-orange-700" />
+                        <h1 className="text-5xl font-extrabold text-orange-900 drop-shadow-lg">Delay Explorer</h1>
+                    </div>
+                    {!isAudioReady && (
+                        <p className="text-orange-700 text-sm mt-4 animate-pulse">
+                            Click "Play Audio Loop" to activate audio and begin.
+                        </p>
+                    )}
                 </div>
-                {!isAudioReady && (
-                    <p className="text-orange-700 text-sm mt-4 animate-pulse">
-                        Click "Play Audio Loop" to activate audio and begin.
-                    </p>
-                )}
-            </div>
 
-            <div className="bg-white/80 backdrop-blur-sm p-8 rounded-xl shadow-lg w-full max-w-4xl flex flex-col items-center space-y-8 z-10 border border-orange-200">
+                <div className="bg-white/80 backdrop-blur-sm p-8 rounded-xl shadow-lg w-full max-w-4xl flex flex-col items-center space-y-8 z-10 border border-orange-200">
 
-                {/* Play/Pause Button */}
-                <button
-                    type="button"
-                    onClick={togglePlay}
-                    className={`px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3 transition-all duration-300
-                                ${isPlaying
-                                ? 'bg-orange-700 hover:bg-orange-800 text-white'
-                                : 'bg-orange-500 hover:bg-orange-600 text-white'}
-                                ${!isAudioReady && !isPlaying ? 'opacity-50 cursor-not-allowed' : ''}
-                    `}
-                >
-                    {isPlaying ? <Pause size={24} /> : <Play size={24} />}
-                    {isPlaying ? "Stop Audio Loop" : "Play Audio Loop"}
-                </button>
+                    {/* Play/Pause Button */}
+                    <button
+                        type="button"
+                        onClick={togglePlay}
+                        className={`px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3 transition-all duration-300
+                                    ${isPlaying
+                                    ? 'bg-orange-700 hover:bg-orange-800 text-white'
+                                    : 'bg-orange-500 hover:bg-orange-600 text-white'}
+                                    ${!isAudioReady && !isPlaying ? 'opacity-50 cursor-not-allowed' : ''}
+                        `}
+                    >
+                        {isPlaying ? <Pause size={24} /> : <Play size={24} />}
+                        {isPlaying ? "Stop Audio Loop" : "Play Audio Loop"}
+                    </button>
 
-                {/* Delay Parameter Sliders */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mt-8">
-                    {/* Delay Time Slider */}
-                    <div className="flex flex-col items-center">
-                        <label className="text-orange-800 font-medium mb-2">Delay Time: {delayTime.toFixed(2)} s</label>
-                        <input
-                            type="range"
-                            min="0.01"
-                            max="1" // Changed max to 1 to adhere to the [0, 1] range error
-                            step="0.01"
-                            value={delayTime}
-                            onChange={(e) => setDelayTime(parseFloat(e.target.value))}
-                            className="w-full accent-orange-600 h-2 rounded-lg appearance-none cursor-pointer bg-orange-100"
-                            disabled={!isAudioReady}
-                        />
-                        <p className="text-orange-700 text-sm mt-1 italic">{getExplanation('delayTime')}</p>
-                    </div>
+                    {/* Delay Parameter Sliders */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mt-8">
+                        {/* Delay Time Slider */}
+                        <div className="flex flex-col items-center">
+                            <label className="text-orange-800 font-medium mb-2">Delay Time: {delayTime.toFixed(2)} s</label>
+                            <input
+                                type="range"
+                                min="0.01"
+                                max="1" // Changed max to 1 to adhere to the [0, 1] range error
+                                step="0.01"
+                                value={delayTime}
+                                onChange={(e) => setDelayTime(parseFloat(e.target.value))}
+                                className="w-full accent-orange-600 h-2 rounded-lg appearance-none cursor-pointer bg-orange-100"
+                                disabled={!isAudioReady}
+                            />
+                            <p className="text-orange-700 text-sm mt-1 italic">{getExplanation('delayTime')}</p>
+                        </div>
 
-                    {/* Feedback Slider */}
-                    <div className="flex flex-col items-center">
-                        <label className="text-orange-800 font-medium mb-2">Feedback: {feedback.toFixed(2)}</label>
-                        <input
-                            type="range"
-                            min="0"
-                            max="0.95" // Keep max slightly below 1 to prevent infinite feedback
-                            step="0.01"
-                            value={feedback}
-                            onChange={(e) => setFeedback(parseFloat(e.target.value))}
-                            className="w-full accent-orange-600 h-2 rounded-lg appearance-none cursor-pointer bg-orange-100"
-                            disabled={!isAudioReady}
-                        />
-                        <p className="text-orange-700 text-sm mt-1 italic">{getExplanation('feedback')}</p>
-                    </div>
+                        {/* Feedback Slider */}
+                        <div className="flex flex-col items-center">
+                            <label className="text-orange-800 font-medium mb-2">Feedback: {feedback.toFixed(2)}</label>
+                            <input
+                                type="range"
+                                min="0"
+                                max="0.95" // Keep max slightly below 1 to prevent infinite feedback
+                                step="0.01"
+                                value={feedback}
+                                onChange={(e) => setFeedback(parseFloat(e.target.value))}
+                                className="w-full accent-orange-600 h-2 rounded-lg appearance-none cursor-pointer bg-orange-100"
+                                disabled={!isAudioReady}
+                            />
+                            <p className="text-orange-700 text-sm mt-1 italic">{getExplanation('feedback')}</p>
+                        </div>
 
-                    {/* Wet/Dry Slider */}
-                    <div className="flex flex-col items-center">
-                        <label className="text-orange-800 font-medium mb-2">Wet/Dry: {wet.toFixed(2)}</label>
-                        <input
-                            type="range"
-                            min="0"
-                            max="1"
-                            step="0.01"
-                            value={wet}
-                            onChange={(e) => setWet(parseFloat(e.target.value))}
-                            className="w-full accent-orange-600 h-2 rounded-lg appearance-none cursor-pointer bg-orange-100"
-                            disabled={!isAudioReady}
-                        />
-                        <p className="text-orange-700 text-sm mt-1 italic">{getExplanation('wet')}</p>
+                        {/* Wet/Dry Slider */}
+                        <div className="flex flex-col items-center">
+                            <label className="text-orange-800 font-medium mb-2">Wet/Dry: {wet.toFixed(2)}</label>
+                            <input
+                                type="range"
+                                min="0"
+                                max="1"
+                                step="0.01"
+                                value={wet}
+                                onChange={(e) => setWet(parseFloat(e.target.value))}
+                                className="w-full accent-orange-600 h-2 rounded-lg appearance-none cursor-pointer bg-orange-100"
+                                disabled={!isAudioReady}
+                            />
+                            <p className="text-orange-700 text-sm mt-1 italic">{getExplanation('wet')}</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

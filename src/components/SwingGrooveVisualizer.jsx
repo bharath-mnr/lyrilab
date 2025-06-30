@@ -1,6 +1,23 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import * as Tone from 'tone';
 import { Play, Pause, Music, Volume2, Shuffle, Zap } from 'lucide-react'; // Icons for play/pause, music, volume, shuffle, and Zap
+import SEOHead from './SEOHead';
+
+
+// Define the tool object for SEO structured data
+const swingGrooveVisualizerTool = {
+    id: 'swing-groove-visualizer',
+    name: 'Swing & Groove',
+    description: 'Understand swing and groove with visual timing analysis and adjustment.',
+    path: '/swing-groove-visualizer',
+    categories: [
+        'Swing Rhythm',
+        'Groove',
+        'Timing Variations',
+        'Jazz',
+        'Rhythmic Feel'
+    ]
+};
 
 // Define the path to a simple click sound. This is a placeholder.
 // You'll need to provide an actual short audio file (e.g., a click or percussive sound)
@@ -379,144 +396,153 @@ const SwingGrooveVisualizerContent = () => {
     ];
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #e0ffe0 0%, #ccffcc 50%, #b3ffb3 100%)',
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Floating Icons Background */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+        <>
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="swing-groove-visualizer" 
+                tool={swingGrooveVisualizerTool}
+                customData={{}}
+            />
+
+            <div
+                className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
                 style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%234caf50' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
+                    background: 'linear-gradient(135deg, #e0ffe0 0%, #ccffcc 50%, #b3ffb3 100%)',
+                    fontFamily: 'Inter, sans-serif',
                 }}
-            ></div>
+            >
+                {/* Floating Icons Background */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%234caf50' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
+                    }}
+                ></div>
 
-            <div className="text-center mb-6 md:mb-10 z-10 w-full px-2">
-                <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
-                    <Shuffle size={36} className="text-green-700 md:mb-0 mb-2" />
-                    <h1 className="text-3xl md:text-5xl font-extrabold text-green-900 drop-shadow-lg">
-                        Swing Visualizer
-                    </h1>
-                </div>
-                {!isAudioReady && !isAudioLoading && (
-                    <p className="text-green-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
-                        Click "Play" to begin.
-                    </p>
-                )}
-                {isAudioLoading && (
-                    <p className="text-green-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
-                        Loading sound...
-                    </p>
-                )}
-            </div>
-
-            <div className="bg-white/80 backdrop-blur-sm p-4 md:p-8 rounded-xl shadow-lg w-full max-w-4xl flex flex-col items-center space-y-4 md:space-y-8 z-10 border border-green-200 mx-2">
-
-                {/* Play/Pause and Reset Buttons */}
-                <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 mb-4 md:mb-6 w-full">
-                    <button
-                        type="button"
-                        onClick={togglePlay}
-                        className={`px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full
-                                    ${isPlaying
-                                    ? 'bg-green-700 hover:bg-green-800 text-white'
-                                    : 'bg-green-500 hover:bg-green-600 text-white'}
-                                    ${(!isAudioReady && !isPlaying) || isAudioLoading ? 'opacity-50 cursor-not-allowed' : ''}
-                            `}
-                        disabled={isAudioLoading}
-                    >
-                        {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-                        {isPlaying ? "Stop" : "Play"}
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={resetParameters}
-                        className={`px-4 py-3 md:px-6 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full md:w-auto
-                                bg-gray-500 hover:bg-gray-600 text-white
-                                ${isAudioLoading ? 'opacity-50 cursor-not-allowed' : ''}
-                        `}
-                        disabled={isAudioLoading}
-                    >
-                        <Zap size={18} /> Reset
-                    </button>
-                </div>
-
-                {/* Parameter Controls */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full mt-4 md:mt-8">
-                    {/* BPM Slider */}
-                    <ParameterSlider
-                        label="BPM" value={bpm} setter={setBpm}
-                        min="60" max="240" step="1" unit=" BPM"
-                        explanation={getExplanation('bpm')}
-                        isAudioReady={isAudioReady}
-                    />
-
-                    {/* Swing Amount Slider */}
-                    <ParameterSlider
-                        label="Swing" value={swingAmount} setter={setSwingAmount}
-                        min="0.0" max="1.0" step="0.01"
-                        explanation={getExplanation('swingAmount')}
-                        isAudioReady={isAudioReady}
-                    />
-
-                    {/* Swing Subdivision Select */}
-                    <div className="flex flex-col items-center">
-                        <label className="text-gray-800 font-medium mb-1 md:mb-2 text-sm md:text-base">
-                            Subdivision: {subdivisionOptions.find(opt => opt.value === swingSubdivision)?.label}
-                        </label>
-                        <select
-                            value={swingSubdivision}
-                            onChange={(e) => setSwingSubdivision(e.target.value)}
-                            className="w-full p-2 text-sm md:text-base rounded-md bg-green-100 text-gray-800 border border-green-300 focus:outline-none focus:ring-2 focus:ring-green-500"
-                            disabled={!isAudioReady}
-                        >
-                            {subdivisionOptions.map(option => (
-                                <option key={option.value} value={option.value}>{option.label}</option>
-                            ))}
-                        </select>
-                        <p className="text-gray-700 text-xs md:text-sm mt-1 italic text-center">{getExplanation('swingSubdivision')}</p>
+                <div className="text-center mb-6 md:mb-10 z-10 w-full px-2">
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
+                        <Shuffle size={36} className="text-green-700 md:mb-0 mb-2" />
+                        <h1 className="text-3xl md:text-5xl font-extrabold text-green-900 drop-shadow-lg">
+                            Swing Visualizer
+                        </h1>
                     </div>
-
-                    {/* Pattern Steps Slider */}
-                    <ParameterSlider
-                        label="Steps" value={patternSteps} setter={setPatternSteps}
-                        min="2" max="16" step="1" unit=""
-                        explanation={getExplanation('patternSteps')}
-                        isAudioReady={isAudioReady}
-                    />
+                    {!isAudioReady && !isAudioLoading && (
+                        <p className="text-green-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
+                            Click "Play" to begin.
+                        </p>
+                    )}
+                    {isAudioLoading && (
+                        <p className="text-green-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
+                            Loading sound...
+                        </p>
+                    )}
                 </div>
 
-                {/* Visual Metronome Grid */}
-                <div className="w-full flex justify-center mt-6 md:mt-8 px-2">
-                    <div className="grid gap-1 md:gap-2 p-2 md:p-4 bg-gray-100 rounded-lg shadow-inner overflow-x-auto"
-                        style={{
-                            gridTemplateColumns: `repeat(${Math.min(patternSteps, 16)}, minmax(0, 1fr))`,
-                            width: '100%',
-                            maxWidth: '100%',
-                            justifyItems: 'center'
-                        }}>
-                        {Array.from({ length: patternSteps }).map((_, index) => (
-                            <div
-                                key={index}
-                                className={`w-6 h-6 md:w-8 md:h-8 rounded-full transition-all duration-100 flex items-center justify-center text-xs md:text-sm font-bold
-                                    ${activeStep === index
-                                        ? 'bg-green-600 text-white transform scale-110 shadow-md'
-                                        : 'bg-gray-300 text-gray-800'}
-                                    ${!isAudioReady ? 'opacity-50' : ''}
+                <div className="bg-white/80 backdrop-blur-sm p-4 md:p-8 rounded-xl shadow-lg w-full max-w-4xl flex flex-col items-center space-y-4 md:space-y-8 z-10 border border-green-200 mx-2">
+
+                    {/* Play/Pause and Reset Buttons */}
+                    <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 mb-4 md:mb-6 w-full">
+                        <button
+                            type="button"
+                            onClick={togglePlay}
+                            className={`px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full
+                                        ${isPlaying
+                                        ? 'bg-green-700 hover:bg-green-800 text-white'
+                                        : 'bg-green-500 hover:bg-green-600 text-white'}
+                                        ${(!isAudioReady && !isPlaying) || isAudioLoading ? 'opacity-50 cursor-not-allowed' : ''}
                                 `}
-                            >
-                                {index + 1}
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                            disabled={isAudioLoading}
+                        >
+                            {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+                            {isPlaying ? "Stop" : "Play"}
+                        </button>
 
+                        <button
+                            type="button"
+                            onClick={resetParameters}
+                            className={`px-4 py-3 md:px-6 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full md:w-auto
+                                    bg-gray-500 hover:bg-gray-600 text-white
+                                    ${isAudioLoading ? 'opacity-50 cursor-not-allowed' : ''}
+                            `}
+                            disabled={isAudioLoading}
+                        >
+                            <Zap size={18} /> Reset
+                        </button>
+                    </div>
+
+                    {/* Parameter Controls */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full mt-4 md:mt-8">
+                        {/* BPM Slider */}
+                        <ParameterSlider
+                            label="BPM" value={bpm} setter={setBpm}
+                            min="60" max="240" step="1" unit=" BPM"
+                            explanation={getExplanation('bpm')}
+                            isAudioReady={isAudioReady}
+                        />
+
+                        {/* Swing Amount Slider */}
+                        <ParameterSlider
+                            label="Swing" value={swingAmount} setter={setSwingAmount}
+                            min="0.0" max="1.0" step="0.01"
+                            explanation={getExplanation('swingAmount')}
+                            isAudioReady={isAudioReady}
+                        />
+
+                        {/* Swing Subdivision Select */}
+                        <div className="flex flex-col items-center">
+                            <label className="text-gray-800 font-medium mb-1 md:mb-2 text-sm md:text-base">
+                                Subdivision: {subdivisionOptions.find(opt => opt.value === swingSubdivision)?.label}
+                            </label>
+                            <select
+                                value={swingSubdivision}
+                                onChange={(e) => setSwingSubdivision(e.target.value)}
+                                className="w-full p-2 text-sm md:text-base rounded-md bg-green-100 text-gray-800 border border-green-300 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                disabled={!isAudioReady}
+                            >
+                                {subdivisionOptions.map(option => (
+                                    <option key={option.value} value={option.value}>{option.label}</option>
+                                ))}
+                            </select>
+                            <p className="text-gray-700 text-xs md:text-sm mt-1 italic text-center">{getExplanation('swingSubdivision')}</p>
+                        </div>
+
+                        {/* Pattern Steps Slider */}
+                        <ParameterSlider
+                            label="Steps" value={patternSteps} setter={setPatternSteps}
+                            min="2" max="16" step="1" unit=""
+                            explanation={getExplanation('patternSteps')}
+                            isAudioReady={isAudioReady}
+                        />
+                    </div>
+
+                    {/* Visual Metronome Grid */}
+                    <div className="w-full flex justify-center mt-6 md:mt-8 px-2">
+                        <div className="grid gap-1 md:gap-2 p-2 md:p-4 bg-gray-100 rounded-lg shadow-inner overflow-x-auto"
+                            style={{
+                                gridTemplateColumns: `repeat(${Math.min(patternSteps, 16)}, minmax(0, 1fr))`,
+                                width: '100%',
+                                maxWidth: '100%',
+                                justifyItems: 'center'
+                            }}>
+                            {Array.from({ length: patternSteps }).map((_, index) => (
+                                <div
+                                    key={index}
+                                    className={`w-6 h-6 md:w-8 md:h-8 rounded-full transition-all duration-100 flex items-center justify-center text-xs md:text-sm font-bold
+                                        ${activeStep === index
+                                            ? 'bg-green-600 text-white transform scale-110 shadow-md'
+                                            : 'bg-gray-300 text-gray-800'}
+                                        ${!isAudioReady ? 'opacity-50' : ''}
+                                    `}
+                                >
+                                    {index + 1}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                </div>
             </div>
-        </div>
+        </>
     );
 };
 

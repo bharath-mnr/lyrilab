@@ -1,6 +1,22 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext, useMemo } from 'react';
 import * as Tone from 'tone';
 import { Play, Pause, SlidersHorizontal } from 'lucide-react'; // Using SlidersHorizontal as a general EQ icon
+import SEOHead from './SEOHead';
+
+// Define the tool object for SEO structured data
+const eqExplorerTool = {
+    id: 'eq-explorer',
+    name: 'EQ Explorer',
+    description: 'Interactive equalizer training tool to learn frequency shaping and audio mixing fundamentals.',
+    path: '/eq-explorer',
+    categories: [
+        'Audio Mixing',
+        'Equalization',
+        'Sound Engineering',
+        'Frequency Control',
+        'Music Production'
+    ]
+};
 
 // Define the path to your white noise MP3 file for EQ testing
 const WHITE_NOISE_MP3_PATH = '/white-noise/white-noise.mp3';
@@ -483,145 +499,154 @@ const EQExplorerContent = () => {
     };
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center p-8 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #e5d4ff 0%, #d6bfff 50%, #c8aaff 100%)', // Purple gradient
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Floating Icons Background */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+        <>
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="eq-explorer" 
+                tool={eqExplorerTool}
+                customData={{}}
+            />
+
+            <div
+                className="min-h-screen flex flex-col items-center p-8 relative overflow-hidden w-full"
                 style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ccircle cx='25' cy='25' r='3' fill='%237d5fff'/%3E%3Ccircle cx='75' cy='25' r='3' fill='%237d5fff'/%3E%3Ccircle cx='50' cy='50' r='3' fill='%237d5fff'/%3E%3Ccircle cx='25' cy='75' r='3' fill='%237d5fff'/%3E%3Ccircle cx='75' cy='75' r='3' fill='%237d5fff'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
+                    background: 'linear-gradient(135deg, #e5d4ff 0%, #d6bfff 50%, #c8aaff 100%)', // Purple gradient
+                    fontFamily: 'Inter, sans-serif',
                 }}
-            ></div>
+            >
+                {/* Floating Icons Background */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ccircle cx='25' cy='25' r='3' fill='%237d5fff'/%3E%3Ccircle cx='75' cy='25' r='3' fill='%237d5fff'/%3E%3Ccircle cx='50' cy='50' r='3' fill='%237d5fff'/%3E%3Ccircle cx='25' cy='75' r='3' fill='%237d5fff'/%3E%3Ccircle cx='75' cy='75' r='3' fill='%237d5fff'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
+                    }}
+                ></div>
 
-            <div className="text-center mb-10 z-10">
-                <div className="flex items-center justify-center gap-4 mb-4">
-                    <SlidersHorizontal size={48} className="text-indigo-600" /> {/* Using SlidersHorizontal icon */}
-                    <h1 className="text-5xl font-extrabold text-indigo-800 drop-shadow-lg">EQ Explorer</h1>
-                </div>
-                {!isAudioReady && (
-                    <p className="text-purple-700 text-sm mt-4 animate-pulse">
-                        Click "Play White Noise" to activate audio and begin.
-                    </p>
-                )}
-            </div>
-
-            <div className="bg-white/80 backdrop-blur-sm p-8 rounded-xl shadow-lg w-full max-w-4xl flex flex-col items-center space-y-8 z-10 border border-indigo-200">
-
-                {/* Play/Pause Button */}
-                <button
-                    type="button"
-                    onClick={togglePlay}
-                    className={`px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3 transition-all duration-300
-                                ${isPlaying
-                                ? 'bg-indigo-700 hover:bg-indigo-800 text-white'
-                                : 'bg-indigo-500 hover:bg-indigo-600 text-white'}
-                                ${!isAudioReady && !isPlaying ? 'opacity-50 cursor-not-allowed' : ''}
-                    `}
-                >
-                    {isPlaying ? <Pause size={24} /> : <Play size={24} />}
-                    {isPlaying ? "Stop White Noise" : "Play White Noise"}
-                </button>
-
-                {/* EQ Type Selector */}
-                <div className="w-full">
-                    <label htmlFor="filter-type" className="block text-indigo-800 text-lg font-medium mb-2">
-                        EQ Type:
-                    </label>
-                    <select
-                        id="filter-type"
-                        value={filterType}
-                        onChange={(e) => setFilterType(e.target.value)}
-                        className="w-full p-3 rounded-lg bg-white text-indigo-900 border border-indigo-300 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-                        disabled={!isAudioReady}
-                    >
-                        {EQ_FILTER_TYPES.map(type => (
-                            <option key={type} value={type}>
-                                {type.charAt(0).toUpperCase() + type.slice(1)} {/* Capitalize first letter */}
-                            </option>
-                        ))}
-                    </select>
-                    <p className="text-indigo-700 text-sm mt-2 italic">{getExplanation(filterType)}</p>
-                </div>
-
-                {/* Frequency Visualizer */}
-                <div className="w-full flex justify-center">
-                    {isAudioReady && analyserNode && filterCurveData ? (
-                        <FrequencyVisualizer
-                            analyser={analyserNode}
-                            filterCurve={filterCurveData}
-                            width={visualizerWidth}
-                            height={visualizerHeight}
-                        />
-                    ) : (
-                        <div className="w-full bg-white/60 rounded-lg shadow-inner border border-indigo-200 flex items-center justify-center"
-                            style={{ width: visualizerWidth, height: visualizerHeight }}>
-                            <p className="text-indigo-500">Visualizer will appear after audio starts.</p>
-                        </div>
+                <div className="text-center mb-10 z-10">
+                    <div className="flex items-center justify-center gap-4 mb-4">
+                        <SlidersHorizontal size={48} className="text-indigo-600" /> {/* Using SlidersHorizontal icon */}
+                        <h1 className="text-5xl font-extrabold text-indigo-800 drop-shadow-lg">EQ Explorer</h1>
+                    </div>
+                    {!isAudioReady && (
+                        <p className="text-purple-700 text-sm mt-4 animate-pulse">
+                            Click "Play White Noise" to activate audio and begin.
+                        </p>
                     )}
                 </div>
 
-                {/* EQ Parameter Sliders */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mt-8">
-                    {/* Frequency Slider */}
-                    <div className="flex flex-col items-center">
-                        <label className="text-indigo-800 font-medium mb-2">Frequency: {Math.round(frequency)} Hz</label>
-                        <input
-                            type="range"
-                            min="20"
-                            max="20000"
-                            step="any" // Allows fine-grained control
-                            value={frequency}
-                            onChange={(e) => setFrequency(parseFloat(e.target.value))}
-                            className="w-full accent-indigo-600 h-2 rounded-lg appearance-none cursor-pointer bg-indigo-100"
+                <div className="bg-white/80 backdrop-blur-sm p-8 rounded-xl shadow-lg w-full max-w-4xl flex flex-col items-center space-y-8 z-10 border border-indigo-200">
+
+                    {/* Play/Pause Button */}
+                    <button
+                        type="button"
+                        onClick={togglePlay}
+                        className={`px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3 transition-all duration-300
+                                    ${isPlaying
+                                    ? 'bg-indigo-700 hover:bg-indigo-800 text-white'
+                                    : 'bg-indigo-500 hover:bg-indigo-600 text-white'}
+                                    ${!isAudioReady && !isPlaying ? 'opacity-50 cursor-not-allowed' : ''}
+                        `}
+                    >
+                        {isPlaying ? <Pause size={24} /> : <Play size={24} />}
+                        {isPlaying ? "Stop White Noise" : "Play White Noise"}
+                    </button>
+
+                    {/* EQ Type Selector */}
+                    <div className="w-full">
+                        <label htmlFor="filter-type" className="block text-indigo-800 text-lg font-medium mb-2">
+                            EQ Type:
+                        </label>
+                        <select
+                            id="filter-type"
+                            value={filterType}
+                            onChange={(e) => setFilterType(e.target.value)}
+                            className="w-full p-3 rounded-lg bg-white text-indigo-900 border border-indigo-300 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
                             disabled={!isAudioReady}
-                            // Optional: Inline style for progress bar effect for better UX
-                            style={{
-                                backgroundSize: `${(frequency - 20) / (20000 - 20) * 100}% 100%`
-                            }}
-                        />
+                        >
+                            {EQ_FILTER_TYPES.map(type => (
+                                <option key={type} value={type}>
+                                    {type.charAt(0).toUpperCase() + type.slice(1)} {/* Capitalize first letter */}
+                                </option>
+                            ))}
+                        </select>
+                        <p className="text-indigo-700 text-sm mt-2 italic">{getExplanation(filterType)}</p>
                     </div>
 
-                    {/* Q Factor Slider (conditionally rendered) */}
-                    {showQ && (
-                        <div className="flex flex-col items-center">
-                            <label className="text-indigo-800 font-medium mb-2">Q Factor: {Q.toFixed(1)}</label>
-                            <input
-                                type="range"
-                                min="0.1"
-                                max="10"
-                                step="0.1"
-                                value={Q}
-                                onChange={(e) => setQ(parseFloat(e.target.value))}
-                                className="w-full accent-indigo-600 h-2 rounded-lg appearance-none cursor-pointer bg-indigo-100"
-                                disabled={!isAudioReady}
+                    {/* Frequency Visualizer */}
+                    <div className="w-full flex justify-center">
+                        {isAudioReady && analyserNode && filterCurveData ? (
+                            <FrequencyVisualizer
+                                analyser={analyserNode}
+                                filterCurve={filterCurveData}
+                                width={visualizerWidth}
+                                height={visualizerHeight}
                             />
-                        </div>
-                    )}
+                        ) : (
+                            <div className="w-full bg-white/60 rounded-lg shadow-inner border border-indigo-200 flex items-center justify-center"
+                                style={{ width: visualizerWidth, height: visualizerHeight }}>
+                                <p className="text-indigo-500">Visualizer will appear after audio starts.</p>
+                            </div>
+                        )}
+                    </div>
 
-                    {/* Gain Slider (conditionally rendered) */}
-                    {showGain && (
+                    {/* EQ Parameter Sliders */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mt-8">
+                        {/* Frequency Slider */}
                         <div className="flex flex-col items-center">
-                            <label className="text-indigo-800 font-medium mb-2">Gain: {gain.toFixed(1)} dB</label>
+                            <label className="text-indigo-800 font-medium mb-2">Frequency: {Math.round(frequency)} Hz</label>
                             <input
                                 type="range"
-                                min="-20"
-                                max="20"
-                                step="0.5"
-                                value={gain}
-                                onChange={(e) => setGain(parseFloat(e.target.value))}
+                                min="20"
+                                max="20000"
+                                step="any" // Allows fine-grained control
+                                value={frequency}
+                                onChange={(e) => setFrequency(parseFloat(e.target.value))}
                                 className="w-full accent-indigo-600 h-2 rounded-lg appearance-none cursor-pointer bg-indigo-100"
                                 disabled={!isAudioReady}
+                                // Optional: Inline style for progress bar effect for better UX
+                                style={{
+                                    backgroundSize: `${(frequency - 20) / (20000 - 20) * 100}% 100%`
+                                }}
                             />
                         </div>
-                    )}
+
+                        {/* Q Factor Slider (conditionally rendered) */}
+                        {showQ && (
+                            <div className="flex flex-col items-center">
+                                <label className="text-indigo-800 font-medium mb-2">Q Factor: {Q.toFixed(1)}</label>
+                                <input
+                                    type="range"
+                                    min="0.1"
+                                    max="10"
+                                    step="0.1"
+                                    value={Q}
+                                    onChange={(e) => setQ(parseFloat(e.target.value))}
+                                    className="w-full accent-indigo-600 h-2 rounded-lg appearance-none cursor-pointer bg-indigo-100"
+                                    disabled={!isAudioReady}
+                                />
+                            </div>
+                        )}
+
+                        {/* Gain Slider (conditionally rendered) */}
+                        {showGain && (
+                            <div className="flex flex-col items-center">
+                                <label className="text-indigo-800 font-medium mb-2">Gain: {gain.toFixed(1)} dB</label>
+                                <input
+                                    type="range"
+                                    min="-20"
+                                    max="20"
+                                    step="0.5"
+                                    value={gain}
+                                    onChange={(e) => setGain(parseFloat(e.target.value))}
+                                    className="w-full accent-indigo-600 h-2 rounded-lg appearance-none cursor-pointer bg-indigo-100"
+                                    disabled={!isAudioReady}
+                                />
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

@@ -1,6 +1,23 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import * as Tone from 'tone';
 import { Play, Pause, Waves, Volume2 } from 'lucide-react';
+import SEOHead from './SEOHead';
+
+// Define the tool object for SEO structured data
+const tremoloExplorerTool = {
+    id: 'tremolo-explorer',
+    name: 'Tremolo Explorer',
+    description: 'Create rhythmic volume pulsations with tremolo amplitude modulation.',
+    path: '/tremolo-explorer',
+    categories: [
+        'Modulation Effects',
+        'Tremolo',
+        'Amplitude Modulation',
+        'Audio Effects',
+        'Rhythmic'
+    ]
+};
+
 
 // Define the path to your C4 piano sample.
 const C4_PIANO_MP3_PATH = '/piano_samples/C4.mp3';
@@ -376,94 +393,103 @@ const TremoloExplorerContent = () => {
     };
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center p-8 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #e6f7e0 0%, #c9f0c9 50%, #b3e4b3 100%)',
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Floating Icons Background */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+        <>
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="tremolo-explorer" 
+                tool={tremoloExplorerTool}
+                customData={{}}
+            />
+
+            <div
+                className="min-h-screen flex flex-col items-center p-8 relative overflow-hidden w-full"
                 style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%234b5563' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
+                    background: 'linear-gradient(135deg, #e6f7e0 0%, #c9f0c9 50%, #b3e4b3 100%)',
+                    fontFamily: 'Inter, sans-serif',
                 }}
-            ></div>
+            >
+                {/* Floating Icons Background */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%234b5563' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
+                    }}
+                ></div>
 
-            <div className="text-center mb-10 z-10">
-                <div className="flex items-center justify-center gap-4 mb-4">
-                    <Volume2 size={48} className="text-green-700" />
-                    <h1 className="text-5xl font-extrabold text-green-900 drop-shadow-lg">Tremolo Explorer</h1>
-                </div>
-                {!isAudioReady && (
-                    <p className="text-green-700 text-sm mt-4 animate-pulse">
-                        Click "Play Piano Loop" to activate audio and begin.
-                    </p>
-                )}
-            </div>
-
-            <div className="bg-white/80 backdrop-blur-sm p-8 rounded-xl shadow-lg w-full max-w-3xl flex flex-col items-center space-y-8 z-10 border border-green-200">
-
-                {/* Play/Pause Button */}
-                <button
-                    type="button"
-                    onClick={togglePlay}
-                    className={`px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3 transition-all duration-300
-                                ${isPlaying
-                                ? 'bg-green-700 hover:bg-green-800 text-white'
-                                : 'bg-green-500 hover:bg-green-600 text-white'}
-                                ${!isAudioReady && !isPlaying ? 'opacity-50 cursor-not-allowed' : ''}
-                    `}
-                >
-                    {isPlaying ? <Pause size={24} /> : <Play size={24} />}
-                    {isPlaying ? "Stop Piano Loop" : "Play Piano Loop"}
-                </button>
-
-                {/* Waveform Visualizer */}
-                <div className="w-full flex justify-center mt-8">
-                    {isAudioReady && getWaveformData ? (
-                        <WaveformVisualizer
-                            analyser={getWaveformData}
-                            width={visualizerWidth}
-                            height={visualizerHeight}
-                            scale={1.5}
-                        />
-                    ) : (
-                        <div className="w-full bg-white/60 rounded-lg shadow-inner border border-green-200 flex items-center justify-center"
-                            style={{ width: visualizerWidth, height: visualizerHeight }}>
-                            <p className="text-green-500">Waveform Visualizer will appear after audio starts.</p>
-                        </div>
+                <div className="text-center mb-10 z-10">
+                    <div className="flex items-center justify-center gap-4 mb-4">
+                        <Volume2 size={48} className="text-green-700" />
+                        <h1 className="text-5xl font-extrabold text-green-900 drop-shadow-lg">Tremolo Explorer</h1>
+                    </div>
+                    {!isAudioReady && (
+                        <p className="text-green-700 text-sm mt-4 animate-pulse">
+                            Click "Play Piano Loop" to activate audio and begin.
+                        </p>
                     )}
                 </div>
 
-                {/* Tremolo Controls */}
-                <EffectSection
-                    title="Tremolo"
-                    icon={<Volume2 size={28} className="text-green-600" />}
-                    isAudioReady={isAudioReady}
-                >
-                    <ParameterSlider
-                        label="Frequency" value={tremoloFreq} setter={setTremoloFreq}
-                        min="0.1" max="20" step="0.1" unit=" Hz"
-                        explanation={getExplanation('frequency')}
+                <div className="bg-white/80 backdrop-blur-sm p-8 rounded-xl shadow-lg w-full max-w-3xl flex flex-col items-center space-y-8 z-10 border border-green-200">
+
+                    {/* Play/Pause Button */}
+                    <button
+                        type="button"
+                        onClick={togglePlay}
+                        className={`px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3 transition-all duration-300
+                                    ${isPlaying
+                                    ? 'bg-green-700 hover:bg-green-800 text-white'
+                                    : 'bg-green-500 hover:bg-green-600 text-white'}
+                                    ${!isAudioReady && !isPlaying ? 'opacity-50 cursor-not-allowed' : ''}
+                        `}
+                    >
+                        {isPlaying ? <Pause size={24} /> : <Play size={24} />}
+                        {isPlaying ? "Stop Piano Loop" : "Play Piano Loop"}
+                    </button>
+
+                    {/* Waveform Visualizer */}
+                    <div className="w-full flex justify-center mt-8">
+                        {isAudioReady && getWaveformData ? (
+                            <WaveformVisualizer
+                                analyser={getWaveformData}
+                                width={visualizerWidth}
+                                height={visualizerHeight}
+                                scale={1.5}
+                            />
+                        ) : (
+                            <div className="w-full bg-white/60 rounded-lg shadow-inner border border-green-200 flex items-center justify-center"
+                                style={{ width: visualizerWidth, height: visualizerHeight }}>
+                                <p className="text-green-500">Waveform Visualizer will appear after audio starts.</p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Tremolo Controls */}
+                    <EffectSection
+                        title="Tremolo"
+                        icon={<Volume2 size={28} className="text-green-600" />}
                         isAudioReady={isAudioReady}
-                    />
-                    <ParameterSlider
-                        label="Depth" value={tremoloDepth} setter={setTremoloDepth}
-                        min="0" max="1" step="0.01"
-                        explanation={getExplanation('depth')}
-                        isAudioReady={isAudioReady}
-                    />
-                    <ParameterSlider
-                        label="Wet/Dry" value={tremoloWet} setter={setTremoloWet}
-                        min="0" max="1" step="0.01"
-                        explanation={getExplanation('wet')}
-                        isAudioReady={isAudioReady}
-                    />
-                </EffectSection>
+                    >
+                        <ParameterSlider
+                            label="Frequency" value={tremoloFreq} setter={setTremoloFreq}
+                            min="0.1" max="20" step="0.1" unit=" Hz"
+                            explanation={getExplanation('frequency')}
+                            isAudioReady={isAudioReady}
+                        />
+                        <ParameterSlider
+                            label="Depth" value={tremoloDepth} setter={setTremoloDepth}
+                            min="0" max="1" step="0.01"
+                            explanation={getExplanation('depth')}
+                            isAudioReady={isAudioReady}
+                        />
+                        <ParameterSlider
+                            label="Wet/Dry" value={tremoloWet} setter={setTremoloWet}
+                            min="0" max="1" step="0.01"
+                            explanation={getExplanation('wet')}
+                            isAudioReady={isAudioReady}
+                        />
+                    </EffectSection>
+                </div>
             </div>
-        </div>
+        </>
     );
 };
 

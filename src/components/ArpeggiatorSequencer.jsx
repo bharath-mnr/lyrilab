@@ -1,7 +1,22 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import * as Tone from 'tone';
 import { Play, Pause, FastForward, Repeat, Music4, ArrowUp, ArrowDown, Shuffle } from 'lucide-react'; // Icons for controls and patterns
-import SEOHead from './SEOHead';
+import SEOHead from './SEOHead';    
+
+// Define the tool object for SEO structured data
+const arpeggiatorTool = {
+    id: 'arpeggiator-sequencer',
+    name: 'Arpeggiator',
+    description: 'Create complex arpeggios with customizable patterns and sequencing options.',
+    path: '/arpeggiator-sequencer',
+    categories: [
+        'Arpeggios',
+        'Music Sequencing',
+        'Electronic Music',
+        'MIDI',
+        'Pattern Generation'
+    ]
+};
 
 // --- AUDIO CONTEXT ---
 // This context manages the global Tone.js audio state, ensuring only one audio context.
@@ -431,157 +446,133 @@ const ArpeggiatorSequencerContent = () => {
     ];
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center justify-center p-3 sm:p-4 md:p-8 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #e0ffff 0%, #ccf5ff 50%, #99ebff 100%)',
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Floating Icons Background */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+        <>
+
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="arpeggiator-sequencer" 
+                tool={arpeggiatorTool}
+                customData={{}}
+            />
+
+            <div
+                className="min-h-screen flex flex-col items-center justify-center p-3 sm:p-4 md:p-8 relative overflow-hidden w-full"
                 style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%2320c997' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
+                    background: 'linear-gradient(135deg, #e0ffff 0%, #ccf5ff 50%, #99ebff 100%)',
+                    fontFamily: 'Inter, sans-serif',
                 }}
-            ></div>
+            >
+                {/* Floating Icons Background */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%2320c997' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
+                    }}
+                ></div>
 
-            <div className="text-center mb-4 sm:mb-6 md:mb-10 z-10 w-full max-w-5xl">
-                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-cyan-900 drop-shadow-lg mb-2 sm:mb-4 leading-tight">
-                    Arpeggiator
-                </h1>
-                
-                {/* Status Messages */}
-                <div className="min-h-[1.5rem] flex items-center justify-center">
-                    {isLoading && (
-                        <p className="text-cyan-700 text-sm sm:text-base animate-pulse">
-                            Setting up audio...
-                        </p>
-                    )}
-                    {!isLoading && !isAudioReady && (
-                        <p className="text-cyan-700 text-sm sm:text-base">
-                            Click "Play" to activate audio
-                        </p>
-                    )}
-                    {!isLoading && isAudioReady && (
-                        <p className="text-cyan-600 text-sm sm:text-base font-medium">
-                            🎼 Ready! Select notes and play
-                        </p>
-                    )}
-                </div>
-            </div>
-
-            <div className="bg-white/90 backdrop-blur-md p-4 sm:p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-6xl flex flex-col items-center space-y-4 sm:space-y-6 md:space-y-8 z-10 border border-cyan-200/50 mx-2">
-
-                {/* Play and Stop Buttons */}
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full max-w-md">
-                    <button
-                        type="button"
-                        onClick={playSequencer}
-                        className={`px-6 py-4 sm:px-8 sm:py-5 rounded-xl font-bold text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-3 transition-all duration-300 w-full shadow-lg hover:shadow-xl
-                                ${!isPlaying && !isLoading && selectedNotes.length > 0
-                                    ? 'bg-cyan-500 hover:bg-cyan-600 active:scale-95 text-white hover:scale-105'
-                                    : 'bg-gray-400 cursor-not-allowed text-gray-700'}
-                                `}
-                        disabled={isPlaying || isLoading || selectedNotes.length === 0}
-                        style={{
-                            WebkitTapHighlightColor: 'transparent',
-                            touchAction: 'manipulation'
-                        }}
-                    >
-                        <Play size={20} />
-                        Play
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={stopSequencer}
-                        className={`px-6 py-4 sm:px-8 sm:py-5 rounded-xl font-bold text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-3 transition-all duration-300 w-full shadow-lg hover:shadow-xl
-                                ${isPlaying && isAudioReady
-                                    ? 'bg-cyan-700 hover:bg-cyan-800 active:scale-95 text-white hover:scale-105'
-                                    : 'bg-gray-400 cursor-not-allowed text-gray-700'}
-                                `}
-                        disabled={!isPlaying || !isAudioReady}
-                        style={{
-                            WebkitTapHighlightColor: 'transparent',
-                            touchAction: 'manipulation'
-                        }}
-                    >
-                        <Pause size={20} />
-                        Stop
-                    </button>
+                <div className="text-center mb-4 sm:mb-6 md:mb-10 z-10 w-full max-w-5xl">
+                    <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-cyan-900 drop-shadow-lg mb-2 sm:mb-4 leading-tight">
+                        Arpeggiator
+                    </h1>
+                    
+                    {/* Status Messages */}
+                    <div className="min-h-[1.5rem] flex items-center justify-center">
+                        {isLoading && (
+                            <p className="text-cyan-700 text-sm sm:text-base animate-pulse">
+                                Setting up audio...
+                            </p>
+                        )}
+                        {!isLoading && !isAudioReady && (
+                            <p className="text-cyan-700 text-sm sm:text-base">
+                                Click "Play" to activate audio
+                            </p>
+                        )}
+                        {!isLoading && isAudioReady && (
+                            <p className="text-cyan-600 text-sm sm:text-base font-medium">
+                                🎼 Ready! Select notes and play
+                            </p>
+                        )}
+                    </div>
                 </div>
 
-                {/* Current Step Indicator */}
-                {isAudioReady && totalArpeggioNotesCount > 0 && (
-                    <div className="w-full">
-                        <div className="flex justify-center items-center gap-1 sm:gap-2 mb-4 sm:mb-6 overflow-x-auto py-2 px-2">
-                            {Array.from({ length: totalArpeggioNotesCount }).map((_, idx) => (
-                                <div
-                                    key={idx}
-                                    className={`w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm flex-shrink-0
-                                        ${currentStep === idx ? 'bg-cyan-600 text-white shadow-lg ring-2 ring-cyan-400' : 'bg-gray-200 text-gray-600'}
-                                        transition-all duration-100 ease-linear
-                                    `}
-                                >
-                                    {idx + 1}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
-                {isAudioReady && totalArpeggioNotesCount === 0 && (
-                    <div className="bg-red-50 border border-red-200 rounded-xl p-4 w-full max-w-md">
-                        <p className="text-red-600 text-sm sm:text-base font-medium text-center">
-                            ⚠️ Select at least one note to play
-                        </p>
-                    </div>
-                )}
+                <div className="bg-white/90 backdrop-blur-md p-4 sm:p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-6xl flex flex-col items-center space-y-4 sm:space-y-6 md:space-y-8 z-10 border border-cyan-200/50 mx-2">
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 w-full">
-                    {/* Note Selection */}
-                    <div className="bg-cyan-50/80 p-4 sm:p-6 rounded-xl border border-cyan-200 flex flex-col items-center shadow-lg">
-                        <h2 className="text-xl sm:text-2xl font-bold text-cyan-800 mb-3 sm:mb-4">🎵 Notes</h2>
-                        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3 w-full">
-                            {allNotes.map(note => (
-                                <button
-                                    key={note}
-                                    onClick={() => toggleNoteSelection(note)}
-                                    className={`py-2 sm:py-3 px-2 sm:px-3 rounded-lg text-sm sm:text-base font-semibold transition-all duration-200 shadow-sm hover:shadow-md
-                                        ${selectedNotes.includes(note)
-                                            ? 'bg-cyan-600 text-white shadow-md ring-2 ring-cyan-400'
-                                            : 'bg-gray-200 text-gray-800 hover:bg-gray-300 active:scale-95'}
-                                        ${isLoading ? 'cursor-not-allowed opacity-50' : ''}
+                    {/* Play and Stop Buttons */}
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full max-w-md">
+                        <button
+                            type="button"
+                            onClick={playSequencer}
+                            className={`px-6 py-4 sm:px-8 sm:py-5 rounded-xl font-bold text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-3 transition-all duration-300 w-full shadow-lg hover:shadow-xl
+                                    ${!isPlaying && !isLoading && selectedNotes.length > 0
+                                        ? 'bg-cyan-500 hover:bg-cyan-600 active:scale-95 text-white hover:scale-105'
+                                        : 'bg-gray-400 cursor-not-allowed text-gray-700'}
                                     `}
-                                    disabled={isLoading}
-                                    style={{
-                                        WebkitTapHighlightColor: 'transparent',
-                                        touchAction: 'manipulation'
-                                    }}
-                                >
-                                    {note}
-                                </button>
-                            ))}
-                        </div>
-                        <p className="text-gray-600 text-xs sm:text-sm mt-3 sm:mt-4 italic text-center">
-                            Tap to select base notes for the arpeggio
-                        </p>
+                            disabled={isPlaying || isLoading || selectedNotes.length === 0}
+                            style={{
+                                WebkitTapHighlightColor: 'transparent',
+                                touchAction: 'manipulation'
+                            }}
+                        >
+                            <Play size={20} />
+                            Play
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={stopSequencer}
+                            className={`px-6 py-4 sm:px-8 sm:py-5 rounded-xl font-bold text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-3 transition-all duration-300 w-full shadow-lg hover:shadow-xl
+                                    ${isPlaying && isAudioReady
+                                        ? 'bg-cyan-700 hover:bg-cyan-800 active:scale-95 text-white hover:scale-105'
+                                        : 'bg-gray-400 cursor-not-allowed text-gray-700'}
+                                    `}
+                            disabled={!isPlaying || !isAudioReady}
+                            style={{
+                                WebkitTapHighlightColor: 'transparent',
+                                touchAction: 'manipulation'
+                            }}
+                        >
+                            <Pause size={20} />
+                            Stop
+                        </button>
                     </div>
 
-                    {/* Arpeggio Settings */}
-                    <div className="bg-cyan-50/80 p-4 sm:p-6 rounded-xl border border-cyan-200 flex flex-col shadow-lg">
-                        <h2 className="text-xl sm:text-2xl font-bold text-cyan-800 mb-3 sm:mb-4 text-center">⚙️ Settings</h2>
-                        
-                        {/* Pattern Selection */}
-                        <div className="mb-4 sm:mb-6">
-                            <h3 className="text-sm sm:text-base font-semibold text-gray-700 mb-2 text-center">Pattern:</h3>
-                            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-2">
-                                {patternOptions.map(({ key, label, Icon }) => (
+                    {/* Current Step Indicator */}
+                    {isAudioReady && totalArpeggioNotesCount > 0 && (
+                        <div className="w-full">
+                            <div className="flex justify-center items-center gap-1 sm:gap-2 mb-4 sm:mb-6 overflow-x-auto py-2 px-2">
+                                {Array.from({ length: totalArpeggioNotesCount }).map((_, idx) => (
+                                    <div
+                                        key={idx}
+                                        className={`w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm flex-shrink-0
+                                            ${currentStep === idx ? 'bg-cyan-600 text-white shadow-lg ring-2 ring-cyan-400' : 'bg-gray-200 text-gray-600'}
+                                            transition-all duration-100 ease-linear
+                                        `}
+                                    >
+                                        {idx + 1}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    {isAudioReady && totalArpeggioNotesCount === 0 && (
+                        <div className="bg-red-50 border border-red-200 rounded-xl p-4 w-full max-w-md">
+                            <p className="text-red-600 text-sm sm:text-base font-medium text-center">
+                                ⚠️ Select at least one note to play
+                            </p>
+                        </div>
+                    )}
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 w-full">
+                        {/* Note Selection */}
+                        <div className="bg-cyan-50/80 p-4 sm:p-6 rounded-xl border border-cyan-200 flex flex-col items-center shadow-lg">
+                            <h2 className="text-xl sm:text-2xl font-bold text-cyan-800 mb-3 sm:mb-4">🎵 Notes</h2>
+                            <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3 w-full">
+                                {allNotes.map(note => (
                                     <button
-                                        key={key}
-                                        onClick={() => setArpeggioPattern(key)}
-                                        className={`px-3 py-2 sm:px-4 sm:py-3 rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center gap-1 sm:gap-2 transition-all duration-200 shadow-sm hover:shadow-md
-                                            ${arpeggioPattern === key
+                                        key={note}
+                                        onClick={() => toggleNoteSelection(note)}
+                                        className={`py-2 sm:py-3 px-2 sm:px-3 rounded-lg text-sm sm:text-base font-semibold transition-all duration-200 shadow-sm hover:shadow-md
+                                            ${selectedNotes.includes(note)
                                                 ? 'bg-cyan-600 text-white shadow-md ring-2 ring-cyan-400'
                                                 : 'bg-gray-200 text-gray-800 hover:bg-gray-300 active:scale-95'}
                                             ${isLoading ? 'cursor-not-allowed opacity-50' : ''}
@@ -592,81 +583,115 @@ const ArpeggiatorSequencerContent = () => {
                                             touchAction: 'manipulation'
                                         }}
                                     >
-                                        <Icon size={14} className="flex-shrink-0" />
-                                        <span className="whitespace-nowrap">{label}</span>
+                                        {note}
                                     </button>
                                 ))}
                             </div>
-                        </div>
-
-                        {/* Subdivision Selection */}
-                        <div className="mb-4 sm:mb-6">
-                            <h3 className="text-sm sm:text-base font-semibold text-gray-700 mb-2 text-center">Subdivision:</h3>
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                                {subdivisionOptions.map(option => (
-                                    <button
-                                        key={option.value}
-                                        onClick={() => setStepSubdivision(option.value)}
-                                        className={`px-3 py-2 sm:px-4 sm:py-3 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 shadow-sm hover:shadow-md
-                                            ${stepSubdivision === option.value
-                                                ? 'bg-cyan-600 text-white shadow-md ring-2 ring-cyan-400'
-                                                : 'bg-gray-200 text-gray-800 hover:bg-gray-300 active:scale-95'}
-                                            ${isLoading ? 'cursor-not-allowed opacity-50' : ''}
-                                        `}
-                                        disabled={isLoading}
-                                        style={{
-                                            WebkitTapHighlightColor: 'transparent',
-                                            touchAction: 'manipulation'
-                                        }}
-                                    >
-                                        {option.label}
-                                    </button>
-                                ))}
-                            </div>
-                            <p className="text-gray-600 text-xs sm:text-sm mt-2 italic text-center">
-                                {getExplanation('stepSubdivision')}
+                            <p className="text-gray-600 text-xs sm:text-sm mt-3 sm:mt-4 italic text-center">
+                                Tap to select base notes for the arpeggio
                             </p>
                         </div>
 
-                        {/* Sliders */}
-                        <div className="space-y-4">
-                            <ParameterSlider
-                                label="Base Oct" value={baseOctave} setter={setBaseOctave}
-                                min="2" max="6" step="1" unit=""
-                                explanation={getExplanation('baseOctave')}
-                                isDisabled={isLoading}
-                                colorClass="accent-cyan-600 bg-cyan-100"
-                            />
-                            <ParameterSlider
-                                label="Oct Range" value={octaveRange} setter={setOctaveRange}
-                                min="1" max="3" step="1" unit=""
-                                explanation={getExplanation('octaveRange')}
-                                isDisabled={isLoading}
-                                colorClass="accent-cyan-600 bg-cyan-100"
-                            />
+                        {/* Arpeggio Settings */}
+                        <div className="bg-cyan-50/80 p-4 sm:p-6 rounded-xl border border-cyan-200 flex flex-col shadow-lg">
+                            <h2 className="text-xl sm:text-2xl font-bold text-cyan-800 mb-3 sm:mb-4 text-center">⚙️ Settings</h2>
+                            
+                            {/* Pattern Selection */}
+                            <div className="mb-4 sm:mb-6">
+                                <h3 className="text-sm sm:text-base font-semibold text-gray-700 mb-2 text-center">Pattern:</h3>
+                                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-2">
+                                    {patternOptions.map(({ key, label, Icon }) => (
+                                        <button
+                                            key={key}
+                                            onClick={() => setArpeggioPattern(key)}
+                                            className={`px-3 py-2 sm:px-4 sm:py-3 rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center gap-1 sm:gap-2 transition-all duration-200 shadow-sm hover:shadow-md
+                                                ${arpeggioPattern === key
+                                                    ? 'bg-cyan-600 text-white shadow-md ring-2 ring-cyan-400'
+                                                    : 'bg-gray-200 text-gray-800 hover:bg-gray-300 active:scale-95'}
+                                                ${isLoading ? 'cursor-not-allowed opacity-50' : ''}
+                                            `}
+                                            disabled={isLoading}
+                                            style={{
+                                                WebkitTapHighlightColor: 'transparent',
+                                                touchAction: 'manipulation'
+                                            }}
+                                        >
+                                            <Icon size={14} className="flex-shrink-0" />
+                                            <span className="whitespace-nowrap">{label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Subdivision Selection */}
+                            <div className="mb-4 sm:mb-6">
+                                <h3 className="text-sm sm:text-base font-semibold text-gray-700 mb-2 text-center">Subdivision:</h3>
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                    {subdivisionOptions.map(option => (
+                                        <button
+                                            key={option.value}
+                                            onClick={() => setStepSubdivision(option.value)}
+                                            className={`px-3 py-2 sm:px-4 sm:py-3 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 shadow-sm hover:shadow-md
+                                                ${stepSubdivision === option.value
+                                                    ? 'bg-cyan-600 text-white shadow-md ring-2 ring-cyan-400'
+                                                    : 'bg-gray-200 text-gray-800 hover:bg-gray-300 active:scale-95'}
+                                                ${isLoading ? 'cursor-not-allowed opacity-50' : ''}
+                                            `}
+                                            disabled={isLoading}
+                                            style={{
+                                                WebkitTapHighlightColor: 'transparent',
+                                                touchAction: 'manipulation'
+                                            }}
+                                        >
+                                            {option.label}
+                                        </button>
+                                    ))}
+                                </div>
+                                <p className="text-gray-600 text-xs sm:text-sm mt-2 italic text-center">
+                                    {getExplanation('stepSubdivision')}
+                                </p>
+                            </div>
+
+                            {/* Sliders */}
+                            <div className="space-y-4">
+                                <ParameterSlider
+                                    label="Base Oct" value={baseOctave} setter={setBaseOctave}
+                                    min="2" max="6" step="1" unit=""
+                                    explanation={getExplanation('baseOctave')}
+                                    isDisabled={isLoading}
+                                    colorClass="accent-cyan-600 bg-cyan-100"
+                                />
+                                <ParameterSlider
+                                    label="Oct Range" value={octaveRange} setter={setOctaveRange}
+                                    min="1" max="3" step="1" unit=""
+                                    explanation={getExplanation('octaveRange')}
+                                    isDisabled={isLoading}
+                                    colorClass="accent-cyan-600 bg-cyan-100"
+                                />
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {/* BPM Slider */}
-                <div className="w-full max-w-2xl pt-4 sm:pt-6 border-t border-cyan-200">
-                    <ParameterSlider
-                        label="BPM" value={bpm} setter={setBpm}
-                        min="60" max="240" step="5" unit=""
-                        explanation={getExplanation('bpm')}
-                        isDisabled={isLoading}
-                        colorClass="accent-cyan-700 bg-cyan-200"
-                    />
-                </div>
+                    {/* BPM Slider */}
+                    <div className="w-full max-w-2xl pt-4 sm:pt-6 border-t border-cyan-200">
+                        <ParameterSlider
+                            label="BPM" value={bpm} setter={setBpm}
+                            min="60" max="240" step="5" unit=""
+                            explanation={getExplanation('bpm')}
+                            isDisabled={isLoading}
+                            colorClass="accent-cyan-700 bg-cyan-200"
+                        />
+                    </div>
 
-                <div className="text-center text-gray-600 text-xs sm:text-sm italic max-w-md">
-                    🎶 Create beautiful arpeggios from selected notes. Try different patterns and speeds for unique melodies!
+                    <div className="text-center text-gray-600 text-xs sm:text-sm italic max-w-md">
+                        🎶 Create beautiful arpeggios from selected notes. Try different patterns and speeds for unique melodies!
+                    </div>
                 </div>
+                
+                {/* Footer spacing for mobile */}
+                <div className="h-8 sm:h-4"></div>
             </div>
-            
-            {/* Footer spacing for mobile */}
-            <div className="h-8 sm:h-4"></div>
-        </div>
+        </>
     );
 };
 

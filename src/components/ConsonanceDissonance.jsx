@@ -1,6 +1,23 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import * as Tone from 'tone';
 import { Play, Pause, Circle, Square, Triangle, Activity, Waves, Music3, Minus, Plus } from 'lucide-react'; // Icons for play/pause, waveform types, general waves, and music/intervals
+import SEOHead from './SEOHead';
+
+// Define the tool object for SEO structured data
+const consonanceDissonanceTool = {
+    id: 'consonance-dissonance',
+    name: 'Consonance & Dissonance',
+    description: 'Explore harmonic relationships and tension between consonant and dissonant intervals.',
+    path: '/consonance-dissonance',
+    categories: [
+        'Music Theory',
+        'Harmony',
+        'Interval Relationships',
+        'Tension',
+        'Acoustics'
+    ]
+};
+
 
 // --- AUDIO CONTEXT ---
 // This context manages the global Tone.js audio state, ensuring only one audio context.
@@ -532,211 +549,220 @@ const ConsonanceDissonanceContent = () => {
     };
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #fffbe6 0%, #fff0b3 50%, #ffe380 100%)',
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Floating Icons Background */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+        <>
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="consonance-dissonance" 
+                tool={consonanceDissonanceTool}
+                customData={{}}
+            />
+
+            <div
+                className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
                 style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%23fbbf24' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
+                    background: 'linear-gradient(135deg, #fffbe6 0%, #fff0b3 50%, #ffe380 100%)',
+                    fontFamily: 'Inter, sans-serif',
                 }}
-            ></div>
+            >
+                {/* Floating Icons Background */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%23fbbf24' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
+                    }}
+                ></div>
 
-            <div className="text-center mb-6 md:mb-10 z-10 w-full px-2">
-                <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
-                    <Music3 size={36} className="text-orange-700 md:mb-0 mb-2" />
-                    <h1 className="text-3xl md:text-5xl font-extrabold text-orange-900 drop-shadow-lg">
-                        Interval Explorer
-                    </h1>
-                </div>
-                {isLoading && (
-                    <p className="text-orange-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
-                        Setting up audio engine...
-                    </p>
-                )}
-                {!isLoading && !isAudioReady && (
-                    <p className="text-orange-700 text-xs md:text-sm mt-2 md:mt-4">
-                        Click "Play" to activate audio.
-                    </p>
-                )}
-                {!isLoading && isAudioReady && (
-                    <p className="text-orange-600 text-xs md:text-sm mt-2 md:mt-4">
-                        Ready. Choose waves and interval to play!
-                    </p>
-                )}
-            </div>
-
-            <div className="bg-white/80 backdrop-blur-sm p-4 md:p-8 rounded-xl shadow-lg w-full max-w-5xl flex flex-col items-center space-y-4 md:space-y-8 z-10 border border-orange-200 mx-2">
-
-                {/* Play and Stop Sound Buttons */}
-                <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-4 md:mb-6 w-full">
-                    <button
-                        type="button"
-                        onClick={playNote}
-                        className={`px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full
-                                ${!isPlaying && !isLoading
-                                    ? 'bg-orange-500 hover:bg-orange-600 text-white'
-                                    : 'bg-gray-400 cursor-not-allowed text-gray-700'}
-                                `}
-                        disabled={isPlaying || isLoading} // Allow click to activate audio context if not playing or loading
-                    >
-                        <Play size={20} />
-                        Play
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={stopNote}
-                        className={`px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full
-                                ${isPlaying && isAudioReady
-                                    ? 'bg-orange-700 hover:bg-orange-800 text-white'
-                                    : 'bg-gray-400 cursor-not-allowed text-gray-700'}
-                                `}
-                        disabled={!isPlaying || !isAudioReady}
-                    >
-                        <Pause size={20} />
-                        Stop
-                    </button>
+                <div className="text-center mb-6 md:mb-10 z-10 w-full px-2">
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
+                        <Music3 size={36} className="text-orange-700 md:mb-0 mb-2" />
+                        <h1 className="text-3xl md:text-5xl font-extrabold text-orange-900 drop-shadow-lg">
+                            Interval Explorer
+                        </h1>
+                    </div>
+                    {isLoading && (
+                        <p className="text-orange-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
+                            Setting up audio engine...
+                        </p>
+                    )}
+                    {!isLoading && !isAudioReady && (
+                        <p className="text-orange-700 text-xs md:text-sm mt-2 md:mt-4">
+                            Click "Play" to activate audio.
+                        </p>
+                    )}
+                    {!isLoading && isAudioReady && (
+                        <p className="text-orange-600 text-xs md:text-sm mt-2 md:mt-4">
+                            Ready. Choose waves and interval to play!
+                        </p>
+                    )}
                 </div>
 
-                {/* Waveform Visualizer */}
-                <div className="w-full px-2">
-                    <WaveformVisualizer
-                        waveformAnalyzer={waveformAnalyzer}
-                        isAudioReady={isAudioReady}
-                        isPlaying={isPlaying}
-                    />
-                </div>
+                <div className="bg-white/80 backdrop-blur-sm p-4 md:p-8 rounded-xl shadow-lg w-full max-w-5xl flex flex-col items-center space-y-4 md:space-y-8 z-10 border border-orange-200 mx-2">
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 lg:gap-8 w-full mt-4 md:mt-6">
-                    {/* Main Wave Controls */}
-                    <div className="bg-orange-50/70 p-4 md:p-6 rounded-lg border border-orange-100 flex flex-col items-center shadow-inner">
-                        <h2 className="text-xl md:text-2xl font-bold text-orange-800 mb-3 md:mb-4">Main Wave</h2>
-                        <div className="flex justify-center gap-1 md:gap-2 mb-4 md:mb-6 flex-wrap">
-                            {waveformOptions.map(({ type, label, Icon }) => (
-                                <button
-                                    key={`main-${type}`}
-                                    onClick={() => setMainOscType(type)}
-                                    className={`px-3 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold flex items-center gap-1 transition-all duration-200
-                                        ${mainOscType === type
-                                            ? 'bg-orange-600 text-white shadow-md'
-                                            : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}
-                                        ${isLoading ? 'cursor-not-allowed opacity-50' : ''}
+                    {/* Play and Stop Sound Buttons */}
+                    <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-4 md:mb-6 w-full">
+                        <button
+                            type="button"
+                            onClick={playNote}
+                            className={`px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full
+                                    ${!isPlaying && !isLoading
+                                        ? 'bg-orange-500 hover:bg-orange-600 text-white'
+                                        : 'bg-gray-400 cursor-not-allowed text-gray-700'}
                                     `}
-                                    disabled={isLoading} // Disabled only during initial loading
-                                >
-                                    <Icon size={14} className="flex-shrink-0" />
-                                    <span className="whitespace-nowrap">{label}</span>
-                                </button>
-                            ))}
-                        </div>
-                        <ParameterSlider
-                            label="Freq" value={mainOscFrequency} setter={setMainOscFrequency}
-                            min="100" max="800" step="1" unit=" Hz"
-                            explanation={getExplanation('mainOscFrequency')}
-                            isDisabled={isLoading} // Pass isLoading to control disabled state
-                            colorClass="accent-orange-600 bg-orange-100"
-                        />
-                        <ParameterSlider
-                            label="Vol" value={mainOscVolume} setter={setMainOscVolume}
-                            min="-40" max="-5" step="1" unit=" dB"
-                            explanation={getExplanation('mainOscVolume')}
-                            isDisabled={isLoading} // Pass isLoading to control disabled state
-                            colorClass="accent-orange-600 bg-orange-100"
+                            disabled={isPlaying || isLoading} // Allow click to activate audio context if not playing or loading
+                        >
+                            <Play size={20} />
+                            Play
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={stopNote}
+                            className={`px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full
+                                    ${isPlaying && isAudioReady
+                                        ? 'bg-orange-700 hover:bg-orange-800 text-white'
+                                        : 'bg-gray-400 cursor-not-allowed text-gray-700'}
+                                    `}
+                            disabled={!isPlaying || !isAudioReady}
+                        >
+                            <Pause size={20} />
+                            Stop
+                        </button>
+                    </div>
+
+                    {/* Waveform Visualizer */}
+                    <div className="w-full px-2">
+                        <WaveformVisualizer
+                            waveformAnalyzer={waveformAnalyzer}
+                            isAudioReady={isAudioReady}
+                            isPlaying={isPlaying}
                         />
                     </div>
 
-                    {/* Interval Wave Controls */}
-                    <div className="bg-orange-50/70 p-4 md:p-6 rounded-lg border border-orange-100 flex flex-col items-center shadow-inner">
-                        <h2 className="text-xl md:text-2xl font-bold text-orange-800 mb-3 md:mb-4">Interval Wave</h2>
-                        <div className="flex justify-center gap-1 md:gap-2 mb-4 md:mb-6 flex-wrap">
-                            {waveformOptions.map(({ type, label, Icon }) => (
-                                <button
-                                    key={`interval-${type}`}
-                                    onClick={() => setIntervalOscType(type)}
-                                    className={`px-3 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold flex items-center gap-1 transition-all duration-200
-                                        ${intervalOscType === type
-                                            ? 'bg-orange-600 text-white shadow-md'
-                                            : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}
-                                        ${isLoading ? 'cursor-not-allowed opacity-50' : ''}
-                                    `}
-                                    disabled={isLoading} // Disabled only during initial loading
-                                >
-                                    <Icon size={14} className="flex-shrink-0" />
-                                    <span className="whitespace-nowrap">{label}</span>
-                                </button>
-                            ))}
-                        </div>
-                        <div className="w-full flex flex-col items-center mb-4 md:mb-6">
-                            <label className="text-gray-800 font-medium mb-2 text-center">Interval:</label>
-                            <div className="grid grid-cols-2 gap-2 w-full">
-                                {Object.entries(intervalInfo).map(([key, info]) => (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 lg:gap-8 w-full mt-4 md:mt-6">
+                        {/* Main Wave Controls */}
+                        <div className="bg-orange-50/70 p-4 md:p-6 rounded-lg border border-orange-100 flex flex-col items-center shadow-inner">
+                            <h2 className="text-xl md:text-2xl font-bold text-orange-800 mb-3 md:mb-4">Main Wave</h2>
+                            <div className="flex justify-center gap-1 md:gap-2 mb-4 md:mb-6 flex-wrap">
+                                {waveformOptions.map(({ type, label, Icon }) => (
                                     <button
-                                        key={key}
-                                        onClick={() => setSelectedInterval(key)}
-                                        className={`px-2 py-1.5 rounded-lg text-xs md:text-sm transition-all duration-200 flex items-center justify-center gap-1.5
-                                            ${selectedInterval === key
-                                                ? 'bg-orange-600 text-white font-bold shadow-md'
-                                                : 'bg-orange-100 text-orange-800 hover:bg-orange-200'}
+                                        key={`main-${type}`}
+                                        onClick={() => setMainOscType(type)}
+                                        className={`px-3 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold flex items-center gap-1 transition-all duration-200
+                                            ${mainOscType === type
+                                                ? 'bg-orange-600 text-white shadow-md'
+                                                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}
                                             ${isLoading ? 'cursor-not-allowed opacity-50' : ''}
                                         `}
                                         disabled={isLoading} // Disabled only during initial loading
                                     >
-                                        <span className={`w-2.5 h-2.5 rounded-full ${info.type === 'consonant' ? 'bg-green-500' : 'bg-red-500'}`}></span>
-                                        {formatIntervalLabel(key)}
+                                        <Icon size={14} className="flex-shrink-0" />
+                                        <span className="whitespace-nowrap">{label}</span>
                                     </button>
                                 ))}
                             </div>
-                            <p className="text-gray-700 text-xs md:text-sm mt-1 italic text-center px-2">
-                                Musical relationship between waves
-                            </p>
+                            <ParameterSlider
+                                label="Freq" value={mainOscFrequency} setter={setMainOscFrequency}
+                                min="100" max="800" step="1" unit=" Hz"
+                                explanation={getExplanation('mainOscFrequency')}
+                                isDisabled={isLoading} // Pass isLoading to control disabled state
+                                colorClass="accent-orange-600 bg-orange-100"
+                            />
+                            <ParameterSlider
+                                label="Vol" value={mainOscVolume} setter={setMainOscVolume}
+                                min="-40" max="-5" step="1" unit=" dB"
+                                explanation={getExplanation('mainOscVolume')}
+                                isDisabled={isLoading} // Pass isLoading to control disabled state
+                                colorClass="accent-orange-600 bg-orange-100"
+                            />
                         </div>
+
+                        {/* Interval Wave Controls */}
+                        <div className="bg-orange-50/70 p-4 md:p-6 rounded-lg border border-orange-100 flex flex-col items-center shadow-inner">
+                            <h2 className="text-xl md:text-2xl font-bold text-orange-800 mb-3 md:mb-4">Interval Wave</h2>
+                            <div className="flex justify-center gap-1 md:gap-2 mb-4 md:mb-6 flex-wrap">
+                                {waveformOptions.map(({ type, label, Icon }) => (
+                                    <button
+                                        key={`interval-${type}`}
+                                        onClick={() => setIntervalOscType(type)}
+                                        className={`px-3 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold flex items-center gap-1 transition-all duration-200
+                                            ${intervalOscType === type
+                                                ? 'bg-orange-600 text-white shadow-md'
+                                                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}
+                                            ${isLoading ? 'cursor-not-allowed opacity-50' : ''}
+                                        `}
+                                        disabled={isLoading} // Disabled only during initial loading
+                                    >
+                                        <Icon size={14} className="flex-shrink-0" />
+                                        <span className="whitespace-nowrap">{label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="w-full flex flex-col items-center mb-4 md:mb-6">
+                                <label className="text-gray-800 font-medium mb-2 text-center">Interval:</label>
+                                <div className="grid grid-cols-2 gap-2 w-full">
+                                    {Object.entries(intervalInfo).map(([key, info]) => (
+                                        <button
+                                            key={key}
+                                            onClick={() => setSelectedInterval(key)}
+                                            className={`px-2 py-1.5 rounded-lg text-xs md:text-sm transition-all duration-200 flex items-center justify-center gap-1.5
+                                                ${selectedInterval === key
+                                                    ? 'bg-orange-600 text-white font-bold shadow-md'
+                                                    : 'bg-orange-100 text-orange-800 hover:bg-orange-200'}
+                                                ${isLoading ? 'cursor-not-allowed opacity-50' : ''}
+                                            `}
+                                            disabled={isLoading} // Disabled only during initial loading
+                                        >
+                                            <span className={`w-2.5 h-2.5 rounded-full ${info.type === 'consonant' ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                                            {formatIntervalLabel(key)}
+                                        </button>
+                                    ))}
+                                </div>
+                                <p className="text-gray-700 text-xs md:text-sm mt-1 italic text-center px-2">
+                                    Musical relationship between waves
+                                </p>
+                            </div>
+                            <ParameterSlider
+                                label="Vol" value={intervalOscVolume} setter={setIntervalOscVolume}
+                                min="-40" max="-5" step="1" unit=" dB"
+                                explanation={getExplanation('intervalOscVolume')}
+                                isDisabled={isLoading} // Pass isLoading to control disabled state
+                                colorClass="accent-orange-600 bg-orange-100"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Legend for Consonance/Dissonance */}
+                    <div className="w-full mt-4 md:mt-6 pt-4 md:pt-6 border-t border-orange-200 text-center">
+                        <h3 className="text-lg md:text-xl font-bold text-orange-800 mb-3 md:mb-4">Legend</h3>
+                        <div className="flex flex-col sm:flex-row justify-center gap-3 md:gap-8 text-gray-700 text-sm md:text-base">
+                            <div className="flex items-center justify-center gap-2">
+                                <span className="w-3 h-3 rounded-full bg-green-500"></span>
+                                <span>Consonant (Harmonious)</span>
+                            </div>
+                            <div className="flex items-center justify-center gap-2">
+                                <span className="w-3 h-3 rounded-full bg-red-500"></span>
+                                <span>Dissonant (Clashing)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Master Volume Slider */}
+                    <div className="w-full mt-4 md:mt-6 pt-4 md:pt-6 border-t border-orange-200 px-2">
                         <ParameterSlider
-                            label="Vol" value={intervalOscVolume} setter={setIntervalOscVolume}
-                            min="-40" max="-5" step="1" unit=" dB"
-                            explanation={getExplanation('intervalOscVolume')}
+                            label="Master Vol" value={masterVolume} setter={setMasterVolume}
+                            min="-40" max="0" step="1" unit=" dB"
+                            explanation={getExplanation('masterVolume')}
                             isDisabled={isLoading} // Pass isLoading to control disabled state
-                            colorClass="accent-orange-600 bg-orange-100"
+                            colorClass="accent-orange-700 bg-orange-200"
                         />
                     </div>
-                </div>
 
-                {/* Legend for Consonance/Dissonance */}
-                <div className="w-full mt-4 md:mt-6 pt-4 md:pt-6 border-t border-orange-200 text-center">
-                    <h3 className="text-lg md:text-xl font-bold text-orange-800 mb-3 md:mb-4">Legend</h3>
-                    <div className="flex flex-col sm:flex-row justify-center gap-3 md:gap-8 text-gray-700 text-sm md:text-base">
-                        <div className="flex items-center justify-center gap-2">
-                            <span className="w-3 h-3 rounded-full bg-green-500"></span>
-                            <span>Consonant (Harmonious)</span>
-                        </div>
-                        <div className="flex items-center justify-center gap-2">
-                            <span className="w-3 h-3 rounded-full bg-red-500"></span>
-                            <span>Dissonant (Clashing)</span>
-                        </div>
+                    <div className="text-center text-gray-700 text-xs md:text-sm mt-4 md:mt-6 italic px-2">
+                        Explore harmonious (consonant) and clashing (dissonant) intervals by combining two waveforms.
                     </div>
                 </div>
-
-                {/* Master Volume Slider */}
-                <div className="w-full mt-4 md:mt-6 pt-4 md:pt-6 border-t border-orange-200 px-2">
-                    <ParameterSlider
-                        label="Master Vol" value={masterVolume} setter={setMasterVolume}
-                        min="-40" max="0" step="1" unit=" dB"
-                        explanation={getExplanation('masterVolume')}
-                        isDisabled={isLoading} // Pass isLoading to control disabled state
-                        colorClass="accent-orange-700 bg-orange-200"
-                    />
-                </div>
-
-                <div className="text-center text-gray-700 text-xs md:text-sm mt-4 md:mt-6 italic px-2">
-                    Explore harmonious (consonant) and clashing (dissonant) intervals by combining two waveforms.
-                </div>
             </div>
-        </div>
+        </>
     );
 };
 

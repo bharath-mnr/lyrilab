@@ -1,6 +1,24 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import * as Tone from 'tone';
 import { Play, RotateCcw, Volume2, Music, CheckCircle2, XCircle } from 'lucide-react';
+import SEOHead from '../components/SEOHead';
+
+
+// Tool metadata for SEO and structured data
+const chordTrainingQuizTool = {
+    id: 'chord-training-quiz',
+    name: 'Chord Training Quiz',
+    description: 'Test and improve your chord recognition skills with multiple difficulty levels.',
+    path: '/chord-training-quiz',
+    categories: [
+        'Ear Training',
+        'Chord Recognition',
+        'Music Quiz',
+        'Music Education',
+        'Harmony'
+    ]
+};
+
 
 // --- AUDIO CONTEXT ---
 // This context manages the global Tone.js audio state, ensuring only one audio context.
@@ -305,139 +323,148 @@ const ChordTrainingQuizContent = () => {
     } = useChordTraining();
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #e0f2f7 0%, #b3e5fc 50%, #81d4fa 100%)', // Light blue gradient
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Floating Music Notes Background */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+        <>
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="chord-training-quiz" 
+                tool={chordTrainingQuizTool}
+                customData={{}}
+            />
+
+            <div
+                className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden w-full"
                 style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%2303a9f4' d='M25 0l-5 5v15l5 5h15v-5h-10l5-5V5l-5-5H25zm50 0l5 5v15l-5 5h-15v-5h10l-5-5V5l5-5h-50zM0 75l5 5h15l5-5v-15l-5-5H5l-5 5v15zm75 0l-5 5h-15l-5-5v-15l5-5h15l5 5v15z'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
+                    background: 'linear-gradient(135deg, #e0f2f7 0%, #b3e5fc 50%, #81d4fa 100%)', // Light blue gradient
+                    fontFamily: 'Inter, sans-serif',
                 }}
-            ></div>
+            >
+                {/* Floating Music Notes Background */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%2303a9f4' d='M25 0l-5 5v15l5 5h15v-5h-10l5-5V5l-5-5H25zm50 0l5 5v15l-5 5h-15v-5h10l-5-5V5l5-5h-50zM0 75l5 5h15l5-5v-15l-5-5H5l-5 5v15zm75 0l-5 5h-15l-5-5v-15l5-5h15l5 5v15z'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
+                    }}
+                ></div>
 
-            <div className="text-center mb-8 sm:mb-10 z-10 w-full max-w-lg">
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 mb-4">
-                    <Music size={36} sm:size={48} className="text-blue-700" />
-                    <h1 className="text-3xl sm:text-5xl font-extrabold text-blue-900 drop-shadow-lg">Chord Ear Training</h1>
-                </div>
-                {error && (
-                    <p className="text-red-600 text-sm sm:text-base mt-2 sm:mt-4 font-semibold">
-                        Error: {error}
-                    </p>
-                )}
-                {!quizStarted && !isAudioGloballyReady && (
-                    <p className="text-blue-700 text-sm sm:text-base mt-2 sm:mt-4">
-                        Audio context suspended. Click "Start Quiz" or the button below to activate audio.
-                    </p>
-                )}
-                {!isSynthReady && !error && (
-                    <p className="text-blue-700 text-sm sm:text-base mt-2 sm:mt-4 animate-pulse">
-                        Setting up audio synthesizer...
-                    </p>
-                )}
-                {quizStarted && isSynthReady && (
-                    <p className="text-blue-600 text-sm sm:text-base mt-2 sm:mt-4">
-                        Question: {questionCount} | Score: {score}
-                    </p>
-                )}
-            </div>
-
-            <div className="bg-white/80 backdrop-blur-sm p-6 sm:p-8 rounded-xl shadow-lg w-full max-w-xl flex flex-col items-center space-y-6 sm:space-y-8 z-10 border border-blue-200">
-                {!quizStarted ? (
-                    <>
-                        <p className="text-base sm:text-lg text-gray-800 mb-4 text-center">
-                            Identify the second chord in a two-chord progression.
-                            The first chord will always be a Major Triad.
+                <div className="text-center mb-8 sm:mb-10 z-10 w-full max-w-lg">
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 mb-4">
+                        <Music size={36} sm:size={48} className="text-blue-700" />
+                        <h1 className="text-3xl sm:text-5xl font-extrabold text-blue-900 drop-shadow-lg">Chord Ear Training</h1>
+                    </div>
+                    {error && (
+                        <p className="text-red-600 text-sm sm:text-base mt-2 sm:mt-4 font-semibold">
+                            Error: {error}
                         </p>
-                        <button
-                            onClick={startQuiz}
-                            className="px-6 py-3 sm:px-8 sm:py-4 bg-blue-600 text-white rounded-lg font-bold text-lg sm:text-xl shadow-md hover:bg-blue-700 transition-all duration-200 flex items-center gap-2 w-full sm:w-auto justify-center"
-                            disabled={!isSynthReady && !error}
-                        >
-                            <Play size={20} sm:size={24} /> Start Quiz
-                        </button>
-                        {/* Fallback for audio activation */}
-                        {!isAudioGloballyReady && !isSynthReady && error && error.includes("suspended") && (
+                    )}
+                    {!quizStarted && !isAudioGloballyReady && (
+                        <p className="text-blue-700 text-sm sm:text-base mt-2 sm:mt-4">
+                            Audio context suspended. Click "Start Quiz" or the button below to activate audio.
+                        </p>
+                    )}
+                    {!isSynthReady && !error && (
+                        <p className="text-blue-700 text-sm sm:text-base mt-2 sm:mt-4 animate-pulse">
+                            Setting up audio synthesizer...
+                        </p>
+                    )}
+                    {quizStarted && isSynthReady && (
+                        <p className="text-blue-600 text-sm sm:text-base mt-2 sm:mt-4">
+                            Question: {questionCount} | Score: {score}
+                        </p>
+                    )}
+                </div>
+
+                <div className="bg-white/80 backdrop-blur-sm p-6 sm:p-8 rounded-xl shadow-lg w-full max-w-xl flex flex-col items-center space-y-6 sm:space-y-8 z-10 border border-blue-200">
+                    {!quizStarted ? (
+                        <>
+                            <p className="text-base sm:text-lg text-gray-800 mb-4 text-center">
+                                Identify the second chord in a two-chord progression.
+                                The first chord will always be a Major Triad.
+                            </p>
                             <button
-                                onClick={startGlobalAudio}
-                                className="mt-4 px-6 py-3 bg-blue-500 text-white rounded-lg font-bold shadow hover:bg-blue-600 transition-all duration-200 w-full sm:w-auto justify-center"
+                                onClick={startQuiz}
+                                className="px-6 py-3 sm:px-8 sm:py-4 bg-blue-600 text-white rounded-lg font-bold text-lg sm:text-xl shadow-md hover:bg-blue-700 transition-all duration-200 flex items-center gap-2 w-full sm:w-auto justify-center"
+                                disabled={!isSynthReady && !error}
                             >
-                                Click to Activate Audio
+                                <Play size={20} sm:size={24} /> Start Quiz
                             </button>
-                        )}
-                    </>
-                ) : (
-                    <>
-                        <button
-                            onClick={playChordProgression}
-                            className="px-6 py-3 sm:px-8 sm:py-4 bg-purple-600 text-white rounded-full font-bold text-xl sm:text-2xl shadow-lg hover:bg-purple-700 transition-all duration-200 flex items-center gap-3 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto justify-center"
-                            disabled={!isSynthReady || hasGuessed}
-                        >
-                            <Volume2 size={28} sm:size={32} /> Play Chords
-                        </button>
-
-                        {/* Feedback and Revealed Answer */}
-                        {feedbackMessage && (
-                            <p className={`text-lg sm:text-xl font-bold mt-4 ${feedbackMessage.includes('Correct') ? 'text-green-700' : (feedbackMessage.includes('Incorrect') ? 'text-red-700' : 'text-orange-700')}`}>
-                                {feedbackMessage}
-                            </p>
-                        )}
-                        {revealedAnswer && (
-                            <p className="text-base sm:text-lg text-gray-700">
-                                The correct answer was: <span className="font-semibold text-blue-800">{revealedAnswer}</span>
-                            </p>
-                        )}
-
-                        <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full mt-6">
-                            {chordTypes.map(chord => (
+                            {/* Fallback for audio activation */}
+                            {!isAudioGloballyReady && !isSynthReady && error && error.includes("suspended") && (
                                 <button
-                                    key={chord.name}
-                                    onClick={() => handleGuess(chord.name)}
-                                    className={`
-                                        py-3 px-2 sm:py-4 sm:px-4 rounded-lg text-base sm:text-lg font-semibold shadow-md transition-all duration-100 ease-out transform
-                                        ${hasGuessed ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600 text-white active:scale-98'}
-                                    `}
-                                    disabled={hasGuessed || !isSynthReady || !chordsPlayedForCurrentQuestion}
+                                    onClick={startGlobalAudio}
+                                    className="mt-4 px-6 py-3 bg-blue-500 text-white rounded-lg font-bold shadow hover:bg-blue-600 transition-all duration-200 w-full sm:w-auto justify-center"
                                 >
-                                    {chord.name}
+                                    Click to Activate Audio
                                 </button>
-                            ))}
-                        </div>
+                            )}
+                        </>
+                    ) : (
+                        <>
+                            <button
+                                onClick={playChordProgression}
+                                className="px-6 py-3 sm:px-8 sm:py-4 bg-purple-600 text-white rounded-full font-bold text-xl sm:text-2xl shadow-lg hover:bg-purple-700 transition-all duration-200 flex items-center gap-3 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto justify-center"
+                                disabled={!isSynthReady || hasGuessed}
+                            >
+                                <Volume2 size={28} sm:size={32} /> Play Chords
+                            </button>
 
-                        {/* Next Question and Reset Buttons */}
-                        {hasGuessed && (
-                            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-6 sm:mt-8 w-full justify-center">
-                                <button
-                                    onClick={generateNewQuestion}
-                                    className="px-5 py-2 sm:px-6 sm:py-3 bg-green-500 text-white rounded-lg font-bold text-sm sm:text-base shadow hover:bg-green-600 transition-all duration-200 flex items-center gap-2 justify-center"
-                                >
-                                    <CheckCircle2 size={18} sm:size={20} /> Next Question
-                                </button>
+                            {/* Feedback and Revealed Answer */}
+                            {feedbackMessage && (
+                                <p className={`text-lg sm:text-xl font-bold mt-4 ${feedbackMessage.includes('Correct') ? 'text-green-700' : (feedbackMessage.includes('Incorrect') ? 'text-red-700' : 'text-orange-700')}`}>
+                                    {feedbackMessage}
+                                </p>
+                            )}
+                            {revealedAnswer && (
+                                <p className="text-base sm:text-lg text-gray-700">
+                                    The correct answer was: <span className="font-semibold text-blue-800">{revealedAnswer}</span>
+                                </p>
+                            )}
+
+                            <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full mt-6">
+                                {chordTypes.map(chord => (
+                                    <button
+                                        key={chord.name}
+                                        onClick={() => handleGuess(chord.name)}
+                                        className={`
+                                            py-3 px-2 sm:py-4 sm:px-4 rounded-lg text-base sm:text-lg font-semibold shadow-md transition-all duration-100 ease-out transform
+                                            ${hasGuessed ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600 text-white active:scale-98'}
+                                        `}
+                                        disabled={hasGuessed || !isSynthReady || !chordsPlayedForCurrentQuestion}
+                                    >
+                                        {chord.name}
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* Next Question and Reset Buttons */}
+                            {hasGuessed && (
+                                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-6 sm:mt-8 w-full justify-center">
+                                    <button
+                                        onClick={generateNewQuestion}
+                                        className="px-5 py-2 sm:px-6 sm:py-3 bg-green-500 text-white rounded-lg font-bold text-sm sm:text-base shadow hover:bg-green-600 transition-all duration-200 flex items-center gap-2 justify-center"
+                                    >
+                                        <CheckCircle2 size={18} sm:size={20} /> Next Question
+                                    </button>
+                                    <button
+                                        onClick={resetQuiz}
+                                        className="px-5 py-2 sm:px-6 sm:py-3 bg-red-500 text-white rounded-lg font-bold text-sm sm:text-base shadow hover:bg-red-600 transition-all duration-200 flex items-center gap-2 justify-center"
+                                    >
+                                        <RotateCcw size={18} sm:size={20} /> Reset Quiz
+                                    </button>
+                                </div>
+                            )}
+                            {!hasGuessed && quizStarted && (
                                 <button
                                     onClick={resetQuiz}
-                                    className="px-5 py-2 sm:px-6 sm:py-3 bg-red-500 text-white rounded-lg font-bold text-sm sm:text-base shadow hover:bg-red-600 transition-all duration-200 flex items-center gap-2 justify-center"
+                                    className="mt-6 sm:mt-8 px-5 py-2 sm:px-6 sm:py-3 bg-red-500 text-white rounded-lg font-bold text-sm sm:text-base shadow hover:bg-red-600 transition-all duration-200 flex items-center gap-2 justify-center"
                                 >
                                     <RotateCcw size={18} sm:size={20} /> Reset Quiz
                                 </button>
-                            </div>
-                        )}
-                        {!hasGuessed && quizStarted && (
-                             <button
-                                onClick={resetQuiz}
-                                className="mt-6 sm:mt-8 px-5 py-2 sm:px-6 sm:py-3 bg-red-500 text-white rounded-lg font-bold text-sm sm:text-base shadow hover:bg-red-600 transition-all duration-200 flex items-center gap-2 justify-center"
-                            >
-                                <RotateCcw size={18} sm:size={20} /> Reset Quiz
-                            </button>
-                        )}
-                    </>
-                )}
+                            )}
+                        </>
+                    )}
+                </div>
             </div>
-        </div>
+        </>
     );
 };
 

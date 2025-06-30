@@ -1,6 +1,23 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import * as Tone from 'tone';
 import { Play, Pause, Repeat, Zap } from 'lucide-react'; // Icons for play/pause, repeat, and glitch
+import SEOHead from './SEOHead';
+
+
+// Define the tool object for SEO structured data
+const beatRepeatLooperTool = {
+    id: 'beat-repeat-looper',
+    name: 'Beat Repeater',
+    description: 'Capture and manipulate rhythmic fragments in real-time for creative effects.',
+    path: '/beat-repeat-looper',
+    categories: [
+        'Beat Slicing',
+        'Loop Effects',
+        'Rhythmic Processing',
+        'Music Production',
+        'Stutter'
+    ]
+};
 
 // Define the path to a drum loop sample. This is a placeholder.
 // You'll need to provide an actual drum loop MP3 file at this path for sound.
@@ -405,135 +422,144 @@ const BeatRepeatLooperContent = () => {
     ];
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #f0f8ff 0%, #e6f2ff 50%, #d9e6ff 100%)',
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Floating Icons Background */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+        <>
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="beat-repeat-looper" 
+                tool={beatRepeatLooperTool}
+                customData={{}}
+            />
+
+            <div
+                className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
                 style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%239ca3af' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
+                    background: 'linear-gradient(135deg, #f0f8ff 0%, #e6f2ff 50%, #d9e6ff 100%)',
+                    fontFamily: 'Inter, sans-serif',
                 }}
-            ></div>
+            >
+                {/* Floating Icons Background */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%239ca3af' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
+                    }}
+                ></div>
 
-            <div className="text-center mb-6 md:mb-10 z-10 w-full px-2">
-                <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
-                    <Repeat size={36} className="text-blue-700 md:mb-0 mb-2" />
-                    <h1 className="text-3xl md:text-5xl font-extrabold text-blue-900 drop-shadow-lg">
-                        Beat Repeat / Glitch Looper
-                    </h1>
-                </div>
-                {!isAudioReady && !isAudioLoading && (
-                    <p className="text-blue-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
-                        Click "Play Drum Loop" to activate audio.
-                    </p>
-                )}
-                {isAudioLoading && (
-                    <p className="text-blue-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
-                        Loading drum loop... Please wait.
-                    </p>
-                )}
-            </div>
-
-            <div className="bg-white/80 backdrop-blur-sm p-4 md:p-8 rounded-xl shadow-lg w-full max-w-4xl flex flex-col items-center space-y-4 md:space-y-8 z-10 border border-blue-200 mx-2">
-
-                {/* Play/Pause and Reset Buttons */}
-                <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 mb-4 md:mb-6 w-full">
-                    <button
-                        type="button"
-                        onClick={togglePlay}
-                        className={`px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full
-                                    ${isPlaying
-                                    ? 'bg-blue-700 hover:bg-blue-800 text-white'
-                                    : 'bg-blue-500 hover:bg-blue-600 text-white'}
-                                    ${(!isAudioReady && !isPlaying) || isAudioLoading ? 'opacity-50 cursor-not-allowed' : ''}
-                            `}
-                        disabled={isAudioLoading}
-                    >
-                        {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-                        {isPlaying ? "Stop Loop" : "Play Loop"}
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={resetParameters}
-                        className={`px-4 py-3 md:px-6 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full md:w-auto
-                                bg-gray-500 hover:bg-gray-600 text-white
-                                ${isAudioLoading ? 'opacity-50 cursor-not-allowed' : ''}
-                        `}
-                        disabled={isAudioLoading}
-                    >
-                        <Zap size={18} /> Reset All
-                    </button>
+                <div className="text-center mb-6 md:mb-10 z-10 w-full px-2">
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
+                        <Repeat size={36} className="text-blue-700 md:mb-0 mb-2" />
+                        <h1 className="text-3xl md:text-5xl font-extrabold text-blue-900 drop-shadow-lg">
+                            Beat Repeat / Glitch Looper
+                        </h1>
+                    </div>
+                    {!isAudioReady && !isAudioLoading && (
+                        <p className="text-blue-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
+                            Click "Play Drum Loop" to activate audio.
+                        </p>
+                    )}
+                    {isAudioLoading && (
+                        <p className="text-blue-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
+                            Loading drum loop... Please wait.
+                        </p>
+                    )}
                 </div>
 
-                {/* Beat Repeat Controls */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full mt-4 md:mt-8">
-                    {/* Loop Interval */}
-                    <div className="flex flex-col items-center">
-                        <label className="text-gray-800 font-medium mb-1 md:mb-2 text-sm md:text-base">
-                            Repeat Interval: {intervalOptions.find(opt => opt.value === loopInterval)?.label}
-                        </label>
-                        <select
-                            value={loopInterval}
-                            onChange={(e) => setLoopInterval(e.target.value)}
-                            className="w-full p-2 text-sm md:text-base rounded-md bg-blue-100 text-gray-800 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            disabled={!isAudioReady}
+                <div className="bg-white/80 backdrop-blur-sm p-4 md:p-8 rounded-xl shadow-lg w-full max-w-4xl flex flex-col items-center space-y-4 md:space-y-8 z-10 border border-blue-200 mx-2">
+
+                    {/* Play/Pause and Reset Buttons */}
+                    <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 mb-4 md:mb-6 w-full">
+                        <button
+                            type="button"
+                            onClick={togglePlay}
+                            className={`px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full
+                                        ${isPlaying
+                                        ? 'bg-blue-700 hover:bg-blue-800 text-white'
+                                        : 'bg-blue-500 hover:bg-blue-600 text-white'}
+                                        ${(!isAudioReady && !isPlaying) || isAudioLoading ? 'opacity-50 cursor-not-allowed' : ''}
+                                `}
+                            disabled={isAudioLoading}
                         >
-                            {intervalOptions.map(option => (
-                                <option key={option.value} value={option.value}>{option.label}</option>
-                            ))}
-                        </select>
-                        <p className="text-gray-700 text-xs md:text-sm mt-1 italic text-center">{getExplanation('loopInterval')}</p>
+                            {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+                            {isPlaying ? "Stop Loop" : "Play Loop"}
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={resetParameters}
+                            className={`px-4 py-3 md:px-6 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full md:w-auto
+                                    bg-gray-500 hover:bg-gray-600 text-white
+                                    ${isAudioLoading ? 'opacity-50 cursor-not-allowed' : ''}
+                            `}
+                            disabled={isAudioLoading}
+                        >
+                            <Zap size={18} /> Reset All
+                        </button>
                     </div>
 
-                    {/* Slice Duration */}
-                    <ParameterSlider
-                        label="Slice Duration" value={sliceDuration} setter={setSliceDuration}
-                        min="0.01" max="1.0" step="0.01" unit=" s"
-                        explanation={getExplanation('sliceDuration')}
-                        isAudioReady={isAudioReady}
-                    />
+                    {/* Beat Repeat Controls */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full mt-4 md:mt-8">
+                        {/* Loop Interval */}
+                        <div className="flex flex-col items-center">
+                            <label className="text-gray-800 font-medium mb-1 md:mb-2 text-sm md:text-base">
+                                Repeat Interval: {intervalOptions.find(opt => opt.value === loopInterval)?.label}
+                            </label>
+                            <select
+                                value={loopInterval}
+                                onChange={(e) => setLoopInterval(e.target.value)}
+                                className="w-full p-2 text-sm md:text-base rounded-md bg-blue-100 text-gray-800 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                disabled={!isAudioReady}
+                            >
+                                {intervalOptions.map(option => (
+                                    <option key={option.value} value={option.value}>{option.label}</option>
+                                ))}
+                            </select>
+                            <p className="text-gray-700 text-xs md:text-sm mt-1 italic text-center">{getExplanation('loopInterval')}</p>
+                        </div>
 
-                    {/* Start Offset */}
-                    <ParameterSlider
-                        label="Start Offset" value={startOffset} setter={setStartOffset}
-                        min="0.0" max="1.0" step="0.01"
-                        explanation={getExplanation('startOffset')}
-                        isAudioReady={isAudioReady}
-                    />
+                        {/* Slice Duration */}
+                        <ParameterSlider
+                            label="Slice Duration" value={sliceDuration} setter={setSliceDuration}
+                            min="0.01" max="1.0" step="0.01" unit=" s"
+                            explanation={getExplanation('sliceDuration')}
+                            isAudioReady={isAudioReady}
+                        />
 
-                    {/* Pitch Shift */}
-                    <ParameterSlider
-                        label="Pitch Shift" value={pitchShiftValue} setter={setPitchShiftValue}
-                        min="-24" max="24" step="1" unit=" st"
-                        explanation={getExplanation('pitchShift')}
-                        isAudioReady={isAudioReady}
-                    />
+                        {/* Start Offset */}
+                        <ParameterSlider
+                            label="Start Offset" value={startOffset} setter={setStartOffset}
+                            min="0.0" max="1.0" step="0.01"
+                            explanation={getExplanation('startOffset')}
+                            isAudioReady={isAudioReady}
+                        />
 
-                    {/* Filter Frequency */}
-                    <ParameterSlider
-                        label="Filter Cutoff" value={filterFreq} setter={setFilterFreq}
-                        min="20" max="20000" step="10" unit=" Hz"
-                        explanation={getExplanation('filterFreq')}
-                        isAudioReady={isAudioReady}
-                    />
+                        {/* Pitch Shift */}
+                        <ParameterSlider
+                            label="Pitch Shift" value={pitchShiftValue} setter={setPitchShiftValue}
+                            min="-24" max="24" step="1" unit=" st"
+                            explanation={getExplanation('pitchShift')}
+                            isAudioReady={isAudioReady}
+                        />
 
-                    {/* Filter Q */}
-                    <ParameterSlider
-                        label="Filter Q" value={filterQ} setter={setFilterQ}
-                        min="0.1" max="20" step="0.1"
-                        explanation={getExplanation('filterQ')}
-                        isAudioReady={isAudioReady}
-                    />
+                        {/* Filter Frequency */}
+                        <ParameterSlider
+                            label="Filter Cutoff" value={filterFreq} setter={setFilterFreq}
+                            min="20" max="20000" step="10" unit=" Hz"
+                            explanation={getExplanation('filterFreq')}
+                            isAudioReady={isAudioReady}
+                        />
+
+                        {/* Filter Q */}
+                        <ParameterSlider
+                            label="Filter Q" value={filterQ} setter={setFilterQ}
+                            min="0.1" max="20" step="0.1"
+                            explanation={getExplanation('filterQ')}
+                            isAudioReady={isAudioReady}
+                        />
+                    </div>
+
                 </div>
-
             </div>
-        </div>
+        </>
     );
 };
 

@@ -1,6 +1,22 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import * as Tone from 'tone';
 import { Play, Pause, Waves } from 'lucide-react';
+import SEOHead from './SEOHead';
+
+// Define the tool object for SEO structured data
+const reverbExplorerTool = {
+    id: 'reverb-explorer',
+    name: 'Reverb Explorer',
+    description: 'Interactive spatial audio training tool to explore different reverb types and settings.',
+    path: '/reverb-explorer',
+    categories: [
+        'Reverb Effects',
+        'Spatial Audio',
+        'Sound Design',
+        'Audio Processing',
+        'Mixing'
+    ]
+};
 
 // Define the path to your C3 piano sample
 const SAMPLE_C3_MP3_PATH = '/piano_samples/C3.mp3'; // Ensure this file exists in your public/piano_samples folder
@@ -239,102 +255,111 @@ const ReverbExplorerContent = () => { // Renamed to ReverbExplorerContent
     };
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center p-8 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #e0f2fe 0%, #bfd8f5 50%, #a4c4e0 100%)', // Light blue gradient
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Floating Icons Background */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+        <>
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="reverb-explorer" 
+                tool={reverbExplorerTool}
+                customData={{}}
+            />
+
+            <div
+                className="min-h-screen flex flex-col items-center p-8 relative overflow-hidden w-full"
                 style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ccircle cx='25' cy='25' r='3' fill='%2364748b'/%3E%3Ccircle cx='75' cy='25' r='3' fill='%2364748b'/%3E%3Ccircle cx='50' cy='50' r='3' fill='%2364748b'/%3E%3Ccircle cx='25' cy='75' r='3' fill='%2364748b'/%3E%3Ccircle cx='75' cy='75' r='3' fill='%2364748b'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
+                    background: 'linear-gradient(135deg, #e0f2fe 0%, #bfd8f5 50%, #a4c4e0 100%)', // Light blue gradient
+                    fontFamily: 'Inter, sans-serif',
                 }}
-            ></div>
+            >
+                {/* Floating Icons Background */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ccircle cx='25' cy='25' r='3' fill='%2364748b'/%3E%3Ccircle cx='75' cy='25' r='3' fill='%2364748b'/%3E%3Ccircle cx='50' cy='50' r='3' fill='%2364748b'/%3E%3Ccircle cx='25' cy='75' r='3' fill='%2364748b'/%3E%3Ccircle cx='75' cy='75' r='3' fill='%2364748b'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
+                    }}
+                ></div>
 
-            <div className="text-center mb-10 z-10">
-                <div className="flex items-center justify-center gap-4 mb-4">
-                    <Waves size={48} className="text-blue-700" />
-                    <h1 className="text-5xl font-extrabold text-blue-900 drop-shadow-lg">Reverb Explorer</h1>
+                <div className="text-center mb-10 z-10">
+                    <div className="flex items-center justify-center gap-4 mb-4">
+                        <Waves size={48} className="text-blue-700" />
+                        <h1 className="text-5xl font-extrabold text-blue-900 drop-shadow-lg">Reverb Explorer</h1>
+                    </div>
+                    {!isAudioReady && (
+                        <p className="text-blue-700 text-sm mt-4 animate-pulse">
+                            Click "Play C3 Note" to activate audio and begin.
+                        </p>
+                    )}
                 </div>
-                {!isAudioReady && (
-                    <p className="text-blue-700 text-sm mt-4 animate-pulse">
-                        Click "Play C3 Note" to activate audio and begin.
-                    </p>
-                )}
-            </div>
 
-            <div className="bg-white/80 backdrop-blur-sm p-8 rounded-xl shadow-lg w-full max-w-4xl flex flex-col items-center space-y-8 z-10 border border-blue-200">
+                <div className="bg-white/80 backdrop-blur-sm p-8 rounded-xl shadow-lg w-full max-w-4xl flex flex-col items-center space-y-8 z-10 border border-blue-200">
 
-                {/* Play/Pause Button */}
-                <button
-                    type="button"
-                    onClick={togglePlay}
-                    className={`px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3 transition-all duration-300
-                                ${isPlaying
-                                ? 'bg-blue-700 hover:bg-blue-800 text-white'
-                                : 'bg-blue-500 hover:bg-blue-600 text-white'}
-                                ${!isAudioReady && !isPlaying ? 'opacity-50 cursor-not-allowed' : ''}
-                    `}
-                >
-                    {isPlaying ? <Pause size={24} /> : <Play size={24} />}
-                    {isPlaying ? "Stop C3 Note" : "Play C3 Note"} {/* Updated button text */}
-                </button>
+                    {/* Play/Pause Button */}
+                    <button
+                        type="button"
+                        onClick={togglePlay}
+                        className={`px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3 transition-all duration-300
+                                    ${isPlaying
+                                    ? 'bg-blue-700 hover:bg-blue-800 text-white'
+                                    : 'bg-blue-500 hover:bg-blue-600 text-white'}
+                                    ${!isAudioReady && !isPlaying ? 'opacity-50 cursor-not-allowed' : ''}
+                        `}
+                    >
+                        {isPlaying ? <Pause size={24} /> : <Play size={24} />}
+                        {isPlaying ? "Stop C3 Note" : "Play C3 Note"} {/* Updated button text */}
+                    </button>
 
-                {/* Reverb Parameter Sliders */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mt-8">
-                    {/* Decay Slider */}
-                    <div className="flex flex-col items-center">
-                        <label className="text-blue-800 font-medium mb-2">Decay: {decay.toFixed(2)} s</label>
-                        <input
-                            type="range"
-                            min="0.1"
-                            max="20"
-                            step="0.1"
-                            value={decay}
-                            onChange={(e) => setDecay(parseFloat(e.target.value))}
-                            className="w-full accent-blue-600 h-2 rounded-lg appearance-none cursor-pointer bg-blue-100"
-                            disabled={!isAudioReady}
-                        />
-                        <p className="text-blue-700 text-sm mt-1 italic">{getExplanation('decay')}</p>
-                    </div>
+                    {/* Reverb Parameter Sliders */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mt-8">
+                        {/* Decay Slider */}
+                        <div className="flex flex-col items-center">
+                            <label className="text-blue-800 font-medium mb-2">Decay: {decay.toFixed(2)} s</label>
+                            <input
+                                type="range"
+                                min="0.1"
+                                max="20"
+                                step="0.1"
+                                value={decay}
+                                onChange={(e) => setDecay(parseFloat(e.target.value))}
+                                className="w-full accent-blue-600 h-2 rounded-lg appearance-none cursor-pointer bg-blue-100"
+                                disabled={!isAudioReady}
+                            />
+                            <p className="text-blue-700 text-sm mt-1 italic">{getExplanation('decay')}</p>
+                        </div>
 
-                    {/* Pre-Delay Slider */}
-                    <div className="flex flex-col items-center">
-                        <label className="text-blue-800 font-medium mb-2">Pre-Delay: {preDelay.toFixed(3)} s</label>
-                        <input
-                            type="range"
-                            min="0"
-                            max="0.2"
-                            step="0.001"
-                            value={preDelay}
-                            onChange={(e) => setPreDelay(parseFloat(e.target.value))}
-                            className="w-full accent-blue-600 h-2 rounded-lg appearance-none cursor-pointer bg-blue-100"
-                            disabled={!isAudioReady}
-                        />
-                        <p className="text-blue-700 text-sm mt-1 italic">{getExplanation('preDelay')}</p>
-                    </div>
+                        {/* Pre-Delay Slider */}
+                        <div className="flex flex-col items-center">
+                            <label className="text-blue-800 font-medium mb-2">Pre-Delay: {preDelay.toFixed(3)} s</label>
+                            <input
+                                type="range"
+                                min="0"
+                                max="0.2"
+                                step="0.001"
+                                value={preDelay}
+                                onChange={(e) => setPreDelay(parseFloat(e.target.value))}
+                                className="w-full accent-blue-600 h-2 rounded-lg appearance-none cursor-pointer bg-blue-100"
+                                disabled={!isAudioReady}
+                            />
+                            <p className="text-blue-700 text-sm mt-1 italic">{getExplanation('preDelay')}</p>
+                        </div>
 
-                    {/* Wet/Dry Slider */}
-                    <div className="flex flex-col items-center">
-                        <label className="text-blue-800 font-medium mb-2">Wet/Dry: {wet.toFixed(2)}</label>
-                        <input
-                            type="range"
-                            min="0"
-                            max="1"
-                            step="0.01"
-                            value={wet}
-                            onChange={(e) => setWet(parseFloat(e.target.value))}
-                            className="w-full accent-blue-600 h-2 rounded-lg appearance-none cursor-pointer bg-blue-100"
-                            disabled={!isAudioReady}
-                        />
-                        <p className="text-blue-700 text-sm mt-1 italic">{getExplanation('wet')}</p>
+                        {/* Wet/Dry Slider */}
+                        <div className="flex flex-col items-center">
+                            <label className="text-blue-800 font-medium mb-2">Wet/Dry: {wet.toFixed(2)}</label>
+                            <input
+                                type="range"
+                                min="0"
+                                max="1"
+                                step="0.01"
+                                value={wet}
+                                onChange={(e) => setWet(parseFloat(e.target.value))}
+                                className="w-full accent-blue-600 h-2 rounded-lg appearance-none cursor-pointer bg-blue-100"
+                                disabled={!isAudioReady}
+                            />
+                            <p className="text-blue-700 text-sm mt-1 italic">{getExplanation('wet')}</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

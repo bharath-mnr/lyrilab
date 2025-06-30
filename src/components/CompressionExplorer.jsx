@@ -1,6 +1,22 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import * as Tone from 'tone';
 import { Play, Pause, SlidersHorizontal, BarChart2 } from 'lucide-react';
+import SEOHead from './SEOHead';
+
+// Define the tool object for SEO structured data
+const compressionExplorerTool = {
+    id: 'compression-explorer',
+    name: 'Compression Explorer',
+    description: 'Hands-on audio compression training with real-time controls and feedback.',
+    path: '/compression-explorer',
+    categories: [
+        'Audio Compression',
+        'Dynamic Range',
+        'Music Production',
+        'Sound Engineering',
+        'Mixing'
+    ]
+};
 
 // Define the path to your white noise MP3 file for compression testing
 const WHITE_NOISE_MP3_PATH = '/white-noise/white-noise.mp3';
@@ -489,155 +505,164 @@ const CompressionExplorerContent = () => {
     };
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center p-8 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #d4f7e5 0%, #b9e0d4 50%, #9bc9c9 100%)', // Greenish-blue gradient
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Floating Icons Background */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+        <>
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="compression-explorer" 
+                tool={compressionExplorerTool}
+                customData={{}}
+            />
+
+            <div
+                className="min-h-screen flex flex-col items-center p-8 relative overflow-hidden w-full"
                 style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ccircle cx='25' cy='25' r='3' fill='%236b7280'/%3E%3Ccircle cx='75' cy='25' r='3' fill='%236b7280'/%3E%3Ccircle cx='50' cy='50' r='3' fill='%236b7280'/%3E%3Ccircle cx='25' cy='75' r='3' fill='%236b7280'/%3E%3Ccircle cx='75' cy='75' r='3' fill='%236b7280'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
+                    background: 'linear-gradient(135deg, #d4f7e5 0%, #b9e0d4 50%, #9bc9c9 100%)', // Greenish-blue gradient
+                    fontFamily: 'Inter, sans-serif',
                 }}
-            ></div>
+            >
+                {/* Floating Icons Background */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ccircle cx='25' cy='25' r='3' fill='%236b7280'/%3E%3Ccircle cx='75' cy='25' r='3' fill='%236b7280'/%3E%3Ccircle cx='50' cy='50' r='3' fill='%236b7280'/%3E%3Ccircle cx='25' cy='75' r='3' fill='%236b7280'/%3E%3Ccircle cx='75' cy='75' r='3' fill='%236b7280'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
+                    }}
+                ></div>
 
-            <div className="text-center mb-10 z-10">
-                <div className="flex items-center justify-center gap-4 mb-4">
-                    <BarChart2 size={48} className="text-gray-700" />
-                    <h1 className="text-5xl font-extrabold text-gray-900 drop-shadow-lg">Compression Explorer</h1>
-                </div>
-                {!isAudioReady && (
-                    <p className="text-gray-700 text-sm mt-4 animate-pulse">
-                        Click "Play Audio Loop" to activate audio and begin.
-                    </p>
-                )}
-            </div>
-
-            <div className="bg-white/80 backdrop-blur-sm p-8 rounded-xl shadow-lg w-full max-w-4xl flex flex-col items-center space-y-8 z-10 border border-gray-200">
-
-                {/* Play/Pause Button */}
-                <button
-                    type="button"
-                    onClick={togglePlay}
-                    className={`px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3 transition-all duration-300
-                                ${isPlaying
-                                ? 'bg-blue-700 hover:bg-blue-800 text-white'
-                                : 'bg-blue-500 hover:bg-blue-600 text-white'}
-                                ${!isAudioReady && !isPlaying ? 'opacity-50 cursor-not-allowed' : ''}
-                    `}
-                >
-                    {isPlaying ? <Pause size={24} /> : <Play size={24} />}
-                    {isPlaying ? "Stop Audio Loop" : "Play Audio Loop"}
-                </button>
-
-                {/* Gain Reduction Visualizer */}
-                <div className="w-full flex justify-center">
-                    {isAudioReady && compressorParams && getWaveformData ? (
-                        <GainReductionVisualizer
-                            threshold={threshold}
-                            ratio={ratio}
-                            knee={knee}
-                            gainReduction={gainReduction}
-                            waveformDataAnalyser={getWaveformData}
-                            width={visualizerWidth}
-                            height={visualizerHeight}
-                            waveformScale={3} // Passed a default scale of 3 for more visibility
-                        />
-                    ) : (
-                        <div className="w-full bg-white/60 rounded-lg shadow-inner border border-gray-200 flex items-center justify-center"
-                            style={{ width: visualizerWidth, height: visualizerHeight }}>
-                            <p className="text-gray-500">Visualizer will appear after audio starts.</p>
-                        </div>
+                <div className="text-center mb-10 z-10">
+                    <div className="flex items-center justify-center gap-4 mb-4">
+                        <BarChart2 size={48} className="text-gray-700" />
+                        <h1 className="text-5xl font-extrabold text-gray-900 drop-shadow-lg">Compression Explorer</h1>
+                    </div>
+                    {!isAudioReady && (
+                        <p className="text-gray-700 text-sm mt-4 animate-pulse">
+                            Click "Play Audio Loop" to activate audio and begin.
+                        </p>
                     )}
                 </div>
 
-                {/* Compressor Parameter Sliders */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full mt-8">
-                    {/* Threshold Slider */}
-                    <div className="flex flex-col items-center">
-                        <label className="text-gray-800 font-medium mb-2">Threshold: {threshold.toFixed(1)} dB</label>
-                        <input
-                            type="range"
-                            min="-60"
-                            max="0"
-                            step="1"
-                            value={threshold}
-                            onChange={(e) => setThreshold(parseFloat(e.target.value))}
-                            className="w-full accent-blue-600 h-2 rounded-lg appearance-none cursor-pointer bg-blue-100"
-                            disabled={!isAudioReady}
-                        />
-                        <p className="text-gray-700 text-sm mt-1 italic">{getExplanation('threshold')}</p>
+                <div className="bg-white/80 backdrop-blur-sm p-8 rounded-xl shadow-lg w-full max-w-4xl flex flex-col items-center space-y-8 z-10 border border-gray-200">
+
+                    {/* Play/Pause Button */}
+                    <button
+                        type="button"
+                        onClick={togglePlay}
+                        className={`px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3 transition-all duration-300
+                                    ${isPlaying
+                                    ? 'bg-blue-700 hover:bg-blue-800 text-white'
+                                    : 'bg-blue-500 hover:bg-blue-600 text-white'}
+                                    ${!isAudioReady && !isPlaying ? 'opacity-50 cursor-not-allowed' : ''}
+                        `}
+                    >
+                        {isPlaying ? <Pause size={24} /> : <Play size={24} />}
+                        {isPlaying ? "Stop Audio Loop" : "Play Audio Loop"}
+                    </button>
+
+                    {/* Gain Reduction Visualizer */}
+                    <div className="w-full flex justify-center">
+                        {isAudioReady && compressorParams && getWaveformData ? (
+                            <GainReductionVisualizer
+                                threshold={threshold}
+                                ratio={ratio}
+                                knee={knee}
+                                gainReduction={gainReduction}
+                                waveformDataAnalyser={getWaveformData}
+                                width={visualizerWidth}
+                                height={visualizerHeight}
+                                waveformScale={3} // Passed a default scale of 3 for more visibility
+                            />
+                        ) : (
+                            <div className="w-full bg-white/60 rounded-lg shadow-inner border border-gray-200 flex items-center justify-center"
+                                style={{ width: visualizerWidth, height: visualizerHeight }}>
+                                <p className="text-gray-500">Visualizer will appear after audio starts.</p>
+                            </div>
+                        )}
                     </div>
 
-                    {/* Ratio Slider */}
-                    <div className="flex flex-col items-center">
-                        <label className="text-gray-800 font-medium mb-2">Ratio: {ratio.toFixed(1)}:1</label>
-                        <input
-                            type="range"
-                            min="1"
-                            max="20"
-                            step="0.5"
-                            value={ratio}
-                            onChange={(e) => setRatio(parseFloat(e.target.value))}
-                            className="w-full accent-blue-600 h-2 rounded-lg appearance-none cursor-pointer bg-blue-100"
-                            disabled={!isAudioReady}
-                        />
-                        <p className="text-gray-700 text-sm mt-1 italic">{getExplanation('ratio')}</p>
-                    </div>
+                    {/* Compressor Parameter Sliders */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full mt-8">
+                        {/* Threshold Slider */}
+                        <div className="flex flex-col items-center">
+                            <label className="text-gray-800 font-medium mb-2">Threshold: {threshold.toFixed(1)} dB</label>
+                            <input
+                                type="range"
+                                min="-60"
+                                max="0"
+                                step="1"
+                                value={threshold}
+                                onChange={(e) => setThreshold(parseFloat(e.target.value))}
+                                className="w-full accent-blue-600 h-2 rounded-lg appearance-none cursor-pointer bg-blue-100"
+                                disabled={!isAudioReady}
+                            />
+                            <p className="text-gray-700 text-sm mt-1 italic">{getExplanation('threshold')}</p>
+                        </div>
 
-                    {/* Knee Slider */}
-                    <div className="flex flex-col items-center">
-                        <label className="text-gray-800 font-medium mb-2">Knee: {knee.toFixed(1)} dB</label>
-                        <input
-                            type="range"
-                            min="0"
-                            max="40"
-                            step="1"
-                            value={knee}
-                            onChange={(e) => setKnee(parseFloat(e.target.value))}
-                            className="w-full accent-blue-600 h-2 rounded-lg appearance-none cursor-pointer bg-blue-100"
-                            disabled={!isAudioReady}
-                        />
-                        <p className="text-gray-700 text-sm mt-1 italic">{getExplanation('knee')}</p>
-                    </div>
+                        {/* Ratio Slider */}
+                        <div className="flex flex-col items-center">
+                            <label className="text-gray-800 font-medium mb-2">Ratio: {ratio.toFixed(1)}:1</label>
+                            <input
+                                type="range"
+                                min="1"
+                                max="20"
+                                step="0.5"
+                                value={ratio}
+                                onChange={(e) => setRatio(parseFloat(e.target.value))}
+                                className="w-full accent-blue-600 h-2 rounded-lg appearance-none cursor-pointer bg-blue-100"
+                                disabled={!isAudioReady}
+                            />
+                            <p className="text-gray-700 text-sm mt-1 italic">{getExplanation('ratio')}</p>
+                        </div>
 
-                    {/* Attack Slider */}
-                    <div className="flex flex-col items-center">
-                        <label className="text-gray-800 font-medium mb-2">Attack: {attack.toFixed(3)} s</label>
-                        <input
-                            type="range"
-                            min="0.001"
-                            max="1"
-                            step="0.001"
-                            value={attack}
-                            onChange={(e) => setAttack(parseFloat(e.target.value))}
-                            className="w-full accent-blue-600 h-2 rounded-lg appearance-none cursor-pointer bg-blue-100"
-                            disabled={!isAudioReady}
-                        />
-                        <p className="text-gray-700 text-sm mt-1 italic">{getExplanation('attack')}</p>
-                    </div>
+                        {/* Knee Slider */}
+                        <div className="flex flex-col items-center">
+                            <label className="text-gray-800 font-medium mb-2">Knee: {knee.toFixed(1)} dB</label>
+                            <input
+                                type="range"
+                                min="0"
+                                max="40"
+                                step="1"
+                                value={knee}
+                                onChange={(e) => setKnee(parseFloat(e.target.value))}
+                                className="w-full accent-blue-600 h-2 rounded-lg appearance-none cursor-pointer bg-blue-100"
+                                disabled={!isAudioReady}
+                            />
+                            <p className="text-gray-700 text-sm mt-1 italic">{getExplanation('knee')}</p>
+                        </div>
 
-                    {/* Release Slider */}
-                    <div className="flex flex-col items-center">
-                        <label className="text-gray-800 font-medium mb-2">Release: {release.toFixed(3)} s</label>
-                        <input
-                            type="range"
-                            min="0.01"
-                            max="1"
-                            step="0.01"
-                            value={release}
-                            onChange={(e) => setRelease(parseFloat(e.target.value))}
-                            className="w-full accent-blue-600 h-2 rounded-lg appearance-none cursor-pointer bg-blue-100"
-                            disabled={!isAudioReady}
-                        />
-                        <p className="text-gray-700 text-sm mt-1 italic">{getExplanation('release')}</p>
+                        {/* Attack Slider */}
+                        <div className="flex flex-col items-center">
+                            <label className="text-gray-800 font-medium mb-2">Attack: {attack.toFixed(3)} s</label>
+                            <input
+                                type="range"
+                                min="0.001"
+                                max="1"
+                                step="0.001"
+                                value={attack}
+                                onChange={(e) => setAttack(parseFloat(e.target.value))}
+                                className="w-full accent-blue-600 h-2 rounded-lg appearance-none cursor-pointer bg-blue-100"
+                                disabled={!isAudioReady}
+                            />
+                            <p className="text-gray-700 text-sm mt-1 italic">{getExplanation('attack')}</p>
+                        </div>
+
+                        {/* Release Slider */}
+                        <div className="flex flex-col items-center">
+                            <label className="text-gray-800 font-medium mb-2">Release: {release.toFixed(3)} s</label>
+                            <input
+                                type="range"
+                                min="0.01"
+                                max="1"
+                                step="0.01"
+                                value={release}
+                                onChange={(e) => setRelease(parseFloat(e.target.value))}
+                                className="w-full accent-blue-600 h-2 rounded-lg appearance-none cursor-pointer bg-blue-100"
+                                disabled={!isAudioReady}
+                            />
+                            <p className="text-gray-700 text-sm mt-1 italic">{getExplanation('release')}</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

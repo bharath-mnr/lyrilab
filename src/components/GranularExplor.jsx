@@ -1,6 +1,22 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import * as Tone from 'tone';
 import { Play, Pause, Disc3 } from 'lucide-react'; // Disc3 icon for Granular effect
+import SEOHead from './SEOHead';
+
+// Define the tool object for SEO structured data
+const granularExplorerTool = {
+    id: 'granular-explorer',
+    name: 'Granular Synthesis',
+    description: 'Manipulate sound at the granular level for unique textures and effects.',
+    path: '/granular-explorer',
+    categories: [
+        'Granular Synthesis',
+        'Advanced Sound Design',
+        'Microsound',
+        'Experimental',
+        'Texture'
+    ]
+};
 
 // Define the path to your C4 piano sample.
 const C4_PIANO_MP3_PATH = '/piano_samples/C4.mp3';
@@ -410,106 +426,115 @@ const GranularExplorerContent = () => {
     };
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center p-8 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #f0e6f7 0%, #d4c9f0 50%, #c1b3e4 100%)', // Light purple gradient
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Floating Icons Background */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+        <>
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="granular-explorer" 
+                tool={granularExplorerTool}
+                customData={{}}
+            />
+
+            <div
+                className="min-h-screen flex flex-col items-center p-8 relative overflow-hidden w-full"
                 style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%236b21a8' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
+                    background: 'linear-gradient(135deg, #f0e6f7 0%, #d4c9f0 50%, #c1b3e4 100%)', // Light purple gradient
+                    fontFamily: 'Inter, sans-serif',
                 }}
-            ></div>
+            >
+                {/* Floating Icons Background */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%236b21a8' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
+                    }}
+                ></div>
 
-            <div className="text-center mb-10 z-10">
-                <div className="flex items-center justify-center gap-4 mb-4">
-                    <Disc3 size={48} className="text-purple-700" />
-                    <h1 className="text-5xl font-extrabold text-purple-900 drop-shadow-lg">Granular Explorer</h1>
-                </div>
-                {!isAudioReady && !isAudioLoading && (
-                    <p className="text-purple-700 text-sm mt-4 animate-pulse">
-                        Click "Play Piano Loop" to activate audio and begin.
-                    </p>
-                )}
-                 {isAudioLoading && (
-                    <p className="text-purple-700 text-sm mt-4 animate-pulse">
-                        Loading audio... Please wait.
-                    </p>
-                )}
-            </div>
-
-            <div className="bg-white/80 backdrop-blur-sm p-8 rounded-xl shadow-lg w-full max-w-3xl flex flex-col items-center space-y-8 z-10 border border-purple-200">
-
-                {/* Play/Pause Button */}
-                <button
-                    type="button"
-                    onClick={togglePlay}
-                    className={`px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3 transition-all duration-300
-                                ${isPlaying
-                                ? 'bg-purple-700 hover:bg-purple-800 text-white'
-                                : 'bg-purple-500 hover:bg-purple-600 text-white'}
-                                ${(!isAudioReady && !isPlaying) || isAudioLoading ? 'opacity-50 cursor-not-allowed' : ''}
-                    `}
-                    disabled={isAudioLoading} // Disable button while audio is loading
-                >
-                    {isPlaying ? <Pause size={24} /> : <Play size={24} />}
-                    {isPlaying ? "Stop Piano Loop" : "Play Piano Loop"}
-                </button>
-
-                {/* Waveform Visualizer */}
-                <div className="w-full flex justify-center mt-8">
-                    {isAudioReady && getWaveformData ? (
-                        <WaveformVisualizer
-                            analyser={getWaveformData}
-                            width={visualizerWidth}
-                            height={visualizerHeight}
-                            scale={1.5} // Adjust scale for 'zoom' effect
-                        />
-                    ) : (
-                        <div className="w-full bg-white/60 rounded-lg shadow-inner border border-purple-200 flex items-center justify-center"
-                            style={{ width: visualizerWidth, height: visualizerHeight }}>
-                            <p className="text-purple-500">Waveform Visualizer will appear after audio starts.</p>
-                        </div>
+                <div className="text-center mb-10 z-10">
+                    <div className="flex items-center justify-center gap-4 mb-4">
+                        <Disc3 size={48} className="text-purple-700" />
+                        <h1 className="text-5xl font-extrabold text-purple-900 drop-shadow-lg">Granular Explorer</h1>
+                    </div>
+                    {!isAudioReady && !isAudioLoading && (
+                        <p className="text-purple-700 text-sm mt-4 animate-pulse">
+                            Click "Play Piano Loop" to activate audio and begin.
+                        </p>
+                    )}
+                    {isAudioLoading && (
+                        <p className="text-purple-700 text-sm mt-4 animate-pulse">
+                            Loading audio... Please wait.
+                        </p>
                     )}
                 </div>
 
-                {/* Granular Controls */}
-                <EffectSection
-                    title="Granular"
-                    icon={<Disc3 size={28} className="text-purple-600" />}
-                    isAudioReady={isAudioReady}
-                >
-                    <ParameterSlider
-                        label="Grain Size" value={grainSize} setter={setGrainSize}
-                        min="0.01" max="0.5" step="0.01" unit=" s"
-                        explanation={getExplanation('grainSize')}
+                <div className="bg-white/80 backdrop-blur-sm p-8 rounded-xl shadow-lg w-full max-w-3xl flex flex-col items-center space-y-8 z-10 border border-purple-200">
+
+                    {/* Play/Pause Button */}
+                    <button
+                        type="button"
+                        onClick={togglePlay}
+                        className={`px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3 transition-all duration-300
+                                    ${isPlaying
+                                    ? 'bg-purple-700 hover:bg-purple-800 text-white'
+                                    : 'bg-purple-500 hover:bg-purple-600 text-white'}
+                                    ${(!isAudioReady && !isPlaying) || isAudioLoading ? 'opacity-50 cursor-not-allowed' : ''}
+                        `}
+                        disabled={isAudioLoading} // Disable button while audio is loading
+                    >
+                        {isPlaying ? <Pause size={24} /> : <Play size={24} />}
+                        {isPlaying ? "Stop Piano Loop" : "Play Piano Loop"}
+                    </button>
+
+                    {/* Waveform Visualizer */}
+                    <div className="w-full flex justify-center mt-8">
+                        {isAudioReady && getWaveformData ? (
+                            <WaveformVisualizer
+                                analyser={getWaveformData}
+                                width={visualizerWidth}
+                                height={visualizerHeight}
+                                scale={1.5} // Adjust scale for 'zoom' effect
+                            />
+                        ) : (
+                            <div className="w-full bg-white/60 rounded-lg shadow-inner border border-purple-200 flex items-center justify-center"
+                                style={{ width: visualizerWidth, height: visualizerHeight }}>
+                                <p className="text-purple-500">Waveform Visualizer will appear after audio starts.</p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Granular Controls */}
+                    <EffectSection
+                        title="Granular"
+                        icon={<Disc3 size={28} className="text-purple-600" />}
                         isAudioReady={isAudioReady}
-                    />
-                    <ParameterSlider
-                        label="Overlap" value={overlap} setter={setOverlap}
-                        min="0" max="1" step="0.01" unit=" s"
-                        explanation={getExplanation('overlap')}
-                        isAudioReady={isAudioReady}
-                    />
-                    <ParameterSlider
-                        label="Playback Rate" value={playbackRate} setter={setPlaybackRate}
-                        min="0.25" max="4" step="0.05"
-                        explanation={getExplanation('playbackRate')}
-                        isAudioReady={isAudioReady}
-                    />
-                    <ParameterSlider
-                        label="Detune" value={detune} setter={setDetune}
-                        min="-1200" max="1200" step="10" unit=" cents"
-                        explanation={getExplanation('detune')}
-                        isAudioReady={isAudioReady}
-                    />
-                </EffectSection>
+                    >
+                        <ParameterSlider
+                            label="Grain Size" value={grainSize} setter={setGrainSize}
+                            min="0.01" max="0.5" step="0.01" unit=" s"
+                            explanation={getExplanation('grainSize')}
+                            isAudioReady={isAudioReady}
+                        />
+                        <ParameterSlider
+                            label="Overlap" value={overlap} setter={setOverlap}
+                            min="0" max="1" step="0.01" unit=" s"
+                            explanation={getExplanation('overlap')}
+                            isAudioReady={isAudioReady}
+                        />
+                        <ParameterSlider
+                            label="Playback Rate" value={playbackRate} setter={setPlaybackRate}
+                            min="0.25" max="4" step="0.05"
+                            explanation={getExplanation('playbackRate')}
+                            isAudioReady={isAudioReady}
+                        />
+                        <ParameterSlider
+                            label="Detune" value={detune} setter={setDetune}
+                            min="-1200" max="1200" step="10" unit=" cents"
+                            explanation={getExplanation('detune')}
+                            isAudioReady={isAudioReady}
+                        />
+                    </EffectSection>
+                </div>
             </div>
-        </div>
+        </>
     );
 };
 

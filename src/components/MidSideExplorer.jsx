@@ -1,6 +1,23 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext, useMemo } from 'react';
 import * as Tone from 'tone';
 import { Play, Pause, Split, Merge } from 'lucide-react'; // Icons for Mid-Side
+import SEOHead from './SEOHead';
+
+// Define the tool object for SEO structured data
+const midSideExplorerTool = {
+    id: 'mid-side-explorer',
+    name: 'Mid/Side Processing',
+    description: 'Master mid/side processing techniques for advanced stereo manipulation.',
+    path: '/mid-side-explorer',
+    categories: [
+        'Stereo Processing',
+        'Advanced Mixing',
+        'Mastering',
+        'Audio Processing',
+        'MS Processing'
+    ]
+};
+
 
 // Define the path to your white noise MP3 file.
 // For a true mid-side effect, a stereo source is recommended.
@@ -424,72 +441,81 @@ const MidSideExplorerContent = () => {
     const controllerHeight = 300;
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center p-8 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #d4e7f7 0%, #b9d8e0 50%, #9cc9c9 100%)', // Light blue/cyan gradient
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Floating Icons Background */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+        <>
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="mid-side-explorer" 
+                tool={midSideExplorerTool}
+                customData={{}}
+            />
+
+            <div
+                className="min-h-screen flex flex-col items-center p-8 relative overflow-hidden w-full"
                 style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%2364748b' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
+                    background: 'linear-gradient(135deg, #d4e7f7 0%, #b9d8e0 50%, #9cc9c9 100%)', // Light blue/cyan gradient
+                    fontFamily: 'Inter, sans-serif',
                 }}
-            ></div>
+            >
+                {/* Floating Icons Background */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%2364748b' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
+                    }}
+                ></div>
 
-            <div className="text-center mb-10 z-10">
-                <div className="flex items-center justify-center gap-4 mb-4">
-                    <Split size={48} className="text-teal-700" />
-                    <Merge size={48} className="text-teal-700" />
-                    <h1 className="text-5xl font-extrabold text-teal-900 drop-shadow-lg">Mid-Side Explorer</h1>
-                </div>
-                {!isAudioReady && (
-                    <p className="text-teal-700 text-sm mt-4 animate-pulse">
-                        Click "Play Audio" to activate audio and begin.
+                <div className="text-center mb-10 z-10">
+                    <div className="flex items-center justify-center gap-4 mb-4">
+                        <Split size={48} className="text-teal-700" />
+                        <Merge size={48} className="text-teal-700" />
+                        <h1 className="text-5xl font-extrabold text-teal-900 drop-shadow-lg">Mid-Side Explorer</h1>
+                    </div>
+                    {!isAudioReady && (
+                        <p className="text-teal-700 text-sm mt-4 animate-pulse">
+                            Click "Play Audio" to activate audio and begin.
+                        </p>
+                    )}
+                    <p className="text-teal-800 text-sm mt-2">
+                        Note: For a strong effect, use a stereo audio source. This explorer uses mono white noise, so side processing will have minimal effect.
                     </p>
-                )}
-                <p className="text-teal-800 text-sm mt-2">
-                    Note: For a strong effect, use a stereo audio source. This explorer uses mono white noise, so side processing will have minimal effect.
-                </p>
-            </div>
+                </div>
 
-            <div className="bg-white/80 backdrop-blur-sm p-8 rounded-xl shadow-lg w-full max-w-2xl flex flex-col items-center space-y-8 z-10 border border-teal-200">
+                <div className="bg-white/80 backdrop-blur-sm p-8 rounded-xl shadow-lg w-full max-w-2xl flex flex-col items-center space-y-8 z-10 border border-teal-200">
 
-                {/* Play/Pause Button */}
-                <button
-                    type="button"
-                    onClick={togglePlay}
-                    className={`px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3 transition-all duration-300
-                                ${isPlaying
-                                ? 'bg-teal-700 hover:bg-teal-800 text-white'
-                                : 'bg-teal-500 hover:bg-teal-600 text-white'}
-                                ${!isAudioReady && !isPlaying ? 'opacity-50 cursor-not-allowed' : ''}
-                    `}
-                >
-                    {isPlaying ? <Pause size={24} /> : <Play size={24} />}
-                    {isPlaying ? "Stop Audio" : "Play Audio"}
-                </button>
+                    {/* Play/Pause Button */}
+                    <button
+                        type="button"
+                        onClick={togglePlay}
+                        className={`px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3 transition-all duration-300
+                                    ${isPlaying
+                                    ? 'bg-teal-700 hover:bg-teal-800 text-white'
+                                    : 'bg-teal-500 hover:bg-teal-600 text-white'}
+                                    ${!isAudioReady && !isPlaying ? 'opacity-50 cursor-not-allowed' : ''}
+                        `}
+                    >
+                        {isPlaying ? <Pause size={24} /> : <Play size={24} />}
+                        {isPlaying ? "Stop Audio" : "Play Audio"}
+                    </button>
 
-                {/* Mid-Side X-Y Controller */}
-                <div className="flex flex-col items-center gap-4 w-full">
-                    <MidSideXYController
-                        midGain={midGainDb}
-                        setMidGain={setMidGainDb}
-                        sideGain={sideGainDb}
-                        setSideGain={setSideGainDb}
-                        width={controllerWidth}
-                        height={controllerHeight}
-                        disabled={!isAudioReady}
-                    />
-                    <div className="flex justify-around w-full max-w-sm text-lg font-semibold text-teal-800">
-                        <span>Mid: {midGainDb.toFixed(1)} dB</span>
-                        <span>Side: {sideGainDb.toFixed(1)} dB</span>
+                    {/* Mid-Side X-Y Controller */}
+                    <div className="flex flex-col items-center gap-4 w-full">
+                        <MidSideXYController
+                            midGain={midGainDb}
+                            setMidGain={setMidGainDb}
+                            sideGain={sideGainDb}
+                            setSideGain={setSideGainDb}
+                            width={controllerWidth}
+                            height={controllerHeight}
+                            disabled={!isAudioReady}
+                        />
+                        <div className="flex justify-around w-full max-w-sm text-lg font-semibold text-teal-800">
+                            <span>Mid: {midGainDb.toFixed(1)} dB</span>
+                            <span>Side: {sideGainDb.toFixed(1)} dB</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

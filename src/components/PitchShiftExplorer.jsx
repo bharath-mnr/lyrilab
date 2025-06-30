@@ -1,6 +1,23 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import * as Tone from 'tone';
 import { Play, Pause, ArrowUpDown } from 'lucide-react'; // Using ArrowUpDown icon for Pitch Shift
+import SEOHead from './SEOHead';
+
+
+// Define the tool object for SEO structured data
+const pitchShiftExplorerTool = {
+    id: 'pitch-shift-explorer',
+    name: 'Pitch Shifter',
+    description: 'Experiment with real-time pitch shifting effects for harmonies and octave shifts.',
+    path: '/pitch-shift-explorer',
+    categories: [
+        'Pitch Effects',
+        'Audio Processing',
+        'Sound Design',
+        'Harmony',
+        'Formant'
+    ]
+};
 
 // Define the path to your C4 piano sample.
 // This is a good source to hear pitch changes clearly.
@@ -247,86 +264,95 @@ const PitchShiftExplorerContent = () => {
     };
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center p-8 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #d4f7e5 0%, #b9e0d4 50%, #9bc9c9 100%)', // Greenish gradient
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Floating Icons Background */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+        <>
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="pitch-shift-explorer" 
+                tool={pitchShiftExplorerTool}
+                customData={{}}
+            />
+
+            <div
+                className="min-h-screen flex flex-col items-center p-8 relative overflow-hidden w-full"
                 style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ccircle cx='25' cy='25' r='3' fill='%236b7280'/%3E%3Ccircle cx='75' cy='25' r='3' fill='%236b7280'/%3E%3Ccircle cx='50' cy='50' r='3' fill='%236b7280'/%3E%3Ccircle cx='25' cy='75' r='3' fill='%236b7280'/%3E%3Ccircle cx='75' cy='75' r='3' fill='%236b7280'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
+                    background: 'linear-gradient(135deg, #d4f7e5 0%, #b9e0d4 50%, #9bc9c9 100%)', // Greenish gradient
+                    fontFamily: 'Inter, sans-serif',
                 }}
-            ></div>
+            >
+                {/* Floating Icons Background */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ccircle cx='25' cy='25' r='3' fill='%236b7280'/%3E%3Ccircle cx='75' cy='25' r='3' fill='%236b7280'/%3E%3Ccircle cx='50' cy='50' r='3' fill='%236b7280'/%3E%3Ccircle cx='25' cy='75' r='3' fill='%236b7280'/%3E%3Ccircle cx='75' cy='75' r='3' fill='%236b7280'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
+                    }}
+                ></div>
 
-            <div className="text-center mb-10 z-10">
-                <div className="flex items-center justify-center gap-4 mb-4">
-                    <ArrowUpDown size={48} className="text-teal-700" />
-                    <h1 className="text-5xl font-extrabold text-teal-900 drop-shadow-lg">Pitch Shift Explorer</h1>
-                </div>
-                {!isAudioReady && (
-                    <p className="text-teal-700 text-sm mt-4 animate-pulse">
-                        Click "Play Audio Loop" to activate audio and begin.
-                    </p>
-                )}
-            </div>
-
-            <div className="bg-white/80 backdrop-blur-sm p-8 rounded-xl shadow-lg w-full max-w-4xl flex flex-col items-center space-y-8 z-10 border border-teal-200">
-
-                {/* Play/Pause Button */}
-                <button
-                    type="button"
-                    onClick={togglePlay}
-                    className={`px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3 transition-all duration-300
-                                ${isPlaying
-                                ? 'bg-teal-700 hover:bg-teal-800 text-white'
-                                : 'bg-teal-500 hover:bg-teal-600 text-white'}
-                                ${!isAudioReady && !isPlaying ? 'opacity-50 cursor-not-allowed' : ''}
-                    `}
-                >
-                    {isPlaying ? <Pause size={24} /> : <Play size={24} />}
-                    {isPlaying ? "Stop Audio Loop" : "Play Audio Loop"}
-                </button>
-
-                {/* Pitch Shift Parameter Sliders */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full mt-8">
-                    {/* Pitch Slider */}
-                    <div className="flex flex-col items-center">
-                        <label className="text-teal-800 font-medium mb-2">Pitch: {pitch.toFixed(1)} semitones</label>
-                        <input
-                            type="range"
-                            min="-12"
-                            max="12"
-                            step="0.1"
-                            value={pitch}
-                            onChange={(e) => setPitch(parseFloat(e.target.value))}
-                            className="w-full accent-teal-600 h-2 rounded-lg appearance-none cursor-pointer bg-teal-100"
-                            disabled={!isAudioReady}
-                        />
-                        <p className="text-teal-700 text-sm mt-1 italic">{getExplanation('pitch')}</p>
+                <div className="text-center mb-10 z-10">
+                    <div className="flex items-center justify-center gap-4 mb-4">
+                        <ArrowUpDown size={48} className="text-teal-700" />
+                        <h1 className="text-5xl font-extrabold text-teal-900 drop-shadow-lg">Pitch Shift Explorer</h1>
                     </div>
+                    {!isAudioReady && (
+                        <p className="text-teal-700 text-sm mt-4 animate-pulse">
+                            Click "Play Audio Loop" to activate audio and begin.
+                        </p>
+                    )}
+                </div>
 
-                    {/* Window Size Slider */}
-                    <div className="flex flex-col items-center">
-                        <label className="text-teal-800 font-medium mb-2">Window Size: {windowSize.toFixed(2)} s</label>
-                        <input
-                            type="range"
-                            min="0.01"
-                            max="0.5" // Max window size of 0.5 seconds for reasonable latency
-                            step="0.01"
-                            value={windowSize}
-                            onChange={(e) => setWindowSize(parseFloat(e.target.value))}
-                            className="w-full accent-teal-600 h-2 rounded-lg appearance-none cursor-pointer bg-teal-100"
-                            disabled={!isAudioReady}
-                        />
-                        <p className="text-teal-700 text-sm mt-1 italic">{getExplanation('windowSize')}</p>
+                <div className="bg-white/80 backdrop-blur-sm p-8 rounded-xl shadow-lg w-full max-w-4xl flex flex-col items-center space-y-8 z-10 border border-teal-200">
+
+                    {/* Play/Pause Button */}
+                    <button
+                        type="button"
+                        onClick={togglePlay}
+                        className={`px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3 transition-all duration-300
+                                    ${isPlaying
+                                    ? 'bg-teal-700 hover:bg-teal-800 text-white'
+                                    : 'bg-teal-500 hover:bg-teal-600 text-white'}
+                                    ${!isAudioReady && !isPlaying ? 'opacity-50 cursor-not-allowed' : ''}
+                        `}
+                    >
+                        {isPlaying ? <Pause size={24} /> : <Play size={24} />}
+                        {isPlaying ? "Stop Audio Loop" : "Play Audio Loop"}
+                    </button>
+
+                    {/* Pitch Shift Parameter Sliders */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full mt-8">
+                        {/* Pitch Slider */}
+                        <div className="flex flex-col items-center">
+                            <label className="text-teal-800 font-medium mb-2">Pitch: {pitch.toFixed(1)} semitones</label>
+                            <input
+                                type="range"
+                                min="-12"
+                                max="12"
+                                step="0.1"
+                                value={pitch}
+                                onChange={(e) => setPitch(parseFloat(e.target.value))}
+                                className="w-full accent-teal-600 h-2 rounded-lg appearance-none cursor-pointer bg-teal-100"
+                                disabled={!isAudioReady}
+                            />
+                            <p className="text-teal-700 text-sm mt-1 italic">{getExplanation('pitch')}</p>
+                        </div>
+
+                        {/* Window Size Slider */}
+                        <div className="flex flex-col items-center">
+                            <label className="text-teal-800 font-medium mb-2">Window Size: {windowSize.toFixed(2)} s</label>
+                            <input
+                                type="range"
+                                min="0.01"
+                                max="0.5" // Max window size of 0.5 seconds for reasonable latency
+                                step="0.01"
+                                value={windowSize}
+                                onChange={(e) => setWindowSize(parseFloat(e.target.value))}
+                                className="w-full accent-teal-600 h-2 rounded-lg appearance-none cursor-pointer bg-teal-100"
+                                disabled={!isAudioReady}
+                            />
+                            <p className="text-teal-700 text-sm mt-1 italic">{getExplanation('windowSize')}</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

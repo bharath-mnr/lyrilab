@@ -1,6 +1,22 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import * as Tone from 'tone';
 import { Music, Play, Piano, Volume2, VolumeX, Volume1 } from 'lucide-react';
+import SEOHead from './SEOHead';
+
+// Define the tool object for SEO structured data
+const intervalTrainingTool = {
+    id: 'interval-training',
+    name: 'Interval Training',
+    description: 'Ear training exercises to recognize musical intervals and improve your relative pitch.',
+    path: '/interval-training',
+    categories: [
+        'Ear Training',
+        'Music Education',
+        'Interval Recognition',
+        'Pitch Training',
+        'Music Theory'
+    ]
+};
 
 // --- usePianoSynth Hook ---
 const usePianoSynth = (initialVolume = 0.7, initialMuteState = false) => {
@@ -599,146 +615,155 @@ const IntervalTrainingApp = () => {
     const selectedInterval = INTERVALS.find(interval => interval.semitones === selectedIntervalSemitones);
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #e0f2f7 0%, #b3e5fc 50%, #81d4fa 100%)',
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
-                style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%2303a9f4' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
-                }}
-            ></div>
+        <> 
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="interval-training" 
+                tool={intervalTrainingTool}
+                customData={{}}
+            />
 
-            {/* Header */}
-            <div className="text-center mb-6 md:mb-10 z-10 w-full">
-                <div className="flex items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
-                    <Music size={32} className="text-blue-700 md:h-12 md:w-12" />
-                    <h1 className="text-3xl md:text-5xl font-extrabold text-blue-900 drop-shadow-lg">Interval Training</h1>
+            <div
+                className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
+                style={{
+                    background: 'linear-gradient(135deg, #e0f2f7 0%, #b3e5fc 50%, #81d4fa 100%)',
+                    fontFamily: 'Inter, sans-serif',
+                }}
+            >
+                {/* Background Pattern */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%2303a9f4' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
+                    }}
+                ></div>
+
+                {/* Header */}
+                <div className="text-center mb-6 md:mb-10 z-10 w-full">
+                    <div className="flex items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
+                        <Music size={32} className="text-blue-700 md:h-12 md:w-12" />
+                        <h1 className="text-3xl md:text-5xl font-extrabold text-blue-900 drop-shadow-lg">Interval Training</h1>
+                    </div>
+                    
                 </div>
+
+                {/* Main Content */}
+                <div className="bg-white/80 backdrop-blur-sm p-4 md:p-6 lg:p-8 rounded-xl shadow-lg w-full max-w-5xl flex flex-col items-center space-y-4 md:space-y-6 lg:space-y-8 z-10 border border-blue-200">
+
+                    {/* Audio Controls */}
+                    <section className="w-full flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-4 md:mb-6">
+                        <div className="flex items-center gap-2 md:gap-4">
+                            <span className={`px-2 py-1 md:px-3 md:py-1 rounded-full text-xs md:text-sm font-medium ${isAudioReady ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                {isAudioReady ? '🔊 Audio Ready' : '🔇 Audio Not Initialized'}
+                            </span>
+                            <button
+                                onClick={toggleMute}
+                                className="px-3 py-1 md:px-4 md:py-2 rounded-full font-bold text-xs md:text-sm flex items-center gap-1 md:gap-2 transition-all duration-300 bg-blue-500 hover:bg-blue-600 text-white"
+                            >
+                                {isSynthMuted ? <VolumeX size={16} className="md:h-5 md:w-5" /> : <Volume1 size={16} className="md:h-5 md:w-5" />}
+                                {isSynthMuted ? 'Unmute' : 'Mute'}
+                            </button>
+                            {isPlaying && (
+                                <button
+                                    onClick={stopPlayback}
+                                    className="px-3 py-1 md:px-4 md:py-2 rounded-full font-bold text-xs md:text-sm flex items-center gap-1 md:gap-2 transition-all duration-300 bg-red-500 hover:bg-red-600 text-white"
+                                >
+                                    Stop
+                                </button>
+                            )}
+                        </div>
+                    </section>
+
+                    {/* Current Interval Display */}
+                    {randomIntervalName && (
+                        <section className="w-full bg-green-50 p-4 rounded-lg border border-green-200">
+                            <h3 className="text-lg font-bold text-green-800 text-center">
+                                Random Interval: {randomIntervalName}
+                            </h3>
+                        </section>
+                    )}
+
+                    {/* Interval Selector */}
+                    <section className="w-full">
+                        <h2 className="text-xl md:text-2xl font-bold text-blue-800 mb-2 md:mb-4 flex items-center gap-2">
+                            <Music size={20} className="md:h-6 md:w-6" /> Interval Selector
+                        </h2>
+                        <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
+                            <select
+                                className="p-2 md:p-3 border border-gray-300 rounded-md shadow-sm w-full md:w-1/2 focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
+                                onChange={handleIntervalSelect}
+                                value={selectedIntervalSemitones}
+                                aria-label="Select interval"
+                                disabled={isPlaying}
+                            >
+                                {INTERVALS.map(interval => (
+                                    <option key={interval.name} value={interval.semitones}>
+                                        {interval.name} ({interval.semitones} semitones)
+                                    </option>
+                                ))}
+                            </select>
+                            <button
+                                onClick={handlePlayInterval}
+                                className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-bold text-sm md:text-lg flex items-center gap-1 md:gap-2 transition-all duration-300 w-full md:w-auto justify-center
+                                            ${!isPlaying
+                                        ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                                        : 'bg-orange-500 hover:bg-orange-600 text-white'}
+                                        `}
+                            >
+                                {isPlaying ? 'Stop' : <><Play size={16} className="md:h-5 md:w-5" /> Play {selectedInterval?.name}</>}
+                            </button>
+
+                </div>
+                    </section>
+
+                    {/* Random Interval Button */}
+                    <section className="w-full">
+                        <button
+                            onClick={handlePlayRandom}
+                            className={`w-full px-4 py-3 md:px-6 md:py-4 rounded-full font-bold text-lg md:text-xl flex items-center justify-center gap-2 md:gap-3 transition-all duration-300
+                                    ${!isPlaying
+                                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg'
+                                    : 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg'}
+                                    `}
+                        >
+                            {isPlaying ? 'Stop Random' : <>🎲 Play Random Interval</>}
+                        </button>
+                    </section>
+
+                    {/* Piano Visualizer */}
+                    <section className="w-full">
+                        <PianoVisualizer highlightedNotes={currentIntervalNotes} />
+                    </section>
+
+                    {/* Instructions */}
+                    <section className="w-full bg-blue-50 p-4 md:p-6 rounded-lg border border-blue-200">
+                        <h3 className="text-lg md:text-xl font-bold text-blue-800 mb-2 md:mb-3">How to Use:</h3>
+                        <ul className="text-blue-700 space-y-1 md:space-y-2 text-sm md:text-base">
+                            <li>• <strong>Select an interval</strong> from the dropdown and click "Play" to hear it</li>
+                            <li>• <strong>Click "Play Random Interval"</strong> to test your interval recognition skills</li>
+                            <li>• <strong>Watch the piano visualizer</strong> to see which notes are being played</li>
+                            <li>• <strong>Use the mute button</strong> to control audio output</li>
+                        </ul>
+                    </section>
+
+                    {/* Interval Reference */}
+                    <section className="w-full bg-gray-50 p-4 md:p-6 rounded-lg border border-gray-200">
+                        <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-2 md:mb-3">Interval Reference:</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-3 text-sm md:text-base">
+                            {INTERVALS.map(interval => (
+                                <div key={interval.name} className="flex justify-between items-center p-2 md:p-3 bg-white rounded border border-gray-200 hover:bg-gray-100 transition-colors">
+                                    <span className="font-medium text-gray-800">{interval.name}</span>
+                                    <span className="text-gray-600 text-xs md:text-sm">{interval.semitones} semitones</span>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                </div>
+
+                {/* Footer */}
                 
             </div>
-
-            {/* Main Content */}
-            <div className="bg-white/80 backdrop-blur-sm p-4 md:p-6 lg:p-8 rounded-xl shadow-lg w-full max-w-5xl flex flex-col items-center space-y-4 md:space-y-6 lg:space-y-8 z-10 border border-blue-200">
-
-                {/* Audio Controls */}
-                <section className="w-full flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-4 md:mb-6">
-                    <div className="flex items-center gap-2 md:gap-4">
-                        <span className={`px-2 py-1 md:px-3 md:py-1 rounded-full text-xs md:text-sm font-medium ${isAudioReady ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                            {isAudioReady ? '🔊 Audio Ready' : '🔇 Audio Not Initialized'}
-                        </span>
-                        <button
-                            onClick={toggleMute}
-                            className="px-3 py-1 md:px-4 md:py-2 rounded-full font-bold text-xs md:text-sm flex items-center gap-1 md:gap-2 transition-all duration-300 bg-blue-500 hover:bg-blue-600 text-white"
-                        >
-                            {isSynthMuted ? <VolumeX size={16} className="md:h-5 md:w-5" /> : <Volume1 size={16} className="md:h-5 md:w-5" />}
-                            {isSynthMuted ? 'Unmute' : 'Mute'}
-                        </button>
-                        {isPlaying && (
-                            <button
-                                onClick={stopPlayback}
-                                className="px-3 py-1 md:px-4 md:py-2 rounded-full font-bold text-xs md:text-sm flex items-center gap-1 md:gap-2 transition-all duration-300 bg-red-500 hover:bg-red-600 text-white"
-                            >
-                                Stop
-                            </button>
-                        )}
-                    </div>
-                </section>
-
-                {/* Current Interval Display */}
-                {randomIntervalName && (
-                    <section className="w-full bg-green-50 p-4 rounded-lg border border-green-200">
-                        <h3 className="text-lg font-bold text-green-800 text-center">
-                            Random Interval: {randomIntervalName}
-                        </h3>
-                    </section>
-                )}
-
-                {/* Interval Selector */}
-                <section className="w-full">
-                    <h2 className="text-xl md:text-2xl font-bold text-blue-800 mb-2 md:mb-4 flex items-center gap-2">
-                        <Music size={20} className="md:h-6 md:w-6" /> Interval Selector
-                    </h2>
-                    <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
-                        <select
-                            className="p-2 md:p-3 border border-gray-300 rounded-md shadow-sm w-full md:w-1/2 focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
-                            onChange={handleIntervalSelect}
-                            value={selectedIntervalSemitones}
-                            aria-label="Select interval"
-                            disabled={isPlaying}
-                        >
-                            {INTERVALS.map(interval => (
-                                <option key={interval.name} value={interval.semitones}>
-                                    {interval.name} ({interval.semitones} semitones)
-                                </option>
-                            ))}
-                        </select>
-                        <button
-                            onClick={handlePlayInterval}
-                            className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-bold text-sm md:text-lg flex items-center gap-1 md:gap-2 transition-all duration-300 w-full md:w-auto justify-center
-                                         ${!isPlaying
-                                    ? 'bg-blue-500 hover:bg-blue-600 text-white'
-                                    : 'bg-orange-500 hover:bg-orange-600 text-white'}
-                                      `}
-                        >
-                            {isPlaying ? 'Stop' : <><Play size={16} className="md:h-5 md:w-5" /> Play {selectedInterval?.name}</>}
-                        </button>
-
-			</div>
-                </section>
-
-                {/* Random Interval Button */}
-                <section className="w-full">
-                    <button
-                        onClick={handlePlayRandom}
-                        className={`w-full px-4 py-3 md:px-6 md:py-4 rounded-full font-bold text-lg md:text-xl flex items-center justify-center gap-2 md:gap-3 transition-all duration-300
-                                   ${!isPlaying
-                                ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg'
-                                : 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg'}
-                                `}
-                    >
-                        {isPlaying ? 'Stop Random' : <>🎲 Play Random Interval</>}
-                    </button>
-                </section>
-
-                {/* Piano Visualizer */}
-                <section className="w-full">
-                    <PianoVisualizer highlightedNotes={currentIntervalNotes} />
-                </section>
-
-                {/* Instructions */}
-                <section className="w-full bg-blue-50 p-4 md:p-6 rounded-lg border border-blue-200">
-                    <h3 className="text-lg md:text-xl font-bold text-blue-800 mb-2 md:mb-3">How to Use:</h3>
-                    <ul className="text-blue-700 space-y-1 md:space-y-2 text-sm md:text-base">
-                        <li>• <strong>Select an interval</strong> from the dropdown and click "Play" to hear it</li>
-                        <li>• <strong>Click "Play Random Interval"</strong> to test your interval recognition skills</li>
-                        <li>• <strong>Watch the piano visualizer</strong> to see which notes are being played</li>
-                        <li>• <strong>Use the mute button</strong> to control audio output</li>
-                    </ul>
-                </section>
-
-                {/* Interval Reference */}
-                <section className="w-full bg-gray-50 p-4 md:p-6 rounded-lg border border-gray-200">
-                    <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-2 md:mb-3">Interval Reference:</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-3 text-sm md:text-base">
-                        {INTERVALS.map(interval => (
-                            <div key={interval.name} className="flex justify-between items-center p-2 md:p-3 bg-white rounded border border-gray-200 hover:bg-gray-100 transition-colors">
-                                <span className="font-medium text-gray-800">{interval.name}</span>
-                                <span className="text-gray-600 text-xs md:text-sm">{interval.semitones} semitones</span>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-            </div>
-
-            {/* Footer */}
-            
-        </div>
+        </>
     );
 };
 

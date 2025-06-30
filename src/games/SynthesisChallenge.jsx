@@ -1,6 +1,24 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import * as Tone from 'tone';
 import { Play, Pause, Circle, Square, Triangle, Activity, Volume2, Waves, RefreshCcw } from 'lucide-react';
+import SEOHead from '../components/SEOHead';
+
+
+// Define the tool object for SEO structured data
+const synthesisChallengeTool = {
+    id: 'synthesis-challenge',
+    name: 'Synthesis Challenge',
+    description: 'Test your sound design skills by recreating target sounds using synthesizer parameters.',
+    path: '/synthesis-challenge',
+    categories: [
+        'Sound Design',
+        'Synthesis',
+        'Audio Challenge',
+        'Electronic Music',
+        'Sound Engineering'
+    ]
+};
+
 
 // --- AUDIO CONTEXT ---
 export const AudioContext = createContext(null);
@@ -752,266 +770,275 @@ const SynthesisChallengeContent = () => {
     }, [isAudioReady, targetSettings, generateRandomTarget]);
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #e6ffe6 0%, #ccffcc 50%, #b3ffb3 100%)',
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Floating Icons Background */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+        <>
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="synthesis-challenge" 
+                tool={synthesisChallengeTool}
+                customData={{}}
+            />
+
+            <div
+                className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
                 style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%2322c55e' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
+                    background: 'linear-gradient(135deg, #e6ffe6 0%, #ccffcc 50%, #b3ffb3 100%)',
+                    fontFamily: 'Inter, sans-serif',
                 }}
-            ></div>
+            >
+                {/* Floating Icons Background */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%2322c55e' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
+                    }}
+                ></div>
 
-            <div className="text-center mb-6 md:mb-10 z-10 w-full px-2">
-                <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
-                    <Waves size={36} className="text-green-700 md:mb-0 mb-2" />
-                    <h1 className="text-3xl md:text-5xl font-extrabold text-green-900 drop-shadow-lg">
-                        Synthesis Challenge
-                    </h1>
-                </div>
-                {!isAudioReady && !isLoading && (
-                    <p className="text-green-700 text-xs md:text-sm mt-2 md:mt-4">
-                        Tap any 'Play' button to activate audio
-                    </p>
-                )}
-                {isLoading && (
-                    <p className="text-green-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
-                        Setting up audio...
-                    </p>
-                )}
-                {isAudioReady && !isLoading && (
-                    <p className="text-green-600 text-base md:text-lg font-semibold mt-2 md:mt-4">
-                        Recreate the Target Sound!
-                    </p>
-                )}
-            </div>
-
-            <div className="bg-white/80 backdrop-blur-sm p-4 md:p-8 rounded-xl shadow-lg w-full max-w-5xl flex flex-col items-center space-y-4 md:space-y-8 z-10 border border-green-200 mx-2">
-
-                {/* Challenge Actions */}
-                <div className="flex flex-wrap justify-center gap-3 md:gap-4 mb-4 md:mb-6 w-full">
-                    <button
-                        type="button"
-                        onClick={generateRandomTarget}
-                        className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-bold text-sm md:text-md flex items-center gap-1 md:gap-2 transition-all duration-300
-                                ${!isLoading // Enabled if not loading
-                                    ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                                    : 'bg-gray-400 cursor-not-allowed text-gray-700'}
-                                `}
-                        disabled={isLoading} // Changed to isLoading
-                    >
-                        <RefreshCcw size={18} className="md:w-5 md:h-5 w-4 h-4" />
-                        New Challenge
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={playTargetSound}
-                        className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-bold text-sm md:text-md flex items-center gap-1 md:gap-2 transition-all duration-300
-                                ${isAudioReady && !isLoading && !isTargetPlaying && targetSettings // Still need targetSettings to exist
-                                    ? 'bg-blue-500 hover:bg-blue-600 text-white'
-                                    : 'bg-gray-400 cursor-not-allowed text-gray-700'}
-                                `}
-                        disabled={isTargetPlaying || isLoading || !targetSettings} // Simplified
-                    >
-                        <Play size={18} className="md:w-5 md:h-5 w-4 h-4" />
-                        Play Target
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={stopTargetSound}
-                        className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-bold text-sm md:text-md flex items-center gap-1 md:gap-2 transition-all duration-300
-                                ${isTargetPlaying && isAudioReady // Only enabled if currently playing and audio ready
-                                    ? 'bg-blue-700 hover:bg-blue-800 text-white'
-                                    : 'bg-gray-400 cursor-not-allowed text-gray-700'}
-                                `}
-                        disabled={!isTargetPlaying} // Simplified
-                    >
-                        <Pause size={18} className="md:w-5 md:h-5 w-4 h-4" />
-                        Stop Target
-                    </button>
+                <div className="text-center mb-6 md:mb-10 z-10 w-full px-2">
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
+                        <Waves size={36} className="text-green-700 md:mb-0 mb-2" />
+                        <h1 className="text-3xl md:text-5xl font-extrabold text-green-900 drop-shadow-lg">
+                            Synthesis Challenge
+                        </h1>
+                    </div>
+                    {!isAudioReady && !isLoading && (
+                        <p className="text-green-700 text-xs md:text-sm mt-2 md:mt-4">
+                            Tap any 'Play' button to activate audio
+                        </p>
+                    )}
+                    {isLoading && (
+                        <p className="text-green-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
+                            Setting up audio...
+                        </p>
+                    )}
+                    {isAudioReady && !isLoading && (
+                        <p className="text-green-600 text-base md:text-lg font-semibold mt-2 md:mt-4">
+                            Recreate the Target Sound!
+                        </p>
+                    )}
                 </div>
 
-                {/* Accuracy Display */}
-                <div className="w-full text-center py-3 md:py-4 bg-green-100 rounded-lg border border-green-300 shadow-md">
-                    <p className="text-xl md:text-2xl font-bold text-green-800">
-                        Accuracy: {accuracyPercentage}%
-                    </p>
-                    <p className="text-xs md:text-sm text-green-700">Get closer to 100%!</p>
-                </div>
+                <div className="bg-white/80 backdrop-blur-sm p-4 md:p-8 rounded-xl shadow-lg w-full max-w-5xl flex flex-col items-center space-y-4 md:space-y-8 z-10 border border-green-200 mx-2">
 
-                {/* Single Visualizer Section */}
-                <div className="w-full mt-4 md:mt-6 flex flex-col items-center">
-                    <h2 className="text-xl md:text-2xl font-bold text-green-800 mb-3 md:mb-4">Current Sound</h2>
-                    <WaveformVisualizer
-                        waveformAnalyzer={currentVisualizerAnalyzer}
-                        isAudioReady={isAudioReady}
-                        isPlaying={isUserPlaying || isTargetPlaying}
-                        title={currentVisualizerTitle}
-                        borderColor={currentVisualizerBorderColor}
-                    />
-                    <div className="flex gap-3 md:gap-4 mt-3 md:mt-4">
+                    {/* Challenge Actions */}
+                    <div className="flex flex-wrap justify-center gap-3 md:gap-4 mb-4 md:mb-6 w-full">
                         <button
                             type="button"
-                            onClick={playUserSound}
+                            onClick={generateRandomTarget}
                             className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-bold text-sm md:text-md flex items-center gap-1 md:gap-2 transition-all duration-300
-                                    ${!isUserPlaying && !isLoading // Enabled if not playing and not loading
-                                        ? 'bg-green-500 hover:bg-green-600 text-white'
+                                    ${!isLoading // Enabled if not loading
+                                        ? 'bg-purple-600 hover:bg-purple-700 text-white'
                                         : 'bg-gray-400 cursor-not-allowed text-gray-700'}
                                     `}
-                            disabled={isUserPlaying || isLoading} // Simplified
+                            disabled={isLoading} // Changed to isLoading
+                        >
+                            <RefreshCcw size={18} className="md:w-5 md:h-5 w-4 h-4" />
+                            New Challenge
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={playTargetSound}
+                            className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-bold text-sm md:text-md flex items-center gap-1 md:gap-2 transition-all duration-300
+                                    ${isAudioReady && !isLoading && !isTargetPlaying && targetSettings // Still need targetSettings to exist
+                                        ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                                        : 'bg-gray-400 cursor-not-allowed text-gray-700'}
+                                    `}
+                            disabled={isTargetPlaying || isLoading || !targetSettings} // Simplified
                         >
                             <Play size={18} className="md:w-5 md:h-5 w-4 h-4" />
-                            Play Yours
+                            Play Target
                         </button>
 
                         <button
                             type="button"
-                            onClick={stopUserSound}
+                            onClick={stopTargetSound}
                             className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-bold text-sm md:text-md flex items-center gap-1 md:gap-2 transition-all duration-300
-                                    ${isUserPlaying && isAudioReady // Only enabled if currently playing and audio ready
-                                        ? 'bg-green-700 hover:bg-green-800 text-white'
+                                    ${isTargetPlaying && isAudioReady // Only enabled if currently playing and audio ready
+                                        ? 'bg-blue-700 hover:bg-blue-800 text-white'
                                         : 'bg-gray-400 cursor-not-allowed text-gray-700'}
                                     `}
-                            disabled={!isUserPlaying} // Simplified
+                            disabled={!isTargetPlaying} // Simplified
                         >
                             <Pause size={18} className="md:w-5 md:h-5 w-4 h-4" />
-                            Stop Yours
+                            Stop Target
                         </button>
                     </div>
-                </div>
 
-                {/* User's Synth Controls */}
-                <div className="grid grid-cols-1 gap-6 md:gap-8 w-full mt-4 md:mt-6">
-                    {/* Wave 1 Controls */}
-                    <div className="bg-green-50/70 p-4 md:p-6 rounded-lg border border-green-100 flex flex-col items-center shadow-inner">
-                        <h2 className="text-xl md:text-2xl font-bold text-green-800 mb-3 md:mb-4">Wave 1</h2>
-                        <div className="flex justify-center gap-1 md:gap-2 mb-4 md:mb-6 flex-wrap">
-                            {waveformOptions.map(({ type, label, Icon }) => (
-                                <button
-                                    key={`user-wave1-${type}`}
-                                    onClick={() => setUserWaveformType1(type)}
-                                    className={`px-3 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold flex items-center gap-1 transition-all duration-200
-                                            ${userWaveformType1 === type
-                                                ? 'bg-green-600 text-white shadow-md'
-                                                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}
-                                            ${isLoading ? 'cursor-not-allowed opacity-50' : ''}
+                    {/* Accuracy Display */}
+                    <div className="w-full text-center py-3 md:py-4 bg-green-100 rounded-lg border border-green-300 shadow-md">
+                        <p className="text-xl md:text-2xl font-bold text-green-800">
+                            Accuracy: {accuracyPercentage}%
+                        </p>
+                        <p className="text-xs md:text-sm text-green-700">Get closer to 100%!</p>
+                    </div>
+
+                    {/* Single Visualizer Section */}
+                    <div className="w-full mt-4 md:mt-6 flex flex-col items-center">
+                        <h2 className="text-xl md:text-2xl font-bold text-green-800 mb-3 md:mb-4">Current Sound</h2>
+                        <WaveformVisualizer
+                            waveformAnalyzer={currentVisualizerAnalyzer}
+                            isAudioReady={isAudioReady}
+                            isPlaying={isUserPlaying || isTargetPlaying}
+                            title={currentVisualizerTitle}
+                            borderColor={currentVisualizerBorderColor}
+                        />
+                        <div className="flex gap-3 md:gap-4 mt-3 md:mt-4">
+                            <button
+                                type="button"
+                                onClick={playUserSound}
+                                className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-bold text-sm md:text-md flex items-center gap-1 md:gap-2 transition-all duration-300
+                                        ${!isUserPlaying && !isLoading // Enabled if not playing and not loading
+                                            ? 'bg-green-500 hover:bg-green-600 text-white'
+                                            : 'bg-gray-400 cursor-not-allowed text-gray-700'}
                                         `}
-                                    disabled={isLoading} // Changed to isLoading
-                                >
-                                    <Icon size={14} className="md:w-4 md:h-4 w-3 h-3" />
-                                    {label}
-                                </button>
-                            ))}
+                                disabled={isUserPlaying || isLoading} // Simplified
+                            >
+                                <Play size={18} className="md:w-5 md:h-5 w-4 h-4" />
+                                Play Yours
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={stopUserSound}
+                                className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-bold text-sm md:text-md flex items-center gap-1 md:gap-2 transition-all duration-300
+                                        ${isUserPlaying && isAudioReady // Only enabled if currently playing and audio ready
+                                            ? 'bg-green-700 hover:bg-green-800 text-white'
+                                            : 'bg-gray-400 cursor-not-allowed text-gray-700'}
+                                        `}
+                                disabled={!isUserPlaying} // Simplified
+                            >
+                                <Pause size={18} className="md:w-5 md:h-5 w-4 h-4" />
+                                Stop Yours
+                            </button>
                         </div>
+                    </div>
+
+                    {/* User's Synth Controls */}
+                    <div className="grid grid-cols-1 gap-6 md:gap-8 w-full mt-4 md:mt-6">
+                        {/* Wave 1 Controls */}
+                        <div className="bg-green-50/70 p-4 md:p-6 rounded-lg border border-green-100 flex flex-col items-center shadow-inner">
+                            <h2 className="text-xl md:text-2xl font-bold text-green-800 mb-3 md:mb-4">Wave 1</h2>
+                            <div className="flex justify-center gap-1 md:gap-2 mb-4 md:mb-6 flex-wrap">
+                                {waveformOptions.map(({ type, label, Icon }) => (
+                                    <button
+                                        key={`user-wave1-${type}`}
+                                        onClick={() => setUserWaveformType1(type)}
+                                        className={`px-3 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold flex items-center gap-1 transition-all duration-200
+                                                ${userWaveformType1 === type
+                                                    ? 'bg-green-600 text-white shadow-md'
+                                                    : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}
+                                                ${isLoading ? 'cursor-not-allowed opacity-50' : ''}
+                                            `}
+                                        disabled={isLoading} // Changed to isLoading
+                                    >
+                                        <Icon size={14} className="md:w-4 md:h-4 w-3 h-3" />
+                                        {label}
+                                    </button>
+                                ))}
+                            </div>
+                            <ParameterSlider
+                                label="Freq 1" value={userFrequency1} setter={setUserFrequency1}
+                                min="20" max="1000" step="1" unit=" Hz"
+                                explanation={getExplanation('frequency')}
+                                isDisabled={isLoading} // Changed to isLoading
+                                colorClass="accent-green-600 bg-green-100"
+                            />
+                            <ParameterSlider
+                                label="Vol 1" value={userVolume1} setter={setUserVolume1}
+                                min="-60" max="0" step="1" unit=" dB"
+                                explanation={getExplanation('volume')}
+                                isDisabled={isLoading} // Changed to isLoading
+                                colorClass="accent-green-600 bg-green-100"
+                            />
+                        </div>
+
+                        {/* Wave 2 Controls */}
+                        <div className="bg-green-50/70 p-4 md:p-6 rounded-lg border border-green-100 flex flex-col items-center shadow-inner">
+                            <h2 className="text-xl md:text-2xl font-bold text-green-800 mb-3 md:mb-4">Wave 2</h2>
+                            <div className="flex justify-center gap-1 md:gap-2 mb-4 md:mb-6 flex-wrap">
+                                {waveformOptions.map(({ type, label, Icon }) => (
+                                    <button
+                                        key={`user-wave2-${type}`}
+                                        onClick={() => setUserWaveformType2(type)}
+                                        className={`px-3 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold flex items-center gap-1 transition-all duration-200
+                                                ${userWaveformType2 === type
+                                                    ? 'bg-green-600 text-white shadow-md'
+                                                    : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}
+                                                ${isLoading ? 'cursor-not-allowed opacity-50' : ''}
+                                            `}
+                                        disabled={isLoading} // Changed to isLoading
+                                    >
+                                        <Icon size={14} className="md:w-4 md:h-4 w-3 h-3" />
+                                        {label}
+                                    </button>
+                                ))}
+                            </div>
+                            <ParameterSlider
+                                label="Freq 2" value={userFrequency2} setter={setUserFrequency2}
+                                min="20" max="1000" step="1" unit=" Hz"
+                                explanation={getExplanation('frequency')}
+                                isDisabled={isLoading} // Changed to isLoading
+                                colorClass="accent-green-600 bg-green-100"
+                            />
+                            <ParameterSlider
+                                label="Vol 2" value={userVolume2} setter={setUserVolume2}
+                                min="-60" max="0" step="1" unit=" dB"
+                                explanation={getExplanation('volume')}
+                                isDisabled={isLoading} // Changed to isLoading
+                                colorClass="accent-green-600 bg-green-100"
+                            />
+                        </div>
+                    </div>
+
+                    {/* ADSR Controls */}
+                    <div className="w-full mt-6 md:mt-8 pt-4 md:pt-6 border-t border-green-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
                         <ParameterSlider
-                            label="Freq 1" value={userFrequency1} setter={setUserFrequency1}
-                            min="20" max="1000" step="1" unit=" Hz"
-                            explanation={getExplanation('frequency')}
+                            label="Attack" value={userAttack} setter={setUserAttack}
+                            min="0.01" max="1" step="0.01" unit=" s"
+                            explanation={getExplanation('attack')}
                             isDisabled={isLoading} // Changed to isLoading
-                            colorClass="accent-green-600 bg-green-100"
+                            colorClass="accent-teal-600 bg-teal-100"
                         />
                         <ParameterSlider
-                            label="Vol 1" value={userVolume1} setter={setUserVolume1}
-                            min="-60" max="0" step="1" unit=" dB"
-                            explanation={getExplanation('volume')}
+                            label="Decay" value={userDecay} setter={setUserDecay}
+                            min="0.05" max="2" step="0.05" unit=" s"
+                            explanation={getExplanation('decay')}
                             isDisabled={isLoading} // Changed to isLoading
-                            colorClass="accent-green-600 bg-green-100"
+                            colorClass="accent-teal-600 bg-teal-100"
+                        />
+                        <ParameterSlider
+                            label="Sustain" value={userSustain} setter={setUserSustain}
+                            min="0.1" max="1" step="0.01" unit=" "
+                            explanation={getExplanation('sustain')}
+                            isDisabled={isLoading} // Changed to isLoading
+                            colorClass="accent-teal-600 bg-teal-100"
+                        />
+                        <ParameterSlider
+                            label="Release" value={userRelease} setter={setUserRelease}
+                            min="0.1" max="3" step="0.05" unit=" s"
+                            explanation={getExplanation('release')}
+                            isDisabled={isLoading} // Changed to isLoading
+                            colorClass="accent-teal-600 bg-teal-100"
                         />
                     </div>
 
-                    {/* Wave 2 Controls */}
-                    <div className="bg-green-50/70 p-4 md:p-6 rounded-lg border border-green-100 flex flex-col items-center shadow-inner">
-                        <h2 className="text-xl md:text-2xl font-bold text-green-800 mb-3 md:mb-4">Wave 2</h2>
-                        <div className="flex justify-center gap-1 md:gap-2 mb-4 md:mb-6 flex-wrap">
-                            {waveformOptions.map(({ type, label, Icon }) => (
-                                <button
-                                    key={`user-wave2-${type}`}
-                                    onClick={() => setUserWaveformType2(type)}
-                                    className={`px-3 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold flex items-center gap-1 transition-all duration-200
-                                            ${userWaveformType2 === type
-                                                ? 'bg-green-600 text-white shadow-md'
-                                                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}
-                                            ${isLoading ? 'cursor-not-allowed opacity-50' : ''}
-                                        `}
-                                    disabled={isLoading} // Changed to isLoading
-                                >
-                                    <Icon size={14} className="md:w-4 md:h-4 w-3 h-3" />
-                                    {label}
-                                </button>
-                            ))}
-                        </div>
+                    {/* Master Volume Slider */}
+                    <div className="w-full mt-6 md:mt-8 pt-4 md:pt-6 border-t border-green-200">
                         <ParameterSlider
-                            label="Freq 2" value={userFrequency2} setter={setUserFrequency2}
-                            min="20" max="1000" step="1" unit=" Hz"
-                            explanation={getExplanation('frequency')}
+                            label="Master Vol" value={userMasterVolume} setter={setUserMasterVolume}
+                            min="-40" max="0" step="1" unit=" dB"
+                            explanation={getExplanation('masterVolume')}
                             isDisabled={isLoading} // Changed to isLoading
-                            colorClass="accent-green-600 bg-green-100"
-                        />
-                        <ParameterSlider
-                            label="Vol 2" value={userVolume2} setter={setUserVolume2}
-                            min="-60" max="0" step="1" unit=" dB"
-                            explanation={getExplanation('volume')}
-                            isDisabled={isLoading} // Changed to isLoading
-                            colorClass="accent-green-600 bg-green-100"
+                            colorClass="accent-green-700 bg-green-200"
                         />
                     </div>
-                </div>
 
-                {/* ADSR Controls */}
-                <div className="w-full mt-6 md:mt-8 pt-4 md:pt-6 border-t border-green-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
-                    <ParameterSlider
-                        label="Attack" value={userAttack} setter={setUserAttack}
-                        min="0.01" max="1" step="0.01" unit=" s"
-                        explanation={getExplanation('attack')}
-                        isDisabled={isLoading} // Changed to isLoading
-                        colorClass="accent-teal-600 bg-teal-100"
-                    />
-                    <ParameterSlider
-                        label="Decay" value={userDecay} setter={setUserDecay}
-                        min="0.05" max="2" step="0.05" unit=" s"
-                        explanation={getExplanation('decay')}
-                        isDisabled={isLoading} // Changed to isLoading
-                        colorClass="accent-teal-600 bg-teal-100"
-                    />
-                    <ParameterSlider
-                        label="Sustain" value={userSustain} setter={setUserSustain}
-                        min="0.1" max="1" step="0.01" unit=" "
-                        explanation={getExplanation('sustain')}
-                        isDisabled={isLoading} // Changed to isLoading
-                        colorClass="accent-teal-600 bg-teal-100"
-                    />
-                    <ParameterSlider
-                        label="Release" value={userRelease} setter={setUserRelease}
-                        min="0.1" max="3" step="0.05" unit=" s"
-                        explanation={getExplanation('release')}
-                        isDisabled={isLoading} // Changed to isLoading
-                        colorClass="accent-teal-600 bg-teal-100"
-                    />
-                </div>
-
-                {/* Master Volume Slider */}
-                <div className="w-full mt-6 md:mt-8 pt-4 md:pt-6 border-t border-green-200">
-                    <ParameterSlider
-                        label="Master Vol" value={userMasterVolume} setter={setUserMasterVolume}
-                        min="-40" max="0" step="1" unit=" dB"
-                        explanation={getExplanation('masterVolume')}
-                        isDisabled={isLoading} // Changed to isLoading
-                        colorClass="accent-green-700 bg-green-200"
-                    />
-                </div>
-
-                <div className="text-center text-gray-700 text-xs md:text-sm mt-4 md:mt-6 italic px-2">
-                    **Instructions:** Tap "New Challenge" for a target sound. Adjust "Wave 1" and "Wave 2" parameters and ADSR settings to match it. "Accuracy" shows how close you are!
+                    <div className="text-center text-gray-700 text-xs md:text-sm mt-4 md:mt-6 italic px-2">
+                        **Instructions:** Tap "New Challenge" for a target sound. Adjust "Wave 1" and "Wave 2" parameters and ADSR settings to match it. "Accuracy" shows how close you are!
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

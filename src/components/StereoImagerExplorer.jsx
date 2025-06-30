@@ -1,6 +1,25 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import * as Tone from 'tone';
 import { Play, Pause, Maximize } from 'lucide-react'; // Using Maximize icon for Stereo Imager
+import SEOHead from './SEOHead';
+
+
+// Define the tool object for SEO structured data
+const stereoImagerExplorerTool = {
+    id: 'stereo-imager-explorer',
+    name: 'Stereo Imager',
+    description: 'Adjust stereo width and imaging with precision controls for professional mixes.',
+    path: '/stereo-imager-explorer',
+    categories: [
+        'Stereo Imaging',
+        'Audio Mixing',
+        'Width Control',
+        'Music Production',
+        'Mastering'
+    ]
+};
+
+
 
 // Define the path to your C4 piano sample.
 // IMPORTANT NOTE: For best results with Stereo Imager, a true stereo audio source
@@ -240,72 +259,81 @@ const StereoImagerExplorerContent = () => {
     };
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center p-8 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #d4e7f7 0%, #b9d8e0 50%, #9cc9c9 100%)', // Light blue/cyan gradient
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Floating Icons Background */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+        <>
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="stereo-imager-explorer" 
+                tool={stereoImagerExplorerTool}
+                customData={{}}
+            />
+
+            <div
+                className="min-h-screen flex flex-col items-center p-8 relative overflow-hidden w-full"
                 style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%2364748b' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
+                    background: 'linear-gradient(135deg, #d4e7f7 0%, #b9d8e0 50%, #9cc9c9 100%)', // Light blue/cyan gradient
+                    fontFamily: 'Inter, sans-serif',
                 }}
-            ></div>
+            >
+                {/* Floating Icons Background */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%2364748b' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
+                    }}
+                ></div>
 
-            <div className="text-center mb-10 z-10">
-                <div className="flex items-center justify-center gap-4 mb-4">
-                    <Maximize size={48} className="text-blue-700" />
-                    <h1 className="text-5xl font-extrabold text-blue-900 drop-shadow-lg">Stereo Imager Explorer</h1>
-                </div>
-                {!isAudioReady && (
-                    <p className="text-blue-700 text-sm mt-4 animate-pulse">
-                        Click "Play Audio Loop" to activate audio and begin.
+                <div className="text-center mb-10 z-10">
+                    <div className="flex items-center justify-center gap-4 mb-4">
+                        <Maximize size={48} className="text-blue-700" />
+                        <h1 className="text-5xl font-extrabold text-blue-900 drop-shadow-lg">Stereo Imager Explorer</h1>
+                    </div>
+                    {!isAudioReady && (
+                        <p className="text-blue-700 text-sm mt-4 animate-pulse">
+                            Click "Play Audio Loop" to activate audio and begin.
+                        </p>
+                    )}
+                    <p className="text-blue-800 text-sm mt-2">
+                        Note: For the most noticeable effect, use a *true stereo* audio source. This example uses a mono piano sample.
                     </p>
-                )}
-                <p className="text-blue-800 text-sm mt-2">
-                    Note: For the most noticeable effect, use a *true stereo* audio source. This example uses a mono piano sample.
-                </p>
-            </div>
+                </div>
 
-            <div className="bg-white/80 backdrop-blur-sm p-8 rounded-xl shadow-lg w-full max-w-4xl flex flex-col items-center space-y-8 z-10 border border-blue-200">
+                <div className="bg-white/80 backdrop-blur-sm p-8 rounded-xl shadow-lg w-full max-w-4xl flex flex-col items-center space-y-8 z-10 border border-blue-200">
 
-                {/* Play/Pause Button */}
-                <button
-                    type="button"
-                    onClick={togglePlay}
-                    className={`px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3 transition-all duration-300
-                                ${isPlaying
-                                ? 'bg-blue-700 hover:bg-blue-800 text-white'
-                                : 'bg-blue-500 hover:bg-blue-600 text-white'}
-                                ${!isAudioReady && !isPlaying ? 'opacity-50 cursor-not-allowed' : ''}
-                    `}
-                >
-                    {isPlaying ? <Pause size={24} /> : <Play size={24} />}
-                    {isPlaying ? "Stop Audio Loop" : "Play Audio Loop"}
-                </button>
+                    {/* Play/Pause Button */}
+                    <button
+                        type="button"
+                        onClick={togglePlay}
+                        className={`px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3 transition-all duration-300
+                                    ${isPlaying
+                                    ? 'bg-blue-700 hover:bg-blue-800 text-white'
+                                    : 'bg-blue-500 hover:bg-blue-600 text-white'}
+                                    ${!isAudioReady && !isPlaying ? 'opacity-50 cursor-not-allowed' : ''}
+                        `}
+                    >
+                        {isPlaying ? <Pause size={24} /> : <Play size={24} />}
+                        {isPlaying ? "Stop Audio Loop" : "Play Audio Loop"}
+                    </button>
 
-                {/* Width Slider */}
-                <div className="grid grid-cols-1 gap-6 w-full mt-8">
-                    <div className="flex flex-col items-center">
-                        <label className="text-blue-800 font-medium mb-2">Width: {width.toFixed(2)}</label>
-                        <input
-                            type="range"
-                            min="0"
-                            max="1"
-                            step="0.01"
-                            value={width}
-                            onChange={(e) => setWidth(parseFloat(e.target.value))}
-                            className="w-full accent-blue-600 h-2 rounded-lg appearance-none cursor-pointer bg-blue-100"
-                            disabled={!isAudioReady}
-                        />
-                        <p className="text-blue-700 text-sm mt-1 italic">{getExplanation('width')}</p>
+                    {/* Width Slider */}
+                    <div className="grid grid-cols-1 gap-6 w-full mt-8">
+                        <div className="flex flex-col items-center">
+                            <label className="text-blue-800 font-medium mb-2">Width: {width.toFixed(2)}</label>
+                            <input
+                                type="range"
+                                min="0"
+                                max="1"
+                                step="0.01"
+                                value={width}
+                                onChange={(e) => setWidth(parseFloat(e.target.value))}
+                                className="w-full accent-blue-600 h-2 rounded-lg appearance-none cursor-pointer bg-blue-100"
+                                disabled={!isAudioReady}
+                            />
+                            <p className="text-blue-700 text-sm mt-1 italic">{getExplanation('width')}</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

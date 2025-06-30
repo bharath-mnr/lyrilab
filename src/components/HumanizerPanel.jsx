@@ -1,6 +1,24 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import * as Tone from 'tone';
 import { Play, Pause, User, Zap } from 'lucide-react';
+import SEOHead from './SEOHead';
+
+
+// Define the tool object for SEO structured data
+const humanizerPanelTool = {
+    id: 'humanizer-panel',
+    name: 'MIDI Humanizer',
+    description: 'Add natural human-like variations to your MIDI performances for more expressive music.',
+    path: '/humanizer-panel',
+    categories: [
+        'MIDI Processing',
+        'Performance Enhancement',
+        'Music Production',
+        'Timing Variations',
+        'Expression'
+    ]
+};
+
 
 // --- AUDIO CONTEXT ---
 export const AudioContext = createContext(null);
@@ -351,143 +369,152 @@ const HumanizerPanelContent = () => {
     const visualSteps = 8;
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #f0e0ff 0%, #e6d3ff 50%, #dbcbff 100%)',
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Floating Icons Background */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+        <>
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="humanizer-panel" 
+                tool={humanizerPanelTool}
+                customData={{}}
+            />
+
+            <div
+                className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
                 style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%238a2be2' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 20h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
+                    background: 'linear-gradient(135deg, #f0e0ff 0%, #e6d3ff 50%, #dbcbff 100%)',
+                    fontFamily: 'Inter, sans-serif',
                 }}
-            ></div>
+            >
+                {/* Floating Icons Background */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%238a2be2' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 20h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
+                    }}
+                ></div>
 
-            <div className="text-center mb-6 md:mb-10 z-10 w-full px-2">
-                <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
-                    <User size={36} className="text-purple-700 md:mb-0 mb-2" />
-                    <h1 className="text-3xl md:text-5xl font-extrabold text-purple-900 drop-shadow-lg">
-                        Humanizer Panel.
-                    </h1>
-                </div>
-                {!isAudioReady && !isAudioLoading && (
-                    <p className="text-purple-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
-                        Click "Play Metronome" to begin.
-                    </p>
-                )}
-                {isAudioLoading && (
-                    <p className="text-purple-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
-                        Initializing audio...
-                    </p>
-                )}
-            </div>
-
-            <div className="bg-white/80 backdrop-blur-sm p-4 md:p-8 rounded-xl shadow-lg w-full max-w-4xl flex flex-col items-center space-y-4 md:space-y-8 z-10 border border-purple-200 mx-2">
-
-                {/* Play/Pause and Reset Buttons */}
-                <div className="flex flex-col md:flex-row items-center gap-4 w-full">
-                    <button
-                        type="button"
-                        onClick={togglePlay}
-                        className={`px-6 py-3 rounded-full font-bold text-lg flex items-center justify-center gap-3 transition-all duration-300 w-full md:w-auto
-                                    ${isPlaying
-                                    ? 'bg-purple-700 hover:bg-purple-800 text-white'
-                                    : 'bg-purple-500 hover:bg-purple-600 text-white'}
-                                    ${(!isAudioReady && !isPlaying) || isAudioLoading ? 'opacity-50 cursor-not-allowed' : ''}
-                            `}
-                        disabled={isAudioLoading}
-                    >
-                        {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-                        {isPlaying ? "Stop Metronome" : "Play Metronome"}
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={resetParameters}
-                        className={`px-6 py-3 rounded-full font-bold text-lg flex items-center justify-center gap-3 transition-all duration-300 w-full md:w-auto
-                                bg-gray-500 hover:bg-gray-600 text-white
-                                ${isAudioLoading ? 'opacity-50 cursor-not-allowed' : ''}
-                        `}
-                        disabled={isAudioLoading}
-                    >
-                        <Zap size={18} /> Reset All
-                    </button>
-                </div>
-
-                {/* Parameter Controls */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full mt-4 md:mt-8">
-                    {/* BPM Slider */}
-                    <ParameterSlider
-                        label="BPM" value={bpm} setter={setBpm}
-                        min="60" max="240" step="1" unit=" BPM"
-                        explanation={getExplanation('bpm')}
-                        isAudioReady={isAudioReady}
-                    />
-
-                    {/* Timing Amount Slider */}
-                    <ParameterSlider
-                        label="Timing Random" value={timingAmount} setter={setTimingAmount}
-                        min="0" max="100" step="1" unit=" ms"
-                        explanation={getExplanation('timingAmount')}
-                        isAudioReady={isAudioReady}
-                    />
-
-                    {/* Velocity Amount Slider */}
-                    <ParameterSlider
-                        label="Vol Random" value={velocityAmount} setter={setVelocityAmount}
-                        min="0.0" max="1.0" step="0.01"
-                        explanation={getExplanation('velocityAmount')}
-                        isAudioReady={isAudioReady}
-                    />
-
-                    {/* Subdivision Select */}
-                    <div className="flex flex-col items-center">
-                        <label className="text-gray-800 font-medium mb-1 md:mb-2 text-sm md:text-base">
-                            Subdivision: {subdivisionOptions.find(opt => opt.value === subdivision)?.label}
-                        </label>
-                        <select
-                            value={subdivision}
-                            onChange={(e) => setSubdivision(e.target.value)}
-                            className="w-full p-2 text-sm md:text-base rounded-md bg-purple-100 text-gray-800 border border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            disabled={!isAudioReady}
-                        >
-                            {subdivisionOptions.map(option => (
-                                <option key={option.value} value={option.value}>{option.label}</option>
-                            ))}
-                        </select>
-                        <p className="text-gray-700 text-xs md:text-sm mt-1 italic text-center">{getExplanation('subdivision')}</p>
+                <div className="text-center mb-6 md:mb-10 z-10 w-full px-2">
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
+                        <User size={36} className="text-purple-700 md:mb-0 mb-2" />
+                        <h1 className="text-3xl md:text-5xl font-extrabold text-purple-900 drop-shadow-lg">
+                            Humanizer Panel.
+                        </h1>
                     </div>
+                    {!isAudioReady && !isAudioLoading && (
+                        <p className="text-purple-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
+                            Click "Play Metronome" to begin.
+                        </p>
+                    )}
+                    {isAudioLoading && (
+                        <p className="text-purple-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
+                            Initializing audio...
+                        </p>
+                    )}
                 </div>
 
-                {/* Visual Beat Indicator */}
-                <div className="w-full flex justify-center mt-6 md:mt-8 px-2">
-                    <div className="grid gap-1 md:gap-2 p-2 md:p-4 bg-gray-100 rounded-lg shadow-inner overflow-x-auto"
-                        style={{
-                            gridTemplateColumns: `repeat(${visualSteps}, minmax(0, 1fr))`,
-                            width: '100%',
-                            maxWidth: '100%',
-                            justifyItems: 'center'
-                        }}>
-                        {Array.from({ length: visualSteps }).map((_, index) => (
-                            <div
-                                key={index}
-                                className={`w-6 h-6 md:w-8 md:h-8 rounded-full transition-all duration-100 flex items-center justify-center text-xs md:text-sm font-bold
-                                    ${activeBeatIndex === index
-                                        ? 'bg-purple-600 text-white transform scale-110 shadow-md'
-                                        : 'bg-gray-300 text-gray-800'}
-                                    ${!isAudioReady ? 'opacity-50' : ''}
+                <div className="bg-white/80 backdrop-blur-sm p-4 md:p-8 rounded-xl shadow-lg w-full max-w-4xl flex flex-col items-center space-y-4 md:space-y-8 z-10 border border-purple-200 mx-2">
+
+                    {/* Play/Pause and Reset Buttons */}
+                    <div className="flex flex-col md:flex-row items-center gap-4 w-full">
+                        <button
+                            type="button"
+                            onClick={togglePlay}
+                            className={`px-6 py-3 rounded-full font-bold text-lg flex items-center justify-center gap-3 transition-all duration-300 w-full md:w-auto
+                                        ${isPlaying
+                                        ? 'bg-purple-700 hover:bg-purple-800 text-white'
+                                        : 'bg-purple-500 hover:bg-purple-600 text-white'}
+                                        ${(!isAudioReady && !isPlaying) || isAudioLoading ? 'opacity-50 cursor-not-allowed' : ''}
                                 `}
+                            disabled={isAudioLoading}
+                        >
+                            {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+                            {isPlaying ? "Stop Metronome" : "Play Metronome"}
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={resetParameters}
+                            className={`px-6 py-3 rounded-full font-bold text-lg flex items-center justify-center gap-3 transition-all duration-300 w-full md:w-auto
+                                    bg-gray-500 hover:bg-gray-600 text-white
+                                    ${isAudioLoading ? 'opacity-50 cursor-not-allowed' : ''}
+                            `}
+                            disabled={isAudioLoading}
+                        >
+                            <Zap size={18} /> Reset All
+                        </button>
+                    </div>
+
+                    {/* Parameter Controls */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full mt-4 md:mt-8">
+                        {/* BPM Slider */}
+                        <ParameterSlider
+                            label="BPM" value={bpm} setter={setBpm}
+                            min="60" max="240" step="1" unit=" BPM"
+                            explanation={getExplanation('bpm')}
+                            isAudioReady={isAudioReady}
+                        />
+
+                        {/* Timing Amount Slider */}
+                        <ParameterSlider
+                            label="Timing Random" value={timingAmount} setter={setTimingAmount}
+                            min="0" max="100" step="1" unit=" ms"
+                            explanation={getExplanation('timingAmount')}
+                            isAudioReady={isAudioReady}
+                        />
+
+                        {/* Velocity Amount Slider */}
+                        <ParameterSlider
+                            label="Vol Random" value={velocityAmount} setter={setVelocityAmount}
+                            min="0.0" max="1.0" step="0.01"
+                            explanation={getExplanation('velocityAmount')}
+                            isAudioReady={isAudioReady}
+                        />
+
+                        {/* Subdivision Select */}
+                        <div className="flex flex-col items-center">
+                            <label className="text-gray-800 font-medium mb-1 md:mb-2 text-sm md:text-base">
+                                Subdivision: {subdivisionOptions.find(opt => opt.value === subdivision)?.label}
+                            </label>
+                            <select
+                                value={subdivision}
+                                onChange={(e) => setSubdivision(e.target.value)}
+                                className="w-full p-2 text-sm md:text-base rounded-md bg-purple-100 text-gray-800 border border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                disabled={!isAudioReady}
                             >
-                                {index + 1}
-                            </div>
-                        ))}
+                                {subdivisionOptions.map(option => (
+                                    <option key={option.value} value={option.value}>{option.label}</option>
+                                ))}
+                            </select>
+                            <p className="text-gray-700 text-xs md:text-sm mt-1 italic text-center">{getExplanation('subdivision')}</p>
+                        </div>
+                    </div>
+
+                    {/* Visual Beat Indicator */}
+                    <div className="w-full flex justify-center mt-6 md:mt-8 px-2">
+                        <div className="grid gap-1 md:gap-2 p-2 md:p-4 bg-gray-100 rounded-lg shadow-inner overflow-x-auto"
+                            style={{
+                                gridTemplateColumns: `repeat(${visualSteps}, minmax(0, 1fr))`,
+                                width: '100%',
+                                maxWidth: '100%',
+                                justifyItems: 'center'
+                            }}>
+                            {Array.from({ length: visualSteps }).map((_, index) => (
+                                <div
+                                    key={index}
+                                    className={`w-6 h-6 md:w-8 md:h-8 rounded-full transition-all duration-100 flex items-center justify-center text-xs md:text-sm font-bold
+                                        ${activeBeatIndex === index
+                                            ? 'bg-purple-600 text-white transform scale-110 shadow-md'
+                                            : 'bg-gray-300 text-gray-800'}
+                                        ${!isAudioReady ? 'opacity-50' : ''}
+                                    `}
+                                >
+                                    {index + 1}
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

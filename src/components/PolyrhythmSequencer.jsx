@@ -1,6 +1,22 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import * as Tone from 'tone';
 import { Play, Pause, Music, Zap } from 'lucide-react'; // Music icon for sequencer, Zap for rhythm/beat
+import SEOHead from './SEOHead';
+
+// Define the tool object for SEO structured data
+const polyrhythmSequencerTool = {
+    id: 'polyrhythm-sequencer',
+    name: 'Polyrhythm Sequencer',
+    description: 'Create and visualize complex polyrhythmic patterns with multiple layered rhythms.',
+    path: '/polyrhythm-sequencer',
+    categories: [
+        'Polyrhythms',
+        'Rhythm Training',
+        'Complex Patterns',
+        'Music Composition',
+        'Percussion'
+    ]
+};
 
 // Define dummy sample paths. In a real application, you'd replace these with actual MP3 files.
 // For example: /samples/kick.mp3, /samples/snare.mp3
@@ -405,105 +421,115 @@ const PolyrhythmSequencerContent = () => {
 
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #f0e7f7 0%, #e0d4f0 50%, #d0c1e4 100%)', // Light purplish gradient
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Floating Icons Background */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+        <>
+
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="polyrhythm-sequencer" 
+                tool={polyrhythmSequencerTool}
+                customData={{}}
+            />
+
+            <div
+                className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8 relative overflow-hidden w-full"
                 style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%238b5cf6' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
+                    background: 'linear-gradient(135deg, #f0e7f7 0%, #e0d4f0 50%, #d0c1e4 100%)', // Light purplish gradient
+                    fontFamily: 'Inter, sans-serif',
                 }}
-            ></div>
+            >
+                {/* Floating Icons Background */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%238b5cf6' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
+                    }}
+                ></div>
 
-            <div className="text-center mb-6 sm:mb-8 lg:mb-10 z-10">
-                <div className="flex items-center justify-center gap-2 sm:gap-4 mb-3 sm:mb-4">
-                    <Music size={32} className="text-purple-700 sm:w-12 sm:h-12" />
-                    <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-purple-900 drop-shadow-lg">Polyrhythm Sequencer</h1>
+                <div className="text-center mb-6 sm:mb-8 lg:mb-10 z-10">
+                    <div className="flex items-center justify-center gap-2 sm:gap-4 mb-3 sm:mb-4">
+                        <Music size={32} className="text-purple-700 sm:w-12 sm:h-12" />
+                        <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-purple-900 drop-shadow-lg">Polyrhythm Sequencer</h1>
+                    </div>
+                    {!isAudioReady && !isAudioLoading && (
+                        <p className="text-purple-700 text-xs sm:text-sm mt-4 animate-pulse px-4">
+                            Click "Play Sequences" to activate audio and begin.
+                        </p>
+                    )}
+                    {isAudioLoading && (
+                        <p className="text-purple-700 text-xs sm:text-sm mt-4 animate-pulse px-4">
+                            Loading drum samples... Please wait.
+                        </p>
+                    )}
                 </div>
-                {!isAudioReady && !isAudioLoading && (
-                    <p className="text-purple-700 text-xs sm:text-sm mt-4 animate-pulse px-4">
-                        Click "Play Sequences" to activate audio and begin.
-                    </p>
-                )}
-                 {isAudioLoading && (
-                    <p className="text-purple-700 text-xs sm:text-sm mt-4 animate-pulse px-4">
-                        Loading drum samples... Please wait.
-                    </p>
-                )}
-            </div>
 
-            <div className="bg-white/80 backdrop-blur-sm p-4 sm:p-6 lg:p-8 rounded-xl shadow-lg w-full max-w-4xl flex flex-col items-center space-y-6 sm:space-y-8 z-10 border border-purple-200">
+                <div className="bg-white/80 backdrop-blur-sm p-4 sm:p-6 lg:p-8 rounded-xl shadow-lg w-full max-w-4xl flex flex-col items-center space-y-6 sm:space-y-8 z-10 border border-purple-200">
 
-                {/* Global Controls: Play/Pause, BPM */}
-                <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 mb-4 sm:mb-6 w-full">
-                    <button
-                        type="button"
-                        onClick={togglePlay}
-                        className={`px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold text-base sm:text-lg flex items-center gap-2 sm:gap-3 transition-all duration-300 touch-manipulation min-w-0 w-full sm:w-auto
-                                ${isPlaying
-                                ? 'bg-purple-700 hover:bg-purple-800 text-white'
-                                : 'bg-purple-500 hover:bg-purple-600 text-white'}
-                                ${(!isAudioReady && !isPlaying) || isAudioLoading ? 'opacity-50 cursor-not-allowed' : ''}
-                        `}
-                        disabled={isAudioLoading} // Disable button while audio is loading
-                    >
-                        {isPlaying ? <Pause size={20} className="sm:w-6 sm:h-6" /> : <Play size={20} className="sm:w-6 sm:h-6" />}
-                        <span className="truncate">{isPlaying ? "Stop Sequences" : "Play Sequences"}</span>
-                    </button>
+                    {/* Global Controls: Play/Pause, BPM */}
+                    <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 mb-4 sm:mb-6 w-full">
+                        <button
+                            type="button"
+                            onClick={togglePlay}
+                            className={`px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold text-base sm:text-lg flex items-center gap-2 sm:gap-3 transition-all duration-300 touch-manipulation min-w-0 w-full sm:w-auto
+                                    ${isPlaying
+                                    ? 'bg-purple-700 hover:bg-purple-800 text-white'
+                                    : 'bg-purple-500 hover:bg-purple-600 text-white'}
+                                    ${(!isAudioReady && !isPlaying) || isAudioLoading ? 'opacity-50 cursor-not-allowed' : ''}
+                            `}
+                            disabled={isAudioLoading} // Disable button while audio is loading
+                        >
+                            {isPlaying ? <Pause size={20} className="sm:w-6 sm:h-6" /> : <Play size={20} className="sm:w-6 sm:h-6" />}
+                            <span className="truncate">{isPlaying ? "Stop Sequences" : "Play Sequences"}</span>
+                        </button>
 
-                    <div className="flex flex-col items-center w-full sm:w-auto min-w-0">
-                        <label className="text-purple-800 font-medium mb-2 text-sm sm:text-base">BPM: {bpm.toFixed(0)}</label>
-                        <input
-                            type="range"
-                            min="60"
-                            max="240"
-                            step="1"
-                            value={bpm}
-                            onChange={(e) => setBpm(parseFloat(e.target.value))}
-                            className="w-full sm:w-48 accent-purple-600 h-2 rounded-lg appearance-none cursor-pointer bg-purple-100 touch-manipulation"
-                            disabled={!isAudioReady}
+                        <div className="flex flex-col items-center w-full sm:w-auto min-w-0">
+                            <label className="text-purple-800 font-medium mb-2 text-sm sm:text-base">BPM: {bpm.toFixed(0)}</label>
+                            <input
+                                type="range"
+                                min="60"
+                                max="240"
+                                step="1"
+                                value={bpm}
+                                onChange={(e) => setBpm(parseFloat(e.target.value))}
+                                className="w-full sm:w-48 accent-purple-600 h-2 rounded-lg appearance-none cursor-pointer bg-purple-100 touch-manipulation"
+                                disabled={!isAudioReady}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Polyrhythm Grids */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 w-full mt-4 sm:mt-6 lg:mt-8">
+                        {/* Rhythm 1 (Kick) */}
+                        <RhythmGrid
+                            label="Kick (8th notes)"
+                            pattern={rhythm1Pattern}
+                            setPattern={setRhythm1Pattern}
+                            steps={rhythm1Steps}
+                            setSteps={setRhythm1Steps} // Pass setter for steps
+                            activeStep={activeStep1}
+                            colorClass="text-purple-700"
+                            isAudioReady={isAudioReady}
+                        />
+
+                        {/* Rhythm 2 (Snare) */}
+                        <RhythmGrid
+                            label="Snare (8th notes)"
+                            pattern={rhythm2Pattern}
+                            setPattern={setRhythm2Pattern}
+                            steps={rhythm2Steps}
+                            setSteps={setRhythm2Steps} // Pass setter for steps
+                            activeStep={activeStep2}
+                            colorClass="text-indigo-700"
+                            isAudioReady={isAudioReady}
                         />
                     </div>
-                </div>
 
-                {/* Polyrhythm Grids */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 w-full mt-4 sm:mt-6 lg:mt-8">
-                    {/* Rhythm 1 (Kick) */}
-                    <RhythmGrid
-                        label="Kick (8th notes)"
-                        pattern={rhythm1Pattern}
-                        setPattern={setRhythm1Pattern}
-                        steps={rhythm1Steps}
-                        setSteps={setRhythm1Steps} // Pass setter for steps
-                        activeStep={activeStep1}
-                        colorClass="text-purple-700"
-                        isAudioReady={isAudioReady}
-                    />
-
-                    {/* Rhythm 2 (Snare) */}
-                    <RhythmGrid
-                        label="Snare (8th notes)"
-                        pattern={rhythm2Pattern}
-                        setPattern={setRhythm2Pattern}
-                        steps={rhythm2Steps}
-                        setSteps={setRhythm2Steps} // Pass setter for steps
-                        activeStep={activeStep2}
-                        colorClass="text-indigo-700"
-                        isAudioReady={isAudioReady}
-                    />
-                </div>
-
-                <div className="text-center text-purple-700 text-xs sm:text-sm mt-4 sm:mt-6 italic px-2">
-                    Adjusting "Steps" for a rhythm will reset its pattern.
-                    The interaction of different "Steps" numbers creates the polyrhythm effect.
+                    <div className="text-center text-purple-700 text-xs sm:text-sm mt-4 sm:mt-6 italic px-2">
+                        Adjusting "Steps" for a rhythm will reset its pattern.
+                        The interaction of different "Steps" numbers creates the polyrhythm effect.
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

@@ -1,6 +1,24 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import * as Tone from 'tone';
 import { Play, Pause, Circle, Square, Triangle, Activity, Volume2, Waves } from 'lucide-react'; // Icons for play/pause, waveform types, volume, and general waves
+import SEOHead from './SEOHead';
+
+
+// Define the tool object for SEO structured data
+const waveformCombinerTool = {
+    id: 'waveform-combiner',
+    name: 'Waveform Combiner',
+    description: 'Mix and combine multiple waveforms to create complex sounds with unique textures.',
+    path: '/waveform-combiner',
+    categories: [
+        'Waveform Synthesis',
+        'Sound Design',
+        'Harmonic Mixing',
+        'Audio Processing',
+        'Synthesis'
+    ]
+};
+
 
 // --- AUDIO CONTEXT ---
 // This context manages the global Tone.js audio state, ensuring only one audio context.
@@ -475,179 +493,188 @@ const WaveformCombinerContent = () => {
     ];
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #e6ffe6 0%, #ccffcc 50%, #b3ffb3 100%)',
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Floating Icons Background */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+        <>
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="waveform-combiner" 
+                tool={waveformCombinerTool}
+                customData={{}}
+            />
+
+            <div
+                className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
                 style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%2322c55e' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
+                    background: 'linear-gradient(135deg, #e6ffe6 0%, #ccffcc 50%, #b3ffb3 100%)',
+                    fontFamily: 'Inter, sans-serif',
                 }}
-            ></div>
+            >
+                {/* Floating Icons Background */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%2322c55e' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
+                    }}
+                ></div>
 
-            <div className="text-center mb-6 md:mb-10 z-10 w-full px-2">
-                <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
-                    <Waves size={36} className="text-green-700 md:mb-0 mb-2" />
-                    <h1 className="text-3xl md:text-5xl font-extrabold text-green-900 drop-shadow-lg">
-                        Waveform Combiner
-                    </h1>
-                </div>
-                {isLoading && (
-                    <p className="text-green-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
-                        Setting up audio engine...
-                    </p>
-                )}
-                {!isLoading && !isAudioReady && (
-                    <p className="text-green-700 text-xs md:text-sm mt-2 md:mt-4">
-                        Click "Play" to activate audio.
-                    </p>
-                )}
-                {!isLoading && isAudioReady && (
-                    <p className="text-green-600 text-xs md:text-sm mt-2 md:mt-4">
-                        Ready. Mix two waveforms and play!
-                    </p>
-                )}
-            </div>
-
-            <div className="bg-white/80 backdrop-blur-sm p-4 md:p-8 rounded-xl shadow-lg w-full max-w-5xl flex flex-col items-center space-y-4 md:space-y-8 z-10 border border-green-200 mx-2">
-
-                {/* Play and Stop Sound Buttons */}
-                <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-4 md:mb-6 w-full">
-                    <button
-                        type="button"
-                        onClick={playNote}
-                        className={`px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full
-                                ${!isPlaying && !isLoading
-                                    ? 'bg-green-500 hover:bg-green-600 text-white'
-                                    : 'bg-gray-400 cursor-not-allowed text-gray-700'}
-                                `}
-                        disabled={isPlaying || isLoading}
-                    >
-                        <Play size={20} />
-                        Play
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={stopNote}
-                        className={`px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full
-                                ${isPlaying && isAudioReady
-                                    ? 'bg-green-700 hover:bg-green-800 text-white'
-                                    : 'bg-gray-400 cursor-not-allowed text-gray-700'}
-                                `}
-                        disabled={!isPlaying || !isAudioReady}
-                    >
-                        <Pause size={20} />
-                        Stop
-                    </button>
+                <div className="text-center mb-6 md:mb-10 z-10 w-full px-2">
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
+                        <Waves size={36} className="text-green-700 md:mb-0 mb-2" />
+                        <h1 className="text-3xl md:text-5xl font-extrabold text-green-900 drop-shadow-lg">
+                            Waveform Combiner
+                        </h1>
+                    </div>
+                    {isLoading && (
+                        <p className="text-green-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
+                            Setting up audio engine...
+                        </p>
+                    )}
+                    {!isLoading && !isAudioReady && (
+                        <p className="text-green-700 text-xs md:text-sm mt-2 md:mt-4">
+                            Click "Play" to activate audio.
+                        </p>
+                    )}
+                    {!isLoading && isAudioReady && (
+                        <p className="text-green-600 text-xs md:text-sm mt-2 md:mt-4">
+                            Ready. Mix two waveforms and play!
+                        </p>
+                    )}
                 </div>
 
-                {/* Waveform Visualizer */}
-                <div className="w-full px-2">
-                    <WaveformVisualizer
-                        waveformAnalyzer={waveformAnalyzer}
-                        isAudioReady={isAudioReady}
-                        isPlaying={isPlaying}
-                    />
-                </div>
+                <div className="bg-white/80 backdrop-blur-sm p-4 md:p-8 rounded-xl shadow-lg w-full max-w-5xl flex flex-col items-center space-y-4 md:space-y-8 z-10 border border-green-200 mx-2">
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 lg:gap-8 w-full mt-4 md:mt-6">
-                    {/* Wave 1 Controls */}
-                    <div className="bg-green-50/70 p-4 md:p-6 rounded-lg border border-green-100 flex flex-col items-center shadow-inner">
-                        <h2 className="text-xl md:text-2xl font-bold text-green-800 mb-3 md:mb-4">Wave 1</h2>
-                        <div className="flex justify-center gap-1 md:gap-2 mb-4 md:mb-6 flex-wrap">
-                            {waveformOptions.map(({ type, label, Icon }) => (
-                                <button
-                                    key={`wave1-${type}`}
-                                    onClick={() => setWaveformType1(type)}
-                                    className={`px-3 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold flex items-center gap-1 transition-all duration-200
-                                        ${waveformType1 === type
-                                            ? 'bg-green-600 text-white shadow-md'
-                                            : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}
-                                        ${isLoading ? 'cursor-not-allowed opacity-50' : ''}
+                    {/* Play and Stop Sound Buttons */}
+                    <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-4 md:mb-6 w-full">
+                        <button
+                            type="button"
+                            onClick={playNote}
+                            className={`px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full
+                                    ${!isPlaying && !isLoading
+                                        ? 'bg-green-500 hover:bg-green-600 text-white'
+                                        : 'bg-gray-400 cursor-not-allowed text-gray-700'}
                                     `}
-                                    disabled={isLoading}
-                                >
-                                    <Icon size={14} className="flex-shrink-0" />
-                                    <span className="whitespace-nowrap">{label}</span>
-                                </button>
-                            ))}
-                        </div>
-                        <ParameterSlider
-                            label="Freq 1" value={frequency1} setter={setFrequency1}
-                            min="20" max="1000" step="1" unit=" Hz"
-                            explanation={getExplanation('frequency')}
+                            disabled={isPlaying || isLoading}
+                        >
+                            <Play size={20} />
+                            Play
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={stopNote}
+                            className={`px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full
+                                    ${isPlaying && isAudioReady
+                                        ? 'bg-green-700 hover:bg-green-800 text-white'
+                                        : 'bg-gray-400 cursor-not-allowed text-gray-700'}
+                                    `}
+                            disabled={!isPlaying || !isAudioReady}
+                        >
+                            <Pause size={20} />
+                            Stop
+                        </button>
+                    </div>
+
+                    {/* Waveform Visualizer */}
+                    <div className="w-full px-2">
+                        <WaveformVisualizer
+                            waveformAnalyzer={waveformAnalyzer}
                             isAudioReady={isAudioReady}
-                            colorClass="accent-green-600 bg-green-100"
-                        />
-                        <ParameterSlider
-                            label="Vol 1" value={volume1} setter={setVolume1}
-                            min="-60" max="0" step="1" unit=" dB"
-                            explanation={getExplanation('volume')}
-                            isAudioReady={isAudioReady}
-                            colorClass="accent-green-600 bg-green-100"
+                            isPlaying={isPlaying}
                         />
                     </div>
 
-                    {/* Wave 2 Controls */}
-                    <div className="bg-green-50/70 p-4 md:p-6 rounded-lg border border-green-100 flex flex-col items-center shadow-inner">
-                        <h2 className="text-xl md:text-2xl font-bold text-green-800 mb-3 md:mb-4">Wave 2</h2>
-                        <div className="flex justify-center gap-1 md:gap-2 mb-4 md:mb-6 flex-wrap">
-                            {waveformOptions.map(({ type, label, Icon }) => (
-                                <button
-                                    key={`wave2-${type}`}
-                                    onClick={() => setWaveformType2(type)}
-                                    className={`px-3 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold flex items-center gap-1 transition-all duration-200
-                                        ${waveformType2 === type
-                                            ? 'bg-green-600 text-white shadow-md'
-                                            : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}
-                                        ${isLoading ? 'cursor-not-allowed opacity-50' : ''}
-                                    `}
-                                    disabled={isLoading}
-                                >
-                                    <Icon size={14} className="flex-shrink-0" />
-                                    <span className="whitespace-nowrap">{label}</span>
-                                </button>
-                            ))}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 lg:gap-8 w-full mt-4 md:mt-6">
+                        {/* Wave 1 Controls */}
+                        <div className="bg-green-50/70 p-4 md:p-6 rounded-lg border border-green-100 flex flex-col items-center shadow-inner">
+                            <h2 className="text-xl md:text-2xl font-bold text-green-800 mb-3 md:mb-4">Wave 1</h2>
+                            <div className="flex justify-center gap-1 md:gap-2 mb-4 md:mb-6 flex-wrap">
+                                {waveformOptions.map(({ type, label, Icon }) => (
+                                    <button
+                                        key={`wave1-${type}`}
+                                        onClick={() => setWaveformType1(type)}
+                                        className={`px-3 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold flex items-center gap-1 transition-all duration-200
+                                            ${waveformType1 === type
+                                                ? 'bg-green-600 text-white shadow-md'
+                                                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}
+                                            ${isLoading ? 'cursor-not-allowed opacity-50' : ''}
+                                        `}
+                                        disabled={isLoading}
+                                    >
+                                        <Icon size={14} className="flex-shrink-0" />
+                                        <span className="whitespace-nowrap">{label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                            <ParameterSlider
+                                label="Freq 1" value={frequency1} setter={setFrequency1}
+                                min="20" max="1000" step="1" unit=" Hz"
+                                explanation={getExplanation('frequency')}
+                                isAudioReady={isAudioReady}
+                                colorClass="accent-green-600 bg-green-100"
+                            />
+                            <ParameterSlider
+                                label="Vol 1" value={volume1} setter={setVolume1}
+                                min="-60" max="0" step="1" unit=" dB"
+                                explanation={getExplanation('volume')}
+                                isAudioReady={isAudioReady}
+                                colorClass="accent-green-600 bg-green-100"
+                            />
                         </div>
+
+                        {/* Wave 2 Controls */}
+                        <div className="bg-green-50/70 p-4 md:p-6 rounded-lg border border-green-100 flex flex-col items-center shadow-inner">
+                            <h2 className="text-xl md:text-2xl font-bold text-green-800 mb-3 md:mb-4">Wave 2</h2>
+                            <div className="flex justify-center gap-1 md:gap-2 mb-4 md:mb-6 flex-wrap">
+                                {waveformOptions.map(({ type, label, Icon }) => (
+                                    <button
+                                        key={`wave2-${type}`}
+                                        onClick={() => setWaveformType2(type)}
+                                        className={`px-3 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold flex items-center gap-1 transition-all duration-200
+                                            ${waveformType2 === type
+                                                ? 'bg-green-600 text-white shadow-md'
+                                                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}
+                                            ${isLoading ? 'cursor-not-allowed opacity-50' : ''}
+                                        `}
+                                        disabled={isLoading}
+                                    >
+                                        <Icon size={14} className="flex-shrink-0" />
+                                        <span className="whitespace-nowrap">{label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                            <ParameterSlider
+                                label="Freq 2" value={frequency2} setter={setFrequency2}
+                                min="20" max="1000" step="1" unit=" Hz"
+                                explanation={getExplanation('frequency')}
+                                isAudioReady={isAudioReady}
+                                colorClass="accent-green-600 bg-green-100"
+                            />
+                            <ParameterSlider
+                                label="Vol 2" value={volume2} setter={setVolume2}
+                                min="-60" max="0" step="1" unit=" dB"
+                                explanation={getExplanation('volume')}
+                                isAudioReady={isAudioReady}
+                                colorClass="accent-green-600 bg-green-100"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Master Volume Slider */}
+                    <div className="w-full mt-4 md:mt-6 pt-4 md:pt-6 border-t border-green-200 px-2">
                         <ParameterSlider
-                            label="Freq 2" value={frequency2} setter={setFrequency2}
-                            min="20" max="1000" step="1" unit=" Hz"
-                            explanation={getExplanation('frequency')}
+                            label="Master Vol" value={masterVolume} setter={setMasterVolume}
+                            min="-40" max="0" step="1" unit=" dB"
+                            explanation={getExplanation('masterVolume')}
                             isAudioReady={isAudioReady}
-                            colorClass="accent-green-600 bg-green-100"
-                        />
-                        <ParameterSlider
-                            label="Vol 2" value={volume2} setter={setVolume2}
-                            min="-60" max="0" step="1" unit=" dB"
-                            explanation={getExplanation('volume')}
-                            isAudioReady={isAudioReady}
-                            colorClass="accent-green-600 bg-green-100"
+                            colorClass="accent-green-700 bg-green-200"
                         />
                     </div>
-                </div>
 
-                {/* Master Volume Slider */}
-                <div className="w-full mt-4 md:mt-6 pt-4 md:pt-6 border-t border-green-200 px-2">
-                    <ParameterSlider
-                        label="Master Vol" value={masterVolume} setter={setMasterVolume}
-                        min="-40" max="0" step="1" unit=" dB"
-                        explanation={getExplanation('masterVolume')}
-                        isAudioReady={isAudioReady}
-                        colorClass="accent-green-700 bg-green-200"
-                    />
-                </div>
-
-                <div className="text-center text-gray-700 text-xs md:text-sm mt-4 md:mt-6 italic px-2">
-                    Combines two waveforms. Adjust each wave's settings and master volume.
+                    <div className="text-center text-gray-700 text-xs md:text-sm mt-4 md:mt-6 italic px-2">
+                        Combines two waveforms. Adjust each wave's settings and master volume.
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

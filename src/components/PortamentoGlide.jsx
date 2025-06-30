@@ -1,6 +1,23 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import * as Tone from 'tone';
 import { Play, Music, Volume2, VolumeX, TrendingUp, TrendingDown } from 'lucide-react'; // Added TrendingUp/Down for glide toggle
+import SEOHead from './SEOHead';
+
+
+// Define the tool object for SEO structured data
+const portamentoGlideTool = {
+    id: 'portamento-glide',
+    name: 'Portamento Glide',
+    description: 'Create smooth pitch transitions between notes with portamento and glide effects.',
+    path: '/portamento-glide',
+    categories: [
+        'Pitch Effects',
+        'Sound Design',
+        'Synthesis',
+        'Expression',
+        'Legato'
+    ]
+};
 
 // --- AUDIO CONTEXT ---
 // This context manages the global Tone.js audio state, ensuring only one audio context.
@@ -222,148 +239,157 @@ const PortamentoGlideContent = () => {
     };
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center justify-center p-3 sm:p-4 md:p-8 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #e6e6fa 0%, #d8bfd8 50%, #c084fc 100%)',
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Floating Icons Background */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+        <>
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="portamento-glide" 
+                tool={portamentoGlideTool}
+                customData={{}}
+            />
+
+            <div
+                className="min-h-screen flex flex-col items-center justify-center p-3 sm:p-4 md:p-8 relative overflow-hidden w-full"
                 style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%23a78bfa' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
+                    background: 'linear-gradient(135deg, #e6e6fa 0%, #d8bfd8 50%, #c084fc 100%)',
+                    fontFamily: 'Inter, sans-serif',
                 }}
-            ></div>
-
-            <div className="text-center mb-4 sm:mb-6 md:mb-10 z-10 w-full max-w-5xl">
-                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-purple-900 drop-shadow-lg mb-2 sm:mb-4 leading-tight">
-                    Glide Synthesizer
-                </h1>
-
-                {/* Status Messages */}
-                <div className="min-h-[1.5rem] flex items-center justify-center">
-                    {isLoading && (
-                        <p className="text-purple-700 text-sm sm:text-base animate-pulse">
-                            Setting up audio...
-                        </p>
-                    )}
-                    {!isLoading && !isAudioReady && (
-                        <p className="text-purple-700 text-sm sm:text-base">
-                            Tap any note to activate audio.
-                        </p>
-                    )}
-                    {!isLoading && isAudioReady && (
-                        <p className="text-purple-600 text-sm sm:text-base font-medium">
-                            🎵 Ready! Tap notes and adjust glide.
-                        </p>
-                    )}
-                </div>
-            </div>
-
-            <div className="bg-white/90 backdrop-blur-md p-4 sm:p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-4xl flex flex-col items-center space-y-6 sm:space-y-8 z-10 border border-purple-200/50 mx-2">
-
-                {/* Glide ON/OFF Toggle Button */}
-                <button
-                    onClick={() => {
-                        setIsPortamentoEnabled(prev => !prev);
-                        // Immediately set portamentoTime to 0 when disabling, for clear UX
-                        // The useEffect will then correctly set synth.portamento to 0.
-                        if (isPortamentoEnabled) { // If it was enabled, we are now disabling it
-                            setPortamentoTime(0);
-                        }
+            >
+                {/* Floating Icons Background */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%23a78bfa' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
                     }}
-                    className={`flex items-center justify-center gap-2 py-2 px-4 rounded-full text-sm font-semibold transition-colors duration-200 ease-in-out
-                        ${isPortamentoEnabled
-                            ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-md hover:from-purple-600 hover:to-indigo-600'
-                            : 'bg-gray-200 text-gray-700 shadow-md hover:bg-gray-300'
-                        }
-                        ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
-                    `}
-                    disabled={isLoading}
-                >
-                    {isPortamentoEnabled ? (
-                        <>
-                            <TrendingUp size={20} /> Glide ON
-                        </>
-                    ) : (
-                        <>
-                            <TrendingDown size={20} /> Glide OFF
-                        </>
-                    )}
-                </button>
+                ></div>
 
-                {/* Portamento Time Slider */}
-                <div className="w-full px-2">
-                    <ParameterSlider
-                        label="Glide Time"
-                        value={portamentoTime}
-                        setter={setPortamentoTime}
-                        min="0"
-                        max="3" // Max to 3 seconds
-                        step="0.01"
-                        unit=" s"
-                        explanation={getExplanation('portamentoTime')}
-                        isDisabled={isLoading || !isPortamentoEnabled} // Disable slider when loading or glide is off
-                        colorClass="accent-purple-600 bg-purple-100"
-                    />
-                </div>
+                <div className="text-center mb-4 sm:mb-6 md:mb-10 z-10 w-full max-w-5xl">
+                    <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-purple-900 drop-shadow-lg mb-2 sm:mb-4 leading-tight">
+                        Glide Synthesizer
+                    </h1>
 
-                {/* Note Play Buttons */}
-                <div className="w-full">
-                    <div className="grid grid-cols-4 gap-3 sm:gap-4 md:gap-5">
-                        {notesToPlay.slice(0, 4).map(note => (
-                            <button
-                                key={note}
-                                onMouseDown={() => playNote(note)}
-                                onTouchStart={(e) => { e.preventDefault(); playNote(note); }}
-                                className={`py-4 sm:py-5 md:py-6 rounded-xl text-base sm:text-lg md:text-xl font-bold transition-all duration-100 ease-out transform shadow-lg hover:shadow-xl
-                                    ${!isLoading
-                                        ? 'bg-purple-500 hover:bg-purple-600 active:scale-95 text-white'
-                                        : 'bg-gray-400 cursor-not-allowed text-gray-700'}
-                                `}
-                                disabled={isLoading}
-                                style={{
-                                    WebkitTapHighlightColor: 'transparent',
-                                    touchAction: 'manipulation'
-                                }}
-                            >
-                                {note}
-                            </button>
-                        ))}
-                    </div>
-                    <div className="grid grid-cols-4 gap-3 sm:gap-4 md:gap-5 mt-3 sm:mt-4 md:mt-5">
-                        {notesToPlay.slice(4).map(note => (
-                            <button
-                                key={note}
-                                onMouseDown={() => playNote(note)}
-                                onTouchStart={(e) => { e.preventDefault(); playNote(note); }}
-                                className={`py-4 sm:py-5 md:py-6 rounded-xl text-base sm:text-lg md:text-xl font-bold transition-all duration-100 ease-out transform shadow-lg hover:shadow-xl
-                                    ${!isLoading
-                                        ? 'bg-purple-500 hover:bg-purple-600 active:scale-95 text-white'
-                                        : 'bg-gray-400 cursor-not-allowed text-gray-700'}
-                                `}
-                                disabled={isLoading}
-                                style={{
-                                    WebkitTapHighlightColor: 'transparent',
-                                    touchAction: 'manipulation'
-                                }}
-                            >
-                                {note}
-                            </button>
-                        ))}
+                    {/* Status Messages */}
+                    <div className="min-h-[1.5rem] flex items-center justify-center">
+                        {isLoading && (
+                            <p className="text-purple-700 text-sm sm:text-base animate-pulse">
+                                Setting up audio...
+                            </p>
+                        )}
+                        {!isLoading && !isAudioReady && (
+                            <p className="text-purple-700 text-sm sm:text-base">
+                                Tap any note to activate audio.
+                            </p>
+                        )}
+                        {!isLoading && isAudioReady && (
+                            <p className="text-purple-600 text-sm sm:text-base font-medium">
+                                🎵 Ready! Tap notes and adjust glide.
+                            </p>
+                        )}
                     </div>
                 </div>
 
-                <div className="text-center text-gray-600 text-xs sm:text-sm italic max-w-md px-2">
-                    **Portamento** creates smooth pitch slides between notes. Adjust the **Glide Time** to control the transition speed for a more fluid sound. Use the "Glide ON/OFF" button to enable or disable this effect.
+                <div className="bg-white/90 backdrop-blur-md p-4 sm:p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-4xl flex flex-col items-center space-y-6 sm:space-y-8 z-10 border border-purple-200/50 mx-2">
+
+                    {/* Glide ON/OFF Toggle Button */}
+                    <button
+                        onClick={() => {
+                            setIsPortamentoEnabled(prev => !prev);
+                            // Immediately set portamentoTime to 0 when disabling, for clear UX
+                            // The useEffect will then correctly set synth.portamento to 0.
+                            if (isPortamentoEnabled) { // If it was enabled, we are now disabling it
+                                setPortamentoTime(0);
+                            }
+                        }}
+                        className={`flex items-center justify-center gap-2 py-2 px-4 rounded-full text-sm font-semibold transition-colors duration-200 ease-in-out
+                            ${isPortamentoEnabled
+                                ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-md hover:from-purple-600 hover:to-indigo-600'
+                                : 'bg-gray-200 text-gray-700 shadow-md hover:bg-gray-300'
+                            }
+                            ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
+                        `}
+                        disabled={isLoading}
+                    >
+                        {isPortamentoEnabled ? (
+                            <>
+                                <TrendingUp size={20} /> Glide ON
+                            </>
+                        ) : (
+                            <>
+                                <TrendingDown size={20} /> Glide OFF
+                            </>
+                        )}
+                    </button>
+
+                    {/* Portamento Time Slider */}
+                    <div className="w-full px-2">
+                        <ParameterSlider
+                            label="Glide Time"
+                            value={portamentoTime}
+                            setter={setPortamentoTime}
+                            min="0"
+                            max="3" // Max to 3 seconds
+                            step="0.01"
+                            unit=" s"
+                            explanation={getExplanation('portamentoTime')}
+                            isDisabled={isLoading || !isPortamentoEnabled} // Disable slider when loading or glide is off
+                            colorClass="accent-purple-600 bg-purple-100"
+                        />
+                    </div>
+
+                    {/* Note Play Buttons */}
+                    <div className="w-full">
+                        <div className="grid grid-cols-4 gap-3 sm:gap-4 md:gap-5">
+                            {notesToPlay.slice(0, 4).map(note => (
+                                <button
+                                    key={note}
+                                    onMouseDown={() => playNote(note)}
+                                    onTouchStart={(e) => { e.preventDefault(); playNote(note); }}
+                                    className={`py-4 sm:py-5 md:py-6 rounded-xl text-base sm:text-lg md:text-xl font-bold transition-all duration-100 ease-out transform shadow-lg hover:shadow-xl
+                                        ${!isLoading
+                                            ? 'bg-purple-500 hover:bg-purple-600 active:scale-95 text-white'
+                                            : 'bg-gray-400 cursor-not-allowed text-gray-700'}
+                                    `}
+                                    disabled={isLoading}
+                                    style={{
+                                        WebkitTapHighlightColor: 'transparent',
+                                        touchAction: 'manipulation'
+                                    }}
+                                >
+                                    {note}
+                                </button>
+                            ))}
+                        </div>
+                        <div className="grid grid-cols-4 gap-3 sm:gap-4 md:gap-5 mt-3 sm:mt-4 md:mt-5">
+                            {notesToPlay.slice(4).map(note => (
+                                <button
+                                    key={note}
+                                    onMouseDown={() => playNote(note)}
+                                    onTouchStart={(e) => { e.preventDefault(); playNote(note); }}
+                                    className={`py-4 sm:py-5 md:py-6 rounded-xl text-base sm:text-lg md:text-xl font-bold transition-all duration-100 ease-out transform shadow-lg hover:shadow-xl
+                                        ${!isLoading
+                                            ? 'bg-purple-500 hover:bg-purple-600 active:scale-95 text-white'
+                                            : 'bg-gray-400 cursor-not-allowed text-gray-700'}
+                                    `}
+                                    disabled={isLoading}
+                                    style={{
+                                        WebkitTapHighlightColor: 'transparent',
+                                        touchAction: 'manipulation'
+                                    }}
+                                >
+                                    {note}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="text-center text-gray-600 text-xs sm:text-sm italic max-w-md px-2">
+                        **Portamento** creates smooth pitch slides between notes. Adjust the **Glide Time** to control the transition speed for a more fluid sound. Use the "Glide ON/OFF" button to enable or disable this effect.
+                    </div>
                 </div>
+
+                {/* Footer spacing for mobile */}
+                <div className="h-8 sm:h-4"></div>
             </div>
-
-            {/* Footer spacing for mobile */}
-            <div className="h-8 sm:h-4"></div>
-        </div>
+        </>
     );
 };
 

@@ -1,6 +1,22 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import * as Tone from 'tone';
 import { Play, Pause, Circle, Square, Triangle, Activity, Volume2, Waves, Repeat } from 'lucide-react'; // Icons for play/pause, waveform types, volume, general waves, and LFO repeat
+import SEOHead from './SEOHead';
+
+// Define the tool object for SEO structured data
+const lfoModulationTool = {
+    id: 'lfo-modulation',
+    name: 'LFO Modulation',
+    description: 'Experiment with low frequency oscillator modulation effects for dynamic sound shaping.',
+    path: '/lfo-modulation',
+    categories: [
+        'Sound Design',
+        'Modulation',
+        'Synthesis',
+        'LFO',
+        'Electronic Music'
+    ]
+};
 
 // --- AUDIO CONTEXT ---
 // This context manages the global Tone.js audio state, ensuring only one audio context.
@@ -476,168 +492,179 @@ const LFOModulationContent = () => {
     ];
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 50%, #d8b4fe 100%)',
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Floating Icons Background */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+        <>
+
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="lfo-modulation" 
+                tool={lfoModulationTool}
+                customData={{}}
+            />
+
+            <div
+                className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
                 style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%23a78bfa' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
+                    background: 'linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 50%, #d8b4fe 100%)',
+                    fontFamily: 'Inter, sans-serif',
                 }}
-            ></div>
+            >
+                {/* Floating Icons Background */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%23a78bfa' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
+                    }}
+                ></div>
 
-            <div className="text-center mb-6 md:mb-10 z-10 w-full px-2">
-                <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
-                    <Repeat size={36} className="text-purple-700 md:mb-0 mb-2" />
-                    <h1 className="text-3xl md:text-5xl font-extrabold text-purple-900 drop-shadow-lg">
-                        LFO Modulator
-                    </h1>
-                </div>
-                {isLoading && (
-                    <p className="text-purple-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
-                        Setting up audio engine...
-                    </p>
-                )}
-                {!isLoading && !isAudioReady && (
-                    <p className="text-purple-700 text-xs md:text-sm mt-2 md:mt-4">
-                        Click "Play" to activate audio.
-                    </p>
-                )}
-                {!isLoading && isAudioReady && (
-                    <p className="text-purple-600 text-xs md:text-sm mt-2 md:mt-4">
-                        Ready. Adjust LFO and play!
-                    </p>
-                )}
-            </div>
-
-            <div className="bg-white/80 backdrop-blur-sm p-4 md:p-8 rounded-xl shadow-lg w-full max-w-5xl flex flex-col items-center space-y-4 md:space-y-8 z-10 border border-purple-200 mx-2">
-
-                {/* Play and Stop Sound Buttons */}
-                <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-4 md:mb-6 w-full">
-                    <button
-                        type="button"
-                        onClick={playNote}
-                        className={`px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full
-                                ${!isPlaying && !isLoading
-                                    ? 'bg-purple-500 hover:bg-purple-600 text-white'
-                                    : 'bg-gray-400 cursor-not-allowed text-gray-700'}
-                                `}
-                        disabled={isPlaying || isLoading} // Allow click to activate audio context
-                    >
-                        <Play size={20} />
-                        Play
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={stopNote}
-                        className={`px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full
-                                ${isPlaying && isAudioReady
-                                    ? 'bg-purple-700 hover:bg-purple-800 text-white'
-                                    : 'bg-gray-400 cursor-not-allowed text-gray-700'}
-                                `}
-                        disabled={!isPlaying || !isAudioReady}
-                    >
-                        <Pause size={20} />
-                        Stop
-                    </button>
+                <div className="text-center mb-6 md:mb-10 z-10 w-full px-2">
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
+                        <Repeat size={36} className="text-purple-700 md:mb-0 mb-2" />
+                        <h1 className="text-3xl md:text-5xl font-extrabold text-purple-900 drop-shadow-lg">
+                            LFO Modulator
+                        </h1>
+                    </div>
+                    {isLoading && (
+                        <p className="text-purple-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
+                            Setting up audio engine...
+                        </p>
+                    )}
+                    {!isLoading && !isAudioReady && (
+                        <p className="text-purple-700 text-xs md:text-sm mt-2 md:mt-4">
+                            Click "Play" to activate audio.
+                        </p>
+                    )}
+                    {!isLoading && isAudioReady && (
+                        <p className="text-purple-600 text-xs md:text-sm mt-2 md:mt-4">
+                            Ready. Adjust LFO and play!
+                        </p>
+                    )}
                 </div>
 
-                {/* Waveform Visualizer */}
-                <div className="w-full px-2">
-                    <WaveformVisualizer
-                        waveformAnalyzer={waveformAnalyzer}
-                        isAudioReady={isAudioReady}
-                        isPlaying={isPlaying}
-                    />
-                </div>
+                <div className="bg-white/80 backdrop-blur-sm p-4 md:p-8 rounded-xl shadow-lg w-full max-w-5xl flex flex-col items-center space-y-4 md:space-y-8 z-10 border border-purple-200 mx-2">
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 lg:gap-8 w-full mt-4 md:mt-6">
-                    {/* Main Oscillator Controls */}
-                    <div className="bg-purple-50/70 p-4 md:p-6 rounded-lg border border-purple-100 flex flex-col items-center shadow-inner">
-                        <h2 className="text-xl md:text-2xl font-bold text-purple-800 mb-3 md:mb-4">Main Osc</h2>
-                        <div className="flex justify-center gap-1 md:gap-2 mb-4 md:mb-6 flex-wrap">
-                            {waveformOptions.map(({ type, label, Icon }) => (
-                                <button
-                                    key={`main-${type}`}
-                                    onClick={() => setMainOscType(type)}
-                                    className={`px-3 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold flex items-center gap-1 transition-all duration-200
-                                        ${mainOscType === type
-                                            ? 'bg-purple-600 text-white shadow-md'
-                                            : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}
-                                        ${isLoading ? 'cursor-not-allowed opacity-50' : ''}
+                    {/* Play and Stop Sound Buttons */}
+                    <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-4 md:mb-6 w-full">
+                        <button
+                            type="button"
+                            onClick={playNote}
+                            className={`px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full
+                                    ${!isPlaying && !isLoading
+                                        ? 'bg-purple-500 hover:bg-purple-600 text-white'
+                                        : 'bg-gray-400 cursor-not-allowed text-gray-700'}
                                     `}
-                                    disabled={isLoading} // Correctly disabled only during initial loading
-                                >
-                                    <Icon size={14} className="flex-shrink-0" />
-                                    <span className="whitespace-nowrap">{label}</span>
-                                </button>
-                            ))}
-                        </div>
-                        <ParameterSlider
-                            label="Freq" value={mainOscFrequency} setter={setMainOscFrequency}
-                            min="100" max="1000" step="1" unit=" Hz"
-                            explanation={getExplanation('mainOscFrequency')}
-                            isDisabled={isLoading} // Pass isLoading to control disabled state
-                            colorClass="accent-purple-600 bg-purple-100"
-                        />
-                        <ParameterSlider
-                            label="Vol" value={mainOscVolume} setter={setMainOscVolume}
-                            min="-40" max="-5" step="1" unit=" dB"
-                            explanation={getExplanation('mainOscVolume')}
-                            isDisabled={isLoading} // Pass isLoading to control disabled state
-                            colorClass="accent-purple-600 bg-purple-100"
+                            disabled={isPlaying || isLoading} // Allow click to activate audio context
+                        >
+                            <Play size={20} />
+                            Play
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={stopNote}
+                            className={`px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full
+                                    ${isPlaying && isAudioReady
+                                        ? 'bg-purple-700 hover:bg-purple-800 text-white'
+                                        : 'bg-gray-400 cursor-not-allowed text-gray-700'}
+                                    `}
+                            disabled={!isPlaying || !isAudioReady}
+                        >
+                            <Pause size={20} />
+                            Stop
+                        </button>
+                    </div>
+
+                    {/* Waveform Visualizer */}
+                    <div className="w-full px-2">
+                        <WaveformVisualizer
+                            waveformAnalyzer={waveformAnalyzer}
+                            isAudioReady={isAudioReady}
+                            isPlaying={isPlaying}
                         />
                     </div>
 
-                    {/* LFO Controls */}
-                    <div className="bg-purple-50/70 p-4 md:p-6 rounded-lg border border-purple-100 flex flex-col items-center shadow-inner">
-                        <h2 className="text-xl md:text-2xl font-bold text-purple-800 mb-3 md:mb-4">LFO (Tremolo)</h2>
-                        <div className="flex justify-center gap-1 md:gap-2 mb-4 md:mb-6 flex-wrap">
-                            {waveformOptions.map(({ type, label, Icon }) => (
-                                <button
-                                    key={`lfo-${type}`}
-                                    onClick={() => setLfoType(type)}
-                                    className={`px-3 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold flex items-center gap-1 transition-all duration-200
-                                        ${lfoType === type
-                                            ? 'bg-purple-600 text-white shadow-md'
-                                            : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}
-                                        ${isLoading ? 'cursor-not-allowed opacity-50' : ''}
-                                    `}
-                                    disabled={isLoading} // Correctly disabled only during initial loading
-                                >
-                                    <Icon size={14} className="flex-shrink-0" />
-                                    <span className="whitespace-nowrap">{label}</span>
-                                </button>
-                            ))}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 lg:gap-8 w-full mt-4 md:mt-6">
+                        {/* Main Oscillator Controls */}
+                        <div className="bg-purple-50/70 p-4 md:p-6 rounded-lg border border-purple-100 flex flex-col items-center shadow-inner">
+                            <h2 className="text-xl md:text-2xl font-bold text-purple-800 mb-3 md:mb-4">Main Osc</h2>
+                            <div className="flex justify-center gap-1 md:gap-2 mb-4 md:mb-6 flex-wrap">
+                                {waveformOptions.map(({ type, label, Icon }) => (
+                                    <button
+                                        key={`main-${type}`}
+                                        onClick={() => setMainOscType(type)}
+                                        className={`px-3 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold flex items-center gap-1 transition-all duration-200
+                                            ${mainOscType === type
+                                                ? 'bg-purple-600 text-white shadow-md'
+                                                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}
+                                            ${isLoading ? 'cursor-not-allowed opacity-50' : ''}
+                                        `}
+                                        disabled={isLoading} // Correctly disabled only during initial loading
+                                    >
+                                        <Icon size={14} className="flex-shrink-0" />
+                                        <span className="whitespace-nowrap">{label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                            <ParameterSlider
+                                label="Freq" value={mainOscFrequency} setter={setMainOscFrequency}
+                                min="100" max="1000" step="1" unit=" Hz"
+                                explanation={getExplanation('mainOscFrequency')}
+                                isDisabled={isLoading} // Pass isLoading to control disabled state
+                                colorClass="accent-purple-600 bg-purple-100"
+                            />
+                            <ParameterSlider
+                                label="Vol" value={mainOscVolume} setter={setMainOscVolume}
+                                min="-40" max="-5" step="1" unit=" dB"
+                                explanation={getExplanation('mainOscVolume')}
+                                isDisabled={isLoading} // Pass isLoading to control disabled state
+                                colorClass="accent-purple-600 bg-purple-100"
+                            />
                         </div>
-                        <ParameterSlider
-                            label="Speed" value={lfoFrequency} setter={setLfoFrequency}
-                            min="0.1" max="10" step="0.1" unit=" Hz"
-                            explanation={getExplanation('lfoFrequency')}
-                            isDisabled={isLoading} // Pass isLoading to control disabled state
-                            colorClass="accent-purple-600 bg-purple-100"
-                        />
-                        <ParameterSlider
-                            label="Depth" value={lfoDepth} setter={setLfoDepth}
-                            min="0.0" max="1.0" step="0.01" unit=""
-                            explanation={getExplanation('lfoDepth')}
-                            isDisabled={isLoading} // Pass isLoading to control disabled state
-                            colorClass="accent-purple-600 bg-purple-100"
-                        />
+
+                        {/* LFO Controls */}
+                        <div className="bg-purple-50/70 p-4 md:p-6 rounded-lg border border-purple-100 flex flex-col items-center shadow-inner">
+                            <h2 className="text-xl md:text-2xl font-bold text-purple-800 mb-3 md:mb-4">LFO (Tremolo)</h2>
+                            <div className="flex justify-center gap-1 md:gap-2 mb-4 md:mb-6 flex-wrap">
+                                {waveformOptions.map(({ type, label, Icon }) => (
+                                    <button
+                                        key={`lfo-${type}`}
+                                        onClick={() => setLfoType(type)}
+                                        className={`px-3 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold flex items-center gap-1 transition-all duration-200
+                                            ${lfoType === type
+                                                ? 'bg-purple-600 text-white shadow-md'
+                                                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}
+                                            ${isLoading ? 'cursor-not-allowed opacity-50' : ''}
+                                        `}
+                                        disabled={isLoading} // Correctly disabled only during initial loading
+                                    >
+                                        <Icon size={14} className="flex-shrink-0" />
+                                        <span className="whitespace-nowrap">{label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                            <ParameterSlider
+                                label="Speed" value={lfoFrequency} setter={setLfoFrequency}
+                                min="0.1" max="10" step="0.1" unit=" Hz"
+                                explanation={getExplanation('lfoFrequency')}
+                                isDisabled={isLoading} // Pass isLoading to control disabled state
+                                colorClass="accent-purple-600 bg-purple-100"
+                            />
+                            <ParameterSlider
+                                label="Depth" value={lfoDepth} setter={setLfoDepth}
+                                min="0.0" max="1.0" step="0.01" unit=""
+                                explanation={getExplanation('lfoDepth')}
+                                isDisabled={isLoading} // Pass isLoading to control disabled state
+                                colorClass="accent-purple-600 bg-purple-100"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="text-center text-gray-700 text-xs md:text-sm mt-4 md:mt-6 italic px-2">
+                        Demonstrates amplitude modulation (Tremolo). LFO controls volume fluctuations.
                     </div>
                 </div>
-
-                <div className="text-center text-gray-700 text-xs md:text-sm mt-4 md:mt-6 italic px-2">
-                    Demonstrates amplitude modulation (Tremolo). LFO controls volume fluctuations.
-                </div>
             </div>
-        </div>
+
+        </>
     );
 };
 

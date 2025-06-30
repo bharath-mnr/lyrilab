@@ -1,6 +1,23 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import * as Tone from 'tone';
 import { Play, Pause, Waves, Ruler } from 'lucide-react'; // Icons for play/pause, waveform, and ruler for envelope
+import SEOHead from './SEOHead';
+
+// Define the tool object for SEO structured data
+const adsrEnvelopeTool = {
+    id: 'adsr-envelope-tool',
+    name: 'ADSR Envelope',
+    description: 'Visual ADSR envelope editor for precise sound shaping and synthesis control.',
+    path: '/adsr-envelope-tool',
+    categories: [
+        'Sound Design',
+        'Synthesis',
+        'ADSR',
+        'Envelope',
+        'Sound Shaping'
+    ]
+};
+
 
 // --- AUDIO CONTEXT ---
 // This context manages the global Tone.js audio state.
@@ -373,127 +390,136 @@ const ADSREnvelopeToolContent = () => {
     };
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #ffe0e0 0%, #ffcccc 50%, #ffb3b3 100%)',
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Floating Icons Background */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+        <>
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="adsr-envelope-tool" 
+                tool={adsrEnvelopeTool}
+                customData={{}}
+            />
+
+            <div
+                className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
                 style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%23ef4444' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
+                    background: 'linear-gradient(135deg, #ffe0e0 0%, #ffcccc 50%, #ffb3b3 100%)',
+                    fontFamily: 'Inter, sans-serif',
                 }}
-            ></div>
+            >
+                {/* Floating Icons Background */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%23ef4444' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
+                    }}
+                ></div>
 
-            <div className="text-center mb-6 md:mb-10 z-10 w-full px-2">
-                <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
-                    <Ruler size={36} className="text-red-700 md:mb-0 mb-2" />
-                    <h1 className="text-3xl md:text-5xl font-extrabold text-red-900 drop-shadow-lg">
-                        ADSR Explorer
-                    </h1>
-                </div>
-                {isLoading && (
-                    <p className="text-red-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
-                        Setting up audio engine...
-                    </p>
-                )}
-                {!isLoading && !isAudioReady && (
-                    <p className="text-red-700 text-xs md:text-sm mt-2 md:mt-4">
-                        Click "Play Note" to activate audio.
-                    </p>
-                )}
-                {!isLoading && isAudioReady && (
-                    <p className="text-red-600 text-xs md:text-sm mt-2 md:mt-4">
-                        Ready. Adjust sliders and play!
-                    </p>
-                )}
-            </div>
-
-            <div className="bg-white/80 backdrop-blur-sm p-4 md:p-8 rounded-xl shadow-lg w-full max-w-4xl flex flex-col items-center space-y-4 md:space-y-8 z-10 border border-red-200 mx-2">
-
-                {/* Play and Stop Note Buttons */}
-                <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-4 md:mb-6 w-full">
-                    <button
-                        type="button"
-                        onClick={triggerNote}
-                        className={`px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full
-                                ${!isPlaying && !isLoading
-                                    ? 'bg-red-500 hover:bg-red-600 text-white'
-                                    : 'bg-gray-400 cursor-not-allowed text-gray-700'}
-                                `}
-                        // Changed disabled logic to allow clicking to activate audio context
-                        disabled={isPlaying || isLoading}
-                    >
-                        <Play size={20} />
-                        Play Note
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={stopNote}
-                        className={`px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full
-                                ${isPlaying && isAudioReady
-                                    ? 'bg-red-700 hover:bg-red-800 text-white'
-                                    : 'bg-gray-400 cursor-not-allowed text-gray-700'}
-                                `}
-                        disabled={!isPlaying || !isAudioReady}
-                    >
-                        <Pause size={20} />
-                        Stop
-                    </button>
-                </div>
-
-                {/* Playback Progress Bar */}
-                {/* Always show progress bar once synth is initialized, even if context is suspended */}
-                {!isLoading && (
-                    <div className="w-full px-2">
-                        <div className="w-full bg-gray-200 rounded-full h-3 md:h-4 mb-2 md:mb-4 overflow-hidden">
-                            <div
-                                className="bg-red-500 h-full rounded-full transition-all duration-100 ease-linear"
-                                style={{ width: `${progressBarWidth}%` }}
-                            ></div>
-                        </div>
-                        <p className="text-gray-700 text-xs md:text-sm text-center">
-                            {currentPlaybackTime.toFixed(1)}s / {totalPlaybackDuration.toFixed(1)}s
-                        </p>
+                <div className="text-center mb-6 md:mb-10 z-10 w-full px-2">
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
+                        <Ruler size={36} className="text-red-700 md:mb-0 mb-2" />
+                        <h1 className="text-3xl md:text-5xl font-extrabold text-red-900 drop-shadow-lg">
+                            ADSR Explorer
+                        </h1>
                     </div>
-                )}
-
-                {/* ADSR Parameter Sliders */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 w-full mt-4 md:mt-8">
-                    <ParameterSlider
-                        label="Attack" value={attack} setter={setAttack}
-                        min="0.01" max="2" step="0.01" unit=" s"
-                        explanation={getExplanation('attack')}
-                    />
-
-                    <ParameterSlider
-                        label="Decay" value={decay} setter={setDecay}
-                        min="0.01" max="2" step="0.01" unit=" s"
-                        explanation={getExplanation('decay')}
-                    />
-
-                    <ParameterSlider
-                        label="Sustain" value={sustain} setter={setSustain}
-                        min="0.0" max="1.0" step="0.01" unit=""
-                        explanation={getExplanation('sustain')}
-                    />
-
-                    <ParameterSlider
-                        label="Release" value={release} setter={setRelease}
-                        min="0.01" max="5" step="0.01" unit=" s"
-                        explanation={getExplanation('release')}
-                    />
+                    {isLoading && (
+                        <p className="text-red-700 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
+                            Setting up audio engine...
+                        </p>
+                    )}
+                    {!isLoading && !isAudioReady && (
+                        <p className="text-red-700 text-xs md:text-sm mt-2 md:mt-4">
+                            Click "Play Note" to activate audio.
+                        </p>
+                    )}
+                    {!isLoading && isAudioReady && (
+                        <p className="text-red-600 text-xs md:text-sm mt-2 md:mt-4">
+                            Ready. Adjust sliders and play!
+                        </p>
+                    )}
                 </div>
 
-                <div className="text-center text-gray-700 text-xs md:text-sm mt-4 md:mt-6 italic px-2">
-                    Generates a sine wave with ADSR envelope. "Play Note" triggers sound; sustain duration adjusts based on level.
+                <div className="bg-white/80 backdrop-blur-sm p-4 md:p-8 rounded-xl shadow-lg w-full max-w-4xl flex flex-col items-center space-y-4 md:space-y-8 z-10 border border-red-200 mx-2">
+
+                    {/* Play and Stop Note Buttons */}
+                    <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-4 md:mb-6 w-full">
+                        <button
+                            type="button"
+                            onClick={triggerNote}
+                            className={`px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full
+                                    ${!isPlaying && !isLoading
+                                        ? 'bg-red-500 hover:bg-red-600 text-white'
+                                        : 'bg-gray-400 cursor-not-allowed text-gray-700'}
+                                    `}
+                            // Changed disabled logic to allow clicking to activate audio context
+                            disabled={isPlaying || isLoading}
+                        >
+                            <Play size={20} />
+                            Play Note
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={stopNote}
+                            className={`px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 w-full
+                                    ${isPlaying && isAudioReady
+                                        ? 'bg-red-700 hover:bg-red-800 text-white'
+                                        : 'bg-gray-400 cursor-not-allowed text-gray-700'}
+                                    `}
+                            disabled={!isPlaying || !isAudioReady}
+                        >
+                            <Pause size={20} />
+                            Stop
+                        </button>
+                    </div>
+
+                    {/* Playback Progress Bar */}
+                    {/* Always show progress bar once synth is initialized, even if context is suspended */}
+                    {!isLoading && (
+                        <div className="w-full px-2">
+                            <div className="w-full bg-gray-200 rounded-full h-3 md:h-4 mb-2 md:mb-4 overflow-hidden">
+                                <div
+                                    className="bg-red-500 h-full rounded-full transition-all duration-100 ease-linear"
+                                    style={{ width: `${progressBarWidth}%` }}
+                                ></div>
+                            </div>
+                            <p className="text-gray-700 text-xs md:text-sm text-center">
+                                {currentPlaybackTime.toFixed(1)}s / {totalPlaybackDuration.toFixed(1)}s
+                            </p>
+                        </div>
+                    )}
+
+                    {/* ADSR Parameter Sliders */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 w-full mt-4 md:mt-8">
+                        <ParameterSlider
+                            label="Attack" value={attack} setter={setAttack}
+                            min="0.01" max="2" step="0.01" unit=" s"
+                            explanation={getExplanation('attack')}
+                        />
+
+                        <ParameterSlider
+                            label="Decay" value={decay} setter={setDecay}
+                            min="0.01" max="2" step="0.01" unit=" s"
+                            explanation={getExplanation('decay')}
+                        />
+
+                        <ParameterSlider
+                            label="Sustain" value={sustain} setter={setSustain}
+                            min="0.0" max="1.0" step="0.01" unit=""
+                            explanation={getExplanation('sustain')}
+                        />
+
+                        <ParameterSlider
+                            label="Release" value={release} setter={setRelease}
+                            min="0.01" max="5" step="0.01" unit=" s"
+                            explanation={getExplanation('release')}
+                        />
+                    </div>
+
+                    <div className="text-center text-gray-700 text-xs md:text-sm mt-4 md:mt-6 italic px-2">
+                        Generates a sine wave with ADSR envelope. "Play Note" triggers sound; sustain duration adjusts based on level.
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 
