@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef, createContext, useContext } from 'react';
 import * as Tone from 'tone';
 import { Play, Pause, Music, Volume2, VolumeX, Clock } from 'lucide-react';
+import SEOHead from './SEOHead';
+
 
 // --- AUDIO CONTEXT ---
 export const AudioContext = createContext(null);
@@ -50,6 +52,21 @@ const AudioContextProvider = ({ children }) => {
             {children}
         </AudioContext.Provider>
     );
+};
+
+// Define the tool object for SEO structured data
+const metronomeTool = {
+    id: 'time-signature-metronome',
+    name: 'Advanced Metronome',
+    description: 'Professional metronome supporting all time signatures with visual and audio feedback for precise rhythm practice.',
+    path: '/time-signature-metronome',
+    categories: [
+        'Metronome',
+        'Rhythm Practice',
+        'Time Signatures',
+        'Music Education',
+        'Tempo Training'
+    ]
 };
 
 // --- useMetronome Hook ---
@@ -244,159 +261,168 @@ const TimeSignatureMetronomeContent = () => {
     const denominatorOptions = [2, 4, 8, 16];
 
     return (
-        <div className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #f0f9ff 0%, #d8f0ff 50%, #c0e7ff 100%)',
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Background pattern */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
-                style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%2367e8f9' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
-                }}
+        <>
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="time-signature-metronome" 
+                tool={metronomeTool}
+                customData={{}}
             />
 
-            <div className="text-center mb-6 md:mb-10 z-10 w-full">
-                <div className="flex items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
-                    <Clock size={32} className="text-blue-700 md:h-12 md:w-12" />
-                    <h1 className="text-3xl md:text-5xl font-extrabold text-blue-900 drop-shadow-lg">
-                        Metronome
-                    </h1>
-                </div>
-                {!isAudioReady && (
-                    <p className="text-blue-700 text-xs md:text-sm mt-2 md:mt-4">
-                        Audio loading... Click "Play" to activate
-                    </p>
-                )}
-            </div>
+            <div className="min-h-screen flex flex-col items-center p-4 md:p-8 relative overflow-hidden w-full"
+                style={{
+                    background: 'linear-gradient(135deg, #f0f9ff 0%, #d8f0ff 50%, #c0e7ff 100%)',
+                    fontFamily: 'Inter, sans-serif',
+                }}
+            >
+                {/* Background pattern */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%2367e8f9' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
+                    }}
+                />
 
-            <div className="bg-white/80 backdrop-blur-sm p-4 md:p-6 rounded-xl shadow-lg w-full max-w-3xl flex flex-col items-center space-y-4 md:space-y-6 z-10 border border-blue-200">
-
-                {/* Time Signature Display */}
-                <div className="text-center mb-4">
-                    <div className="text-6xl md:text-8xl font-bold text-blue-900 leading-none">
-                        <span>{numerator}</span>
-                        <div className="border-t-4 border-blue-900 mx-4 inline-block w-8"></div>
-                        <span>{denominator}</span>
+                <div className="text-center mb-6 md:mb-10 z-10 w-full">
+                    <div className="flex items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
+                        <Clock size={32} className="text-blue-700 md:h-12 md:w-12" />
+                        <h1 className="text-3xl md:text-5xl font-extrabold text-blue-900 drop-shadow-lg">
+                            Metronome
+                        </h1>
                     </div>
-                    <p className="text-gray-600 text-sm mt-2">
-                        {numerator} beats per measure, {denominator === 4 ? 'quarter' : denominator === 8 ? 'eighth' : denominator === 2 ? 'half' : 'sixteenth'} note gets the beat
-                    </p>
+                    {!isAudioReady && (
+                        <p className="text-blue-700 text-xs md:text-sm mt-2 md:mt-4">
+                            Audio loading... Click "Play" to activate
+                        </p>
+                    )}
                 </div>
 
-                {/* Controls */}
-                <div className="flex flex-col md:flex-row gap-3 md:gap-4 w-full justify-center">
-                    <button
-                        onClick={togglePlay}
-                        className={`flex items-center justify-center gap-2 px-4 py-3 md:px-6 md:py-3 rounded-full font-bold text-sm md:text-base shadow-md transition-all ${
-                            isPlaying 
-                                ? 'bg-red-500 hover:bg-red-600 text-white' 
-                                : 'bg-blue-500 hover:bg-blue-600 text-white'
-                        } ${!isAudioReady ? 'opacity-70' : ''}`}
-                        disabled={!isAudioReady}
-                    >
-                        {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-                        {isPlaying ? 'Stop' : 'Play'}
-                    </button>
+                <div className="bg-white/80 backdrop-blur-sm p-4 md:p-6 rounded-xl shadow-lg w-full max-w-3xl flex flex-col items-center space-y-4 md:space-y-6 z-10 border border-blue-200">
 
-                    <button
-                        onClick={toggleMute}
-                        className={`flex items-center justify-center gap-2 px-4 py-3 rounded-full font-bold text-sm md:text-base shadow-md transition-all ${
-                            isMuted 
-                                ? 'bg-gray-500 hover:bg-gray-600 text-white' 
-                                : 'bg-blue-400 hover:bg-blue-500 text-white'
-                        } ${!isAudioReady ? 'opacity-70' : ''}`}
-                        disabled={!isAudioReady}
-                    >
-                        {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-                    </button>
-                </div>
+                    {/* Time Signature Display */}
+                    <div className="text-center mb-4">
+                        <div className="text-6xl md:text-8xl font-bold text-blue-900 leading-none">
+                            <span>{numerator}</span>
+                            <div className="border-t-4 border-blue-900 mx-4 inline-block w-8"></div>
+                            <span>{denominator}</span>
+                        </div>
+                        <p className="text-gray-600 text-sm mt-2">
+                            {numerator} beats per measure, {denominator === 4 ? 'quarter' : denominator === 8 ? 'eighth' : denominator === 2 ? 'half' : 'sixteenth'} note gets the beat
+                        </p>
+                    </div>
 
-                {/* Beat Indicator */}
-                <div className="w-full overflow-x-auto py-2">
-                    <div className="flex min-w-max justify-center">
-                        {Array.from({ length: numerator }).map((_, idx) => (
-                            <div
-                                key={idx}
-                                className={`w-12 h-16 md:w-16 md:h-20 mx-1 rounded-lg flex items-center justify-center text-2xl md:text-4xl font-bold transition-all duration-75 ${
-                                    currentBeat === idx + 1
-                                        ? idx === 0 
-                                            ? 'bg-red-600 text-white shadow-lg scale-110' // First beat (downbeat) is red
-                                            : 'bg-blue-600 text-white shadow-lg scale-110'
-                                        : idx === 0
-                                            ? 'bg-red-200 text-red-700' // First beat indicator is red even when inactive
-                                            : 'bg-blue-200 text-blue-700'
-                                }`}
+                    {/* Controls */}
+                    <div className="flex flex-col md:flex-row gap-3 md:gap-4 w-full justify-center">
+                        <button
+                            onClick={togglePlay}
+                            className={`flex items-center justify-center gap-2 px-4 py-3 md:px-6 md:py-3 rounded-full font-bold text-sm md:text-base shadow-md transition-all ${
+                                isPlaying 
+                                    ? 'bg-red-500 hover:bg-red-600 text-white' 
+                                    : 'bg-blue-500 hover:bg-blue-600 text-white'
+                            } ${!isAudioReady ? 'opacity-70' : ''}`}
+                            disabled={!isAudioReady}
+                        >
+                            {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+                            {isPlaying ? 'Stop' : 'Play'}
+                        </button>
+
+                        <button
+                            onClick={toggleMute}
+                            className={`flex items-center justify-center gap-2 px-4 py-3 rounded-full font-bold text-sm md:text-base shadow-md transition-all ${
+                                isMuted 
+                                    ? 'bg-gray-500 hover:bg-gray-600 text-white' 
+                                    : 'bg-blue-400 hover:bg-blue-500 text-white'
+                            } ${!isAudioReady ? 'opacity-70' : ''}`}
+                            disabled={!isAudioReady}
+                        >
+                            {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+                        </button>
+                    </div>
+
+                    {/* Beat Indicator */}
+                    <div className="w-full overflow-x-auto py-2">
+                        <div className="flex min-w-max justify-center">
+                            {Array.from({ length: numerator }).map((_, idx) => (
+                                <div
+                                    key={idx}
+                                    className={`w-12 h-16 md:w-16 md:h-20 mx-1 rounded-lg flex items-center justify-center text-2xl md:text-4xl font-bold transition-all duration-75 ${
+                                        currentBeat === idx + 1
+                                            ? idx === 0 
+                                                ? 'bg-red-600 text-white shadow-lg scale-110' // First beat (downbeat) is red
+                                                : 'bg-blue-600 text-white shadow-lg scale-110'
+                                            : idx === 0
+                                                ? 'bg-red-200 text-red-700' // First beat indicator is red even when inactive
+                                                : 'bg-blue-200 text-blue-700'
+                                    }`}
+                                >
+                                    {idx + 1}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* BPM Slider */}
+                    <ParameterSlider
+                        label="Tempo" value={bpm} setter={setBpm}
+                        min="40" max="240" step="1" unit=" BPM"
+                        explanation="Beats per minute (speed)"
+                        isAudioReady={isAudioReady}
+                    />
+
+                    {/* Time Signature Controls */}
+                    <div className="grid grid-cols-2 gap-4 w-full">
+                        <div className="flex flex-col items-center">
+                            <label className="text-gray-800 font-medium mb-1 text-sm md:text-base">
+                                Beats per Measure
+                            </label>
+                            <select
+                                value={numerator}
+                                onChange={(e) => setNumerator(parseInt(e.target.value))}
+                                className="w-full p-2 md:p-3 rounded-lg border border-blue-300 bg-blue-50 text-blue-800 focus:ring-2 focus:ring-blue-500"
+                                disabled={!isAudioReady}
                             >
-                                {idx + 1}
-                            </div>
-                        ))}
+                                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(num => (
+                                    <option key={num} value={num}>{num}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="flex flex-col items-center">
+                            <label className="text-gray-800 font-medium mb-1 text-sm md:text-base">
+                                Beat Note Value
+                            </label>
+                            <select
+                                value={denominator}
+                                onChange={(e) => setDenominator(parseInt(e.target.value))}
+                                className="w-full p-2 md:p-3 rounded-lg border border-blue-300 bg-blue-50 text-blue-800 focus:ring-2 focus:ring-blue-500"
+                                disabled={!isAudioReady}
+                            >
+                                {denominatorOptions.map(den => (
+                                    <option key={den} value={den}>
+                                        {den === 2 ? '2 (Half Note)' : 
+                                        den === 4 ? '4 (Quarter Note)' : 
+                                        den === 8 ? '8 (Eighth Note)' : 
+                                        '16 (Sixteenth Note)'}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
+
+                    {/* Volume Slider */}
+                    <ParameterSlider
+                        label="Volume" value={metronomeVolume} setter={setMetronomeVolume}
+                        min="-40" max="0" step="1" unit=" dB"
+                        explanation="Adjust metronome loudness"
+                        isAudioReady={isAudioReady}
+                    />
+
+                    <p className="text-gray-600 text-xs md:text-sm text-center mt-2 px-4">
+                        Set your desired time signature and tempo, then click Play to start the metronome. The first beat (downbeat) is accented with a higher pitch and red color.
+                    </p>
                 </div>
-
-                {/* BPM Slider */}
-                <ParameterSlider
-                    label="Tempo" value={bpm} setter={setBpm}
-                    min="40" max="240" step="1" unit=" BPM"
-                    explanation="Beats per minute (speed)"
-                    isAudioReady={isAudioReady}
-                />
-
-                {/* Time Signature Controls */}
-                <div className="grid grid-cols-2 gap-4 w-full">
-                    <div className="flex flex-col items-center">
-                        <label className="text-gray-800 font-medium mb-1 text-sm md:text-base">
-                            Beats per Measure
-                        </label>
-                        <select
-                            value={numerator}
-                            onChange={(e) => setNumerator(parseInt(e.target.value))}
-                            className="w-full p-2 md:p-3 rounded-lg border border-blue-300 bg-blue-50 text-blue-800 focus:ring-2 focus:ring-blue-500"
-                            disabled={!isAudioReady}
-                        >
-                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(num => (
-                                <option key={num} value={num}>{num}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="flex flex-col items-center">
-                        <label className="text-gray-800 font-medium mb-1 text-sm md:text-base">
-                            Beat Note Value
-                        </label>
-                        <select
-                            value={denominator}
-                            onChange={(e) => setDenominator(parseInt(e.target.value))}
-                            className="w-full p-2 md:p-3 rounded-lg border border-blue-300 bg-blue-50 text-blue-800 focus:ring-2 focus:ring-blue-500"
-                            disabled={!isAudioReady}
-                        >
-                            {denominatorOptions.map(den => (
-                                <option key={den} value={den}>
-                                    {den === 2 ? '2 (Half Note)' : 
-                                     den === 4 ? '4 (Quarter Note)' : 
-                                     den === 8 ? '8 (Eighth Note)' : 
-                                     '16 (Sixteenth Note)'}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
-
-                {/* Volume Slider */}
-                <ParameterSlider
-                    label="Volume" value={metronomeVolume} setter={setMetronomeVolume}
-                    min="-40" max="0" step="1" unit=" dB"
-                    explanation="Adjust metronome loudness"
-                    isAudioReady={isAudioReady}
-                />
-
-                <p className="text-gray-600 text-xs md:text-sm text-center mt-2 px-4">
-                    Set your desired time signature and tempo, then click Play to start the metronome. The first beat (downbeat) is accented with a higher pitch and red color.
-                </p>
             </div>
-        </div>
+        </>
     );
 };
 
