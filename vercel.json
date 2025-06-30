@@ -7,8 +7,8 @@
       "config": {
         "distDir": "dist",
         "cleanUrls": true,
-        "installCommand": "npm install --force",
-        "buildCommand": "npm run vercel-build"
+        "installCommand": "npm install --legacy-peer-deps",
+        "buildCommand": "npm run build"
       }
     }
   ],
