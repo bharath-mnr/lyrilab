@@ -13,6 +13,8 @@ export const TOOLS = [
     icon: '',
     categories: ['Navigation']
   },
+  
+  // INSTRUMENTS SECTION
   {
     id: 'virtual-piano',
     name: 'Piano',
@@ -43,6 +45,152 @@ export const TOOLS = [
     icon: '',
     categories: ['Instruments', 'Rhythm', 'Fun']
   },
+  {
+    id: 'humanizer-panel',
+    name: 'Humanizer',
+    path: '/humanizer-panel',
+    component: 'HumanizerPanel',
+    importPath: './components/HumanizerPanel.jsx', // Corrected
+    description: 'Add human-like variations to your performances with timing, velocity, and micro-tuning controls.',
+    icon: '',
+    categories: ['Instruments', 'Rhythm']
+  },
+
+  // RHYTHM/TEMPO SECTION
+  {
+    id: 'tap-tempo-tool',
+    name: 'Tap Tempo',
+    path: '/tap-tempo-tool',
+    component: 'TapTempoTool',
+    importPath: './components/TapTempoTool.jsx', // Corrected
+    description: 'Set your project tempo by tapping. Includes visual feedback and BPM calculation.',
+    icon: '',
+    categories: ['Rhythm']
+  },
+  {
+    id: 'time-signature-metronome',
+    name: 'Time Signatures',
+    path: '/time-signature-metronome',
+    component: 'TimeSignatureMetronome',
+    importPath: './components/TimeSignatureMetronome.jsx', // Corrected
+    description: 'Metronome with flexible time signatures. Visualize different rhythmic divisions.',
+    icon: '',
+    categories: ['Rhythm']
+  },
+  {
+    id: 'polyrhythm-sequencer',
+    name: 'Polyrhythms',
+    path: '/polyrhythm-sequencer',
+    component: 'PolyrhythmSequencer',
+    importPath: './components/PolyrhythmSequencer.jsx', // Corrected
+    description: 'Create complex rhythmic layers. Visualize and audition multiple concurrent patterns.',
+    icon: '',
+    categories: ['Rhythm', 'Challenge']
+  },
+  {
+    id: 'euclidean-rhythm-generator',
+    name: 'Euclidean Rhythms',
+    path: '/euclidean-rhythm-generator',
+    component: 'EuclideanRhythmGenerator',
+    importPath: './components/EuclideanRhythmGenerator.jsx', // Corrected
+    description: 'Algorithmic rhythm generator. Create balanced patterns based on mathematical distributions.',
+    icon: '',
+    categories: ['Rhythm']
+  },
+  {
+    id: 'beat-repeat-looper',
+    name: 'Beat Repeater',
+    path: '/beat-repeat-looper',
+    component: 'BeatRepeatLooper',
+    importPath: './components/BeatRepeatLooper.jsx', // Corrected
+    description: 'Creative looping tool. Capture and manipulate rhythmic fragments in real-time.',
+    icon: '',
+    categories: ['Rhythm', 'Effects', 'Fun']
+  },
+  {
+    id: 'swing-groove-visualizer',
+    name: 'Swing',
+    path: '/swing-groove-visualizer',
+    component: 'SwingGrooveVisualizer',
+    importPath: './components/SwingGrooveVisualizer.jsx', // Corrected
+    description: 'Groove quantizer. Adjust swing percentage and visualize timing variations.',
+    icon: '',
+    categories: ['Rhythm', 'Theory']
+  },
+
+  // THEORY SECTION (Chords, Intervals, Scales)
+  {
+    id: 'chord-explorer',
+    name: 'Chord Finder',
+    path: '/chord-explorer',
+    component: 'ChordHighlightPage',
+    importPath: './components/ChordHighlightPage.jsx', // Corrected
+    description: 'Interactive chord dictionary. Visualize chord structures and hear how they sound.',
+    icon: '',
+    categories: ['Theory']
+  },
+  {
+    id: 'chord-progression-builder',
+    name: 'Chord Progressions',
+    path: '/chord-progression-builder',
+    component: 'ChordProgressionBuilder',
+    importPath: './components/ChordProgressionBuilder.jsx', // Corrected
+    description: 'Build and audition chord sequences. Explore common progressions in different keys.',
+    icon: '',
+    categories: ['Theory', 'Challenge']
+  },
+  {
+    id: 'interval-training',
+    name: 'Interval Trainer',
+    path: '/interval-training',
+    component: 'IntervalTrainingApp',
+    importPath: './components/IntervalTrainingApp.jsx', // Corrected
+    description: 'Ear training for recognizing musical intervals. Includes multiple difficulty levels.',
+    icon: '',
+    categories: ['Theory', 'Games', 'Challenge']
+  },
+  {
+    id: 'scale-explorer',
+    name: 'Scales',
+    path: '/scale-explorer',
+    component: 'ScaleContent',
+    importPath: './components/ScaleContent.jsx', // Corrected
+    description: 'Comprehensive scale library. Visualize scales across instruments with audio playback.',
+    icon: '',
+    categories: ['Theory']
+  },
+  {
+    id: 'circle-of-fifths',
+    name: 'Circle of Fifths',
+    path: '/circle-of-fifths',
+    component: 'CircleOfFifthsContent',
+    importPath: './components/CircleOfFifthsContent.jsx', // Corrected
+    description: 'Interactive circle of fifths diagram. Explore key relationships and chord functions.',
+    icon: '',
+    categories: ['Theory']
+  },
+  {
+    id: 'consonance-dissonance',
+    name: 'Consonance',
+    path: '/consonance-dissonance',
+    component: 'ConsonanceDissonance',
+    importPath: './components/ConsonanceDissonance.jsx', // Corrected
+    description: 'Experiment with harmonic tension. Compare consonant and dissonant intervals.',
+    icon: '',
+    categories: ['Theory']
+  },
+  {
+    id: 'piano-roll-basics',
+    name: 'Piano Roll',
+    path: '/piano-roll',
+    component: 'PianoRollBasics',
+    importPath: './components/PianoRollBasics.jsx', // Corrected
+    description: 'Learn MIDI sequencing fundamentals with this interactive piano roll editor.',
+    icon: '',
+    categories: ['Theory']
+  },
+
+  // SYNTH SECTION
   {
     id: 'arpeggiator-sequencer',
     name: 'Arpeggiator',
@@ -104,95 +252,27 @@ export const TOOLS = [
     categories: ['Synth', 'Theory']
   },
   {
-    id: 'humanizer-panel',
-    name: 'Humanizer',
-    path: '/humanizer-panel',
-    component: 'HumanizerPanel',
-    importPath: './components/HumanizerPanel.jsx', // Corrected
-    description: 'Add human-like variations to your performances with timing, velocity, and micro-tuning controls.',
+    id: 'saturation-explorer',
+    name: 'Saturation',
+    path: '/saturation-explorer',
+    component: 'SaturationExplor',
+    importPath: './components/SaturationExplor.jsx', // Corrected
+    description: 'Harmonic exciter. Add warmth and distortion with various saturation algorithms.',
     icon: '',
-    categories: ['Instruments', 'Rhythm']
+    categories: ['Effects', 'Synth']
   },
   {
-    id: 'tap-tempo-tool',
-    name: 'Tap Tempo',
-    path: '/tap-tempo-tool',
-    component: 'TapTempoTool',
-    importPath: './components/TapTempoTool.jsx', // Corrected
-    description: 'Set your project tempo by tapping. Includes visual feedback and BPM calculation.',
+    id: 'granular-explorer',
+    name: 'Granular',
+    path: '/granular-explorer',
+    component: 'GranularExplor',
+    importPath: './components/GranularExplor.jsx', // Corrected
+    description: 'Granular synthesis engine. Manipulate sound at the microscopic level.',
     icon: '',
-    categories: ['Rhythm']
+    categories: ['Effects', 'Synth']
   },
-  {
-    id: 'chord-explorer',
-    name: 'Chord Finder',
-    path: '/chord-explorer',
-    component: 'ChordHighlightPage',
-    importPath: './components/ChordHighlightPage.jsx', // Corrected
-    description: 'Interactive chord dictionary. Visualize chord structures and hear how they sound.',
-    icon: '',
-    categories: ['Theory']
-  },
-  {
-    id: 'chord-progression-builder',
-    name: 'Chord Progressions',
-    path: '/chord-progression-builder',
-    component: 'ChordProgressionBuilder',
-    importPath: './components/ChordProgressionBuilder.jsx', // Corrected
-    description: 'Build and audition chord sequences. Explore common progressions in different keys.',
-    icon: '',
-    categories: ['Theory', 'Challenge']
-  },
-  {
-    id: 'scale-explorer',
-    name: 'Scales',
-    path: '/scale-explorer',
-    component: 'ScaleContent',
-    importPath: './components/ScaleContent.jsx', // Corrected
-    description: 'Comprehensive scale library. Visualize scales across instruments with audio playback.',
-    icon: '',
-    categories: ['Theory']
-  },
-  {
-    id: 'interval-training',
-    name: 'Interval Trainer',
-    path: '/interval-training',
-    component: 'IntervalTrainingApp',
-    importPath: './components/IntervalTrainingApp.jsx', // Corrected
-    description: 'Ear training for recognizing musical intervals. Includes multiple difficulty levels.',
-    icon: '',
-    categories: ['Theory', 'Games', 'Challenge']
-  },
-  {
-    id: 'circle-of-fifths',
-    name: 'Circle of Fifths',
-    path: '/circle-of-fifths',
-    component: 'CircleOfFifthsContent',
-    importPath: './components/CircleOfFifthsContent.jsx', // Corrected
-    description: 'Interactive circle of fifths diagram. Explore key relationships and chord functions.',
-    icon: '',
-    categories: ['Theory']
-  },
-  {
-    id: 'consonance-dissonance',
-    name: 'Consonance',
-    path: '/consonance-dissonance',
-    component: 'ConsonanceDissonance',
-    importPath: './components/ConsonanceDissonance.jsx', // Corrected
-    description: 'Experiment with harmonic tension. Compare consonant and dissonant intervals.',
-    icon: '',
-    categories: ['Theory']
-  },
-  {
-    id: 'piano-roll-basics',
-    name: 'Piano Roll',
-    path: '/piano-roll',
-    component: 'PianoRollBasics',
-    importPath: './components/PianoRollBasics.jsx', // Corrected
-    description: 'Learn MIDI sequencing fundamentals with this interactive piano roll editor.',
-    icon: '',
-    categories: ['Theory']
-  },
+
+  // EFFECTS/MIXING SECTION
   {
     id: 'eq-explorer',
     name: 'EQ',
@@ -214,12 +294,52 @@ export const TOOLS = [
     categories: ['Effects']
   },
   {
+    id: 'limiter-explorer',
+    name: 'Limiter',
+    path: '/limiter-explorer',
+    component: 'LimiterExplorer',
+    importPath: './components/LimiterExplorer.jsx', // Corrected
+    description: 'Peak controller. Prevent clipping while maximizing loudness.',
+    icon: '',
+    categories: ['Effects']
+  },
+  {
     id: 'reverb-explorer',
     name: 'Reverb',
     path: '/reverb-explorer',
     component: 'ReverbExplorer',
     importPath: './components/ReverbExplorer.jsx', // Corrected
     description: 'Space simulator. Adjust decay time, pre-delay, and room size parameters.',
+    icon: '',
+    categories: ['Effects']
+  },
+  {
+    id: 'delay-explorer',
+    name: 'Delay',
+    path: '/delay-explorer',
+    component: 'DelayExplorer',
+    importPath: './components/DelayExplorer.jsx', // Corrected
+    description: 'Time-based effects processor. Create echoes, slapbacks, and rhythmic patterns.',
+    icon: '',
+    categories: ['Effects']
+  },
+  {
+    id: 'chorus-explorer',
+    name: 'Chorus',
+    path: '/chorus-explorer',
+    component: 'ChorusExplor',
+    importPath: './components/ChorusExplor.jsx', // Corrected
+    description: 'Modulation effect. Create lush, animated textures with rate and depth controls.',
+    icon: '',
+    categories: ['Effects']
+  },
+  {
+    id: 'tremolo-explorer',
+    name: 'Tremolo',
+    path: '/tremolo-explorer',
+    component: 'TremoloExplorer',
+    importPath: './components/TremoloExplorer.jsx', // Corrected
+    description: 'Amplitude modulator. Create rhythmic volume pulsations with shape controls.',
     icon: '',
     categories: ['Effects']
   },
@@ -244,12 +364,12 @@ export const TOOLS = [
     categories: ['Effects']
   },
   {
-    id: 'delay-explorer',
-    name: 'Delay',
-    path: '/delay-explorer',
-    component: 'DelayExplorer',
-    importPath: './components/DelayExplorer.jsx', // Corrected
-    description: 'Time-based effects processor. Create echoes, slapbacks, and rhythmic patterns.',
+    id: 'stereo-imager-explorer',
+    name: 'Stereo Imager',
+    path: '/stereo-imager-explorer',
+    component: 'StereoImagerExplorer',
+    importPath: './components/StereoImagerExplorer.jsx', // Corrected
+    description: 'Stereo width controller. Adjust spatial characteristics of your mix.',
     icon: '',
     categories: ['Effects']
   },
@@ -263,116 +383,8 @@ export const TOOLS = [
     icon: '',
     categories: ['Effects']
   },
-  {
-    id: 'stereo-imager-explorer',
-    name: 'Stereo Imager',
-    path: '/stereo-imager-explorer',
-    component: 'StereoImagerExplorer',
-    importPath: './components/StereoImagerExplorer.jsx', // Corrected
-    description: 'Stereo width controller. Adjust spatial characteristics of your mix.',
-    icon: '',
-    categories: ['Effects']
-  },
-  {
-    id: 'limiter-explorer',
-    name: 'Limiter',
-    path: '/limiter-explorer',
-    component: 'LimiterExplorer',
-    importPath: './components/LimiterExplorer.jsx', // Corrected
-    description: 'Peak controller. Prevent clipping while maximizing loudness.',
-    icon: '',
-    categories: ['Effects']
-  },
-  {
-    id: 'saturation-explorer',
-    name: 'Saturation',
-    path: '/saturation-explorer',
-    component: 'SaturationExplor',
-    importPath: './components/SaturationExplor.jsx', // Corrected
-    description: 'Harmonic exciter. Add warmth and distortion with various saturation algorithms.',
-    icon: '',
-    categories: ['Effects', 'Synth']
-  },
-  {
-    id: 'chorus-explorer',
-    name: 'Chorus',
-    path: '/chorus-explorer',
-    component: 'ChorusExplor',
-    importPath: './components/ChorusExplor.jsx', // Corrected
-    description: 'Modulation effect. Create lush, animated textures with rate and depth controls.',
-    icon: '',
-    categories: ['Effects']
-  },
-  {
-    id: 'tremolo-explorer',
-    name: 'Tremolo',
-    path: '/tremolo-explorer',
-    component: 'TremoloExplorer',
-    importPath: './components/TremoloExplorer.jsx', // Corrected
-    description: 'Amplitude modulator. Create rhythmic volume pulsations with shape controls.',
-    icon: '',
-    categories: ['Effects']
-  },
-  {
-    id: 'granular-explorer',
-    name: 'Granular',
-    path: '/granular-explorer',
-    component: 'GranularExplor',
-    importPath: './components/GranularExplor.jsx', // Corrected
-    description: 'Granular synthesis engine. Manipulate sound at the microscopic level.',
-    icon: '',
-    categories: ['Effects', 'Synth']
-  },
-  {
-    id: 'time-signature-metronome',
-    name: 'Time Signatures',
-    path: '/time-signature-metronome',
-    component: 'TimeSignatureMetronome',
-    importPath: './components/TimeSignatureMetronome.jsx', // Corrected
-    description: 'Metronome with flexible time signatures. Visualize different rhythmic divisions.',
-    icon: '',
-    categories: ['Rhythm']
-  },
-  {
-    id: 'polyrhythm-sequencer',
-    name: 'Polyrhythms',
-    path: '/polyrhythm-sequencer',
-    component: 'PolyrhythmSequencer',
-    importPath: './components/PolyrhythmSequencer.jsx', // Corrected
-    description: 'Create complex rhythmic layers. Visualize and audition multiple concurrent patterns.',
-    icon: '',
-    categories: ['Rhythm', 'Challenge']
-  },
-  {
-    id: 'euclidean-rhythm-generator',
-    name: 'Euclidean Rhythms',
-    path: '/euclidean-rhythm-generator',
-    component: 'EuclideanRhythmGenerator',
-    importPath: './components/EuclideanRhythmGenerator.jsx', // Corrected
-    description: 'Algorithmic rhythm generator. Create balanced patterns based on mathematical distributions.',
-    icon: '',
-    categories: ['Rhythm']
-  },
-  {
-    id: 'beat-repeat-looper',
-    name: 'Beat Repeater',
-    path: '/beat-repeat-looper',
-    component: 'BeatRepeatLooper',
-    importPath: './components/BeatRepeatLooper.jsx', // Corrected
-    description: 'Creative looping tool. Capture and manipulate rhythmic fragments in real-time.',
-    icon: '',
-    categories: ['Rhythm', 'Effects', 'Fun']
-  },
-  {
-    id: 'swing-groove-visualizer',
-    name: 'Swing',
-    path: '/swing-groove-visualizer',
-    component: 'SwingGrooveVisualizer',
-    importPath: './components/SwingGrooveVisualizer.jsx', // Corrected
-    description: 'Groove quantizer. Adjust swing percentage and visualize timing variations.',
-    icon: '',
-    categories: ['Rhythm', 'Theory']
-  },
+
+  // GAMES SECTION
   {
     id: 'chord-training-quiz',
     name: 'Chord Quiz',

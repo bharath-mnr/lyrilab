@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import * as Tone from 'tone';
 import { Volume2, VolumeX, Music, Play } from 'lucide-react';
+import SEOHead from './SEOHead';
+
 
 // --- usePianoSynth Hook ---
 const usePianoSynth = (initialVolume = 0.7, initialMuteState = false) => {
@@ -8,6 +10,7 @@ const usePianoSynth = (initialVolume = 0.7, initialMuteState = false) => {
     const [isSynthMuted, setIsSynthMuted] = useState(initialMuteState);
     const [synthVolume, setSynthVolume] = useState(initialVolume);
     const [isAudioReady, setIsAudioReady] = useState(false);
+
 
     const initializeAudio = useCallback(async () => {
         try {
@@ -112,6 +115,21 @@ const usePianoSynth = (initialVolume = 0.7, initialMuteState = false) => {
         initializeAudio
     };
 };
+
+// Define the tool object for SEO structured data 
+    const chordExplorerTool = {
+        id: 'chord-explorer',
+        name: 'Chord Explorer',
+        description: 'Interactive chord dictionary with visualizations and audio playback for guitar and piano chords.',
+        path: '/chord-explorer',
+        categories: [
+            'Chord Dictionary',
+            'Music Theory',
+            'Guitar Chords',
+            'Piano Chords',
+            'Harmony'
+        ]
+    };
 
 // --- Chord Definitions ---
 const CHORDS = [
@@ -382,128 +400,138 @@ const ChordHighlightApp = () => {
     }
 
     return (
-        <div
-            className="min-h-screen flex flex-col relative overflow-hidden p-4"
-            style={{
-                background: 'linear-gradient(135deg, #e5d4ff 0%, #d6bfff 50%, #c8aaff 100%)',
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Header */}
-            <div className="text-center py-8 px-4 z-10">
-                <div className="flex items-center justify-center gap-3 mb-4">
-                    <Music className="text-indigo-600" size={32} />
-                    <h1 className="text-4xl font-bold text-indigo-800">Chord Explorer</h1>
-                </div>
+        <>
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="chord-explorer" 
+                tool={chordExplorerTool}
+                customData={{}}
+            />
 
-                {isAudioReady ? (
-                    <p className="text-purple-700 text-sm mt-2 font-medium">
-                        🎵 Audio is active - Click chords or piano keys!
-                    </p>
-                ) : (
-                    <p className="text-yellow-700 text-sm mt-2 font-medium animate-pulse">
-                        Click any chord button or piano key to enable audio and start exploring!
-                    </p>
-                )}
-            </div>
 
-            {/* Volume Controls */}
-            <div className="flex justify-center mb-6 z-10">
-                <div className="flex items-center gap-3 bg-white/90 backdrop-blur-sm rounded-xl px-6 py-3 shadow-lg border border-indigo-200">
-                    <button
-                        onClick={toggleMute}
-                        className="text-indigo-700 hover:text-indigo-900 transition-colors p-2 rounded-full hover:bg-indigo-100"
-                        disabled={!isAudioReady}
-                        aria-label={isSynthMuted ? "Unmute audio" : "Mute audio"}
-                    >
-                        {isSynthMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-                    </button>
-                    <input
-                        type="range"
-                        min="0"
-                        max="1"
-                        step="0.1"
-                        value={synthVolume}
-                        onChange={(e) => setSynthVolume(parseFloat(e.target.value))}
-                        className="w-32 accent-indigo-600"
-                        disabled={!isAudioReady}
-                        aria-label="Volume slider"
-                        aria-valuemin="0"
-                        aria-valuemax="1"
-                        aria-valuenow={synthVolume}
-                        aria-valuetext={`${Math.round(synthVolume * 100)} percent volume`}
-                    />
-                    <span className="text-sm text-indigo-700 w-8 font-medium">{Math.round(synthVolume * 100)}</span>
-                </div>
-            </div>
+            <div
+                className="min-h-screen flex flex-col relative overflow-hidden p-4"
+                style={{
+                    background: 'linear-gradient(135deg, #e5d4ff 0%, #d6bfff 50%, #c8aaff 100%)',
+                    fontFamily: 'Inter, sans-serif',
+                }}
+            >
+                {/* Header */}
+                <div className="text-center py-8 px-4 z-10">
+                    <div className="flex items-center justify-center gap-3 mb-4">
+                        <Music className="text-indigo-600" size={32} />
+                        <h1 className="text-4xl font-bold text-indigo-800">Easy Chord</h1>
+                    </div>
 
-            {/* Chord Selection */}
-            <div className="flex justify-center flex-wrap gap-3 mb-8 px-4 max-w-6xl mx-auto z-10">
-                {CHORDS.map((chord) => (
-                    <button
-                        key={chord.name}
-                        onClick={() => setSelectedChord(chord)}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-md
-                            ${selectedChord.name === chord.name
-                                ? 'bg-indigo-600 text-white shadow-lg transform scale-105 shadow-indigo-300/50'
-                                : 'bg-white/90 text-indigo-700 hover:bg-indigo-50 hover:text-indigo-800 border border-indigo-200 hover:shadow-lg'
-                            }
-                        `}
-                        aria-pressed={selectedChord.name === chord.name}
-                        aria-label={`Play and highlight ${chord.name} chord`}
-                    >
-                        {chord.name}
-                    </button>
-                ))}
-            </div>
-
-            {/* Piano & Chord Info Display */}
-            <div className="flex-1 flex flex-col items-center justify-center px-4 z-10 w-full">
-                <div className="w-full max-w-full overflow-x-auto flex flex-col items-center">
-                    {/* Current Chord Info */}
-                    {selectedChord && (
-                        <div className="mb-8 text-center bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-indigo-200">
-                            <h2 className="text-3xl font-bold text-indigo-800 mb-2">
-                                {selectedChord.name}
-                            </h2>
-                            <p className="text-xl text-indigo-700 mb-1">
-                                Intervals: {selectedChord.intervals.join(' - ')}
-                            </p>
-                            <p className="text-lg text-gray-700">
-                                Notes: {selectedChord.notes.map(getStandardPianoNote).join(', ')}
-                            </p>
-                        </div>
+                    {isAudioReady ? (
+                        <p className="text-purple-700 text-sm mt-2 font-medium">
+                            Audio is active - Click chords or piano keys!
+                        </p>
+                    ) : (
+                        <p className="text-yellow-700 text-sm mt-2 font-medium animate-pulse">
+                            Click any chord button or piano key to enable audio and start exploring!
+                        </p>
                     )}
+                </div>
 
-                    {/* Piano Frame with Improved Design */}
-                    <div className="bg-gradient-to-b from-amber-800 via-amber-900 to-amber-950 p-4 sm:p-8 rounded-3xl shadow-2xl border-4 border-amber-700 w-full max-w-2xl">
-                        <div className="bg-gradient-to-b from-gray-900 to-black p-3 sm:p-6 rounded-2xl shadow-inner border-2 border-gray-800">
-                            <div className="bg-black p-2 sm:p-4 rounded-xl relative">
-                                <PianoKeys
-                                    highlightedNotes={highlightedNotes}
-                                    playNote={playNote}
-                                    stopNote={stopNote}
-                                    isAudioReady={isAudioReady}
-                                />
+                {/* Volume Controls */}
+                <div className="flex justify-center mb-6 z-10">
+                    <div className="flex items-center gap-3 bg-white/90 backdrop-blur-sm rounded-xl px-6 py-3 shadow-lg border border-indigo-200">
+                        <button
+                            onClick={toggleMute}
+                            className="text-indigo-700 hover:text-indigo-900 transition-colors p-2 rounded-full hover:bg-indigo-100"
+                            disabled={!isAudioReady}
+                            aria-label={isSynthMuted ? "Unmute audio" : "Mute audio"}
+                        >
+                            {isSynthMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+                        </button>
+                        <input
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="0.1"
+                            value={synthVolume}
+                            onChange={(e) => setSynthVolume(parseFloat(e.target.value))}
+                            className="w-32 accent-indigo-600"
+                            disabled={!isAudioReady}
+                            aria-label="Volume slider"
+                            aria-valuemin="0"
+                            aria-valuemax="1"
+                            aria-valuenow={synthVolume}
+                            aria-valuetext={`${Math.round(synthVolume * 100)} percent volume`}
+                        />
+                        <span className="text-sm text-indigo-700 w-8 font-medium">{Math.round(synthVolume * 100)}</span>
+                    </div>
+                </div>
+
+                {/* Chord Selection */}
+                <div className="flex justify-center flex-wrap gap-3 mb-8 px-4 max-w-6xl mx-auto z-10">
+                    {CHORDS.map((chord) => (
+                        <button
+                            key={chord.name}
+                            onClick={() => setSelectedChord(chord)}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-md
+                                ${selectedChord.name === chord.name
+                                    ? 'bg-indigo-600 text-white shadow-lg transform scale-105 shadow-indigo-300/50'
+                                    : 'bg-white/90 text-indigo-700 hover:bg-indigo-50 hover:text-indigo-800 border border-indigo-200 hover:shadow-lg'
+                                }
+                            `}
+                            aria-pressed={selectedChord.name === chord.name}
+                            aria-label={`Play and highlight ${chord.name} chord`}
+                        >
+                            {chord.name}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Piano & Chord Info Display */}
+                <div className="flex-1 flex flex-col items-center justify-center px-4 z-10 w-full">
+                    <div className="w-full max-w-full overflow-x-auto flex flex-col items-center">
+                        {/* Current Chord Info */}
+                        {selectedChord && (
+                            <div className="mb-8 text-center bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-indigo-200">
+                                <h2 className="text-3xl font-bold text-indigo-800 mb-2">
+                                    {selectedChord.name}
+                                </h2>
+                                <p className="text-xl text-indigo-700 mb-1">
+                                    Intervals: {selectedChord.intervals.join(' - ')}
+                                </p>
+                                <p className="text-lg text-gray-700">
+                                    Notes: {selectedChord.notes.map(getStandardPianoNote).join(', ')}
+                                </p>
+                            </div>
+                        )}
+
+                        {/* Piano Frame with Improved Design */}
+                        <div className="bg-gradient-to-b from-amber-800 via-amber-900 to-amber-950 p-4 sm:p-8 rounded-3xl shadow-2xl border-4 border-amber-700 w-full max-w-2xl">
+                            <div className="bg-gradient-to-b from-gray-900 to-black p-3 sm:p-6 rounded-2xl shadow-inner border-2 border-gray-800">
+                                <div className="bg-black p-2 sm:p-4 rounded-xl relative">
+                                    <PianoKeys
+                                        highlightedNotes={highlightedNotes}
+                                        playNote={playNote}
+                                        stopNote={stopNote}
+                                        isAudioReady={isAudioReady}
+                                    />
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Piano Legs - Enhanced Design */}
-                    <div className="flex justify-between px-10 sm:px-20 mt-6 w-full max-w-lg">
-                        <div className="w-8 sm:w-10 h-16 sm:h-20 bg-gradient-to-b from-amber-800 to-amber-900 rounded-b-2xl shadow-xl border-2 border-amber-700"></div>
-                        <div className="w-8 sm:w-10 h-16 sm:h-20 bg-gradient-to-b from-amber-800 to-amber-900 rounded-b-2xl shadow-xl border-2 border-amber-700"></div>
+                        {/* Piano Legs - Enhanced Design */}
+                        <div className="flex justify-between px-10 sm:px-20 mt-6 w-full max-w-lg">
+                            <div className="w-8 sm:w-10 h-16 sm:h-20 bg-gradient-to-b from-amber-800 to-amber-900 rounded-b-2xl shadow-xl border-2 border-amber-700"></div>
+                            <div className="w-8 sm:w-10 h-16 sm:h-20 bg-gradient-to-b from-amber-800 to-amber-900 rounded-b-2xl shadow-xl border-2 border-amber-700"></div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Footer */}
-            <div className="text-center py-6 text-indigo-700 px-4 z-10">
-                <p className="text-sm bg-white/60 backdrop-blur-sm rounded-lg p-3 inline-block">
-                    Click chord buttons to hear them, or interact directly with the piano keys
-                </p>
+                {/* Footer */}
+                <div className="text-center py-6 text-indigo-700 px-4 z-10">
+                    <p className="text-sm bg-white/60 backdrop-blur-sm rounded-lg p-3 inline-block">
+                        Click chord buttons to hear them, or interact directly with the piano keys
+                    </p>
+                </div>
             </div>
-        </div>
+        </>
     );
 };
 
