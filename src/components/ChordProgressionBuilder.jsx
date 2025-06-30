@@ -1,6 +1,22 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext, useMemo } from 'react';
 import * as Tone from 'tone';
 import { Play, Pause, Music, Trash2, Shuffle, Plus, Eye, RotateCcw, Save, Volume2 } from 'lucide-react';
+import SEOHead from './SEOHead';
+
+// Define the tool object for SEO structured data
+const chordProgressionTool = {
+    id: 'chord-progression-builder',
+    name: 'Chord Progression Builder',
+    description: 'Create and experiment with chord progressions for songwriting and music composition.',
+    path: '/chord-progression-builder',
+    categories: [
+        'Songwriting',
+        'Music Composition',
+        'Harmony',
+        'Chord Progressions',
+        'Music Theory'
+    ]
+};
 
 // --- AUDIO CONTEXT ---
 export const AudioContext = createContext(null);
@@ -645,294 +661,304 @@ const ChordProgressionBuilderContent = () => {
     } = hookData;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
-            <div className="max-w-7xl mx-auto">
-                {/* Header */}
-                <div className="text-center mb-8">
-                    <div className="flex items-center justify-center gap-3 mb-4">
-                        <Music size={40} className="text-blue-700" />
-                        <h1 className="text-4xl font-bold text-gray-800">Enhanced Chord Progression Builder</h1>
-                    </div>
-                    
-                    {error && (
-                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                            {error}
+        <>
+
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="chord-progression-builder" 
+                tool={chordProgressionTool}
+                customData={{}}
+            />
+
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
+                <div className="max-w-7xl mx-auto">
+                    {/* Header */}
+                    <div className="text-center mb-8">
+                        <div className="flex items-center justify-center gap-3 mb-4">
+                            <Music size={40} className="text-blue-700" />
+                            <h1 className="text-4xl font-bold text-gray-800">Enhanced Chord Progression Builder</h1>
                         </div>
-                    )}
-                    
-                    {!isAudioReady && isLoading && (
-                        <div className="text-blue-600 animate-pulse">Setting up audio system...</div>
-                    )}
-                </div>
+                        
+                        {error && (
+                            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                                {error}
+                            </div>
+                        )}
+                        
+                        {!isAudioReady && isLoading && (
+                            <div className="text-blue-600 animate-pulse">Setting up audio system...</div>
+                        )}
+                    </div>
 
-                <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg p-6 mb-6">
-                    {/* Controls Row 1: Playback */}
-                    <div className="flex flex-wrap gap-4 items-center justify-center mb-6 pb-6 border-b">
-                        <button
-                            onClick={togglePlayback}
-                            disabled={!isAudioReady || progression.length === 0}
-                            className={`flex items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all ${
-                                isAudioReady && progression.length > 0
-                                    ? isPlaying 
-                                        ? 'bg-red-500 hover:bg-red-600 text-white'
-                                        : 'bg-green-500 hover:bg-green-600 text-white'
-                                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                            }`}
-                        >
-                            {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-                            {isPlaying ? 'Pause' : 'Play'}
-                        </button>
-
-                        <button
-                            onClick={stopPlayback}
-                            disabled={!isPlaying}
-                            className="flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500 hover:bg-orange-600 text-white disabled:bg-gray-300 disabled:text-gray-500"
-                        >
-                            <RotateCcw size={16} />
-                            Stop
-                        </button>
-
-                        <button
-                            onClick={shuffleProgression}
-                            disabled={!isAudioReady || progression.length < 2}
-                            className="flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500 hover:bg-purple-600 text-white disabled:bg-gray-300 disabled:text-gray-500"
-                        >
-                            <Shuffle size={16} />
-                            Shuffle
-                        </button>
-
-                        <div className="flex gap-2">
+                    <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg p-6 mb-6">
+                        {/* Controls Row 1: Playback */}
+                        <div className="flex flex-wrap gap-4 items-center justify-center mb-6 pb-6 border-b">
                             <button
-                                onClick={() => transposeProgression(1)}
+                                onClick={togglePlayback}
                                 disabled={!isAudioReady || progression.length === 0}
-                                className="px-3 py-2 rounded bg-blue-500 hover:bg-blue-600 text-white disabled:bg-gray-300 disabled:text-gray-500"
+                                className={`flex items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all ${
+                                    isAudioReady && progression.length > 0
+                                        ? isPlaying 
+                                            ? 'bg-red-500 hover:bg-red-600 text-white'
+                                            : 'bg-green-500 hover:bg-green-600 text-white'
+                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                }`}
                             >
-                                +1♯
+                                {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+                                {isPlaying ? 'Pause' : 'Play'}
                             </button>
+
                             <button
-                                onClick={() => transposeProgression(-1)}
-                                disabled={!isAudioReady || progression.length === 0}
-                                className="px-3 py-2 rounded bg-blue-500 hover:bg-blue-600 text-white disabled:bg-gray-300 disabled:text-gray-500"
+                                onClick={stopPlayback}
+                                disabled={!isPlaying}
+                                className="flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500 hover:bg-orange-600 text-white disabled:bg-gray-300 disabled:text-gray-500"
                             >
-                                -1♭
+                                <RotateCcw size={16} />
+                                Stop
                             </button>
-                        </div>
-                    </div>
 
-                    {/* Controls Row 2: Parameters */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6 pb-6 border-b">
-                        <ParameterSlider
-                            label="Tempo"
-                            value={bpm}
-                            setter={setBpm}
-                            min="60"
-                            max="200"
-                            step="1"
-                            unit=" BPM"
-                            explanation="Playback speed"
-
-			    isAudioReady={isAudioReady}
-                            colorClass="accent-blue-600"
-                        />
-                        
-                        <ParameterSlider
-                            label="Chord Duration"
-                            value={chordDuration}
-                            setter={setChordDuration}
-                            min="0.25"
-                            max="4"
-                            step="0.25"
-                            unit=" beats"
-                            explanation="Length of each chord"
-                            isAudioReady={isAudioReady}
-                            colorClass="accent-green-600"
-                        />
-                        
-                        <ParameterSlider
-                            label="Volume"
-                            value={volume}
-                            setter={setVolume}
-                            min="-30"
-                            max="0"
-                            step="1"
-                            unit=" dB"
-                            explanation="Overall volume level"
-                            isAudioReady={isAudioReady}
-                            colorClass="accent-purple-600"
-                        />
-                        
-                        <div className="flex flex-col items-center">
-                            <label className="text-gray-800 font-medium mb-2 text-sm">Voicing</label>
-                            <select
-                                value={voicingType}
-                                onChange={(e) => setVoicingType(e.target.value)}
-                                disabled={!isAudioReady}
-                                className="w-full p-2 border rounded-lg bg-white disabled:opacity-50"
+                            <button
+                                onClick={shuffleProgression}
+                                disabled={!isAudioReady || progression.length < 2}
+                                className="flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500 hover:bg-purple-600 text-white disabled:bg-gray-300 disabled:text-gray-500"
                             >
-                                <option value="close">Close</option>
-                                <option value="spread">Spread</option>
-                                <option value="drop2">Drop 2</option>
-                            </select>
-                            <p className="text-gray-600 text-xs mt-1 text-center">Chord voicing style</p>
-                        </div>
-                    </div>
+                                <Shuffle size={16} />
+                                Shuffle
+                            </button>
 
-                    {/* Key Selection and Common Progressions */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 pb-6 border-b">
-                        <div className="flex flex-col">
-                            <label className="text-gray-800 font-medium mb-2">Key Center</label>
                             <div className="flex gap-2">
-                                <select
-                                    value={selectedKey.root}
-                                    onChange={(e) => setSelectedKey(prev => ({ ...prev, root: e.target.value }))}
-                                    className="flex-1 p-2 border rounded-lg bg-white"
+                                <button
+                                    onClick={() => transposeProgression(1)}
+                                    disabled={!isAudioReady || progression.length === 0}
+                                    className="px-3 py-2 rounded bg-blue-500 hover:bg-blue-600 text-white disabled:bg-gray-300 disabled:text-gray-500"
                                 >
-                                    {allNotes.map(note => (
-                                        <option key={note} value={note}>{note}</option>
-                                    ))}
-                                </select>
-                                <select
-                                    value={selectedKey.type}
-                                    onChange={(e) => setSelectedKey(prev => ({ ...prev, type: e.target.value }))}
-                                    className="flex-1 p-2 border rounded-lg bg-white"
+                                    +1♯
+                                </button>
+                                <button
+                                    onClick={() => transposeProgression(-1)}
+                                    disabled={!isAudioReady || progression.length === 0}
+                                    className="px-3 py-2 rounded bg-blue-500 hover:bg-blue-600 text-white disabled:bg-gray-300 disabled:text-gray-500"
                                 >
-                                    <option value="major">Major</option>
-                                    <option value="minor">Minor</option>
-                                    <option value="harmonic-minor">Harmonic Minor</option>
-                                </select>
+                                    -1♭
+                                </button>
                             </div>
                         </div>
 
-                        <div className="flex flex-col">
-                            <label className="text-gray-800 font-medium mb-2">Common Progressions</label>
-                            <div className="flex flex-wrap gap-2">
-                                {commonProgressions.map(prog => (
-                                    <button
-                                        key={prog}
-                                        onClick={() => loadCommonProgression(prog)}
-                                        disabled={!isAudioReady}
-                                        className="px-3 py-1 rounded bg-indigo-500 hover:bg-indigo-600 text-white text-sm disabled:bg-gray-300 disabled:text-gray-500"
+                        {/* Controls Row 2: Parameters */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6 pb-6 border-b">
+                            <ParameterSlider
+                                label="Tempo"
+                                value={bpm}
+                                setter={setBpm}
+                                min="60"
+                                max="200"
+                                step="1"
+                                unit=" BPM"
+                                explanation="Playback speed"
+
+                    isAudioReady={isAudioReady}
+                                colorClass="accent-blue-600"
+                            />
+                            
+                            <ParameterSlider
+                                label="Chord Duration"
+                                value={chordDuration}
+                                setter={setChordDuration}
+                                min="0.25"
+                                max="4"
+                                step="0.25"
+                                unit=" beats"
+                                explanation="Length of each chord"
+                                isAudioReady={isAudioReady}
+                                colorClass="accent-green-600"
+                            />
+                            
+                            <ParameterSlider
+                                label="Volume"
+                                value={volume}
+                                setter={setVolume}
+                                min="-30"
+                                max="0"
+                                step="1"
+                                unit=" dB"
+                                explanation="Overall volume level"
+                                isAudioReady={isAudioReady}
+                                colorClass="accent-purple-600"
+                            />
+                            
+                            <div className="flex flex-col items-center">
+                                <label className="text-gray-800 font-medium mb-2 text-sm">Voicing</label>
+                                <select
+                                    value={voicingType}
+                                    onChange={(e) => setVoicingType(e.target.value)}
+                                    disabled={!isAudioReady}
+                                    className="w-full p-2 border rounded-lg bg-white disabled:opacity-50"
+                                >
+                                    <option value="close">Close</option>
+                                    <option value="spread">Spread</option>
+                                    <option value="drop2">Drop 2</option>
+                                </select>
+                                <p className="text-gray-600 text-xs mt-1 text-center">Chord voicing style</p>
+                            </div>
+                        </div>
+
+                        {/* Key Selection and Common Progressions */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 pb-6 border-b">
+                            <div className="flex flex-col">
+                                <label className="text-gray-800 font-medium mb-2">Key Center</label>
+                                <div className="flex gap-2">
+                                    <select
+                                        value={selectedKey.root}
+                                        onChange={(e) => setSelectedKey(prev => ({ ...prev, root: e.target.value }))}
+                                        className="flex-1 p-2 border rounded-lg bg-white"
                                     >
-                                        {prog}
-                                    </button>
-                                ))}
+                                        {allNotes.map(note => (
+                                            <option key={note} value={note}>{note}</option>
+                                        ))}
+                                    </select>
+                                    <select
+                                        value={selectedKey.type}
+                                        onChange={(e) => setSelectedKey(prev => ({ ...prev, type: e.target.value }))}
+                                        className="flex-1 p-2 border rounded-lg bg-white"
+                                    >
+                                        <option value="major">Major</option>
+                                        <option value="minor">Minor</option>
+                                        <option value="harmonic-minor">Harmonic Minor</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col">
+                                <label className="text-gray-800 font-medium mb-2">Common Progressions</label>
+                                <div className="flex flex-wrap gap-2">
+                                    {commonProgressions.map(prog => (
+                                        <button
+                                            key={prog}
+                                            onClick={() => loadCommonProgression(prog)}
+                                            disabled={!isAudioReady}
+                                            className="px-3 py-1 rounded bg-indigo-500 hover:bg-indigo-600 text-white text-sm disabled:bg-gray-300 disabled:text-gray-500"
+                                        >
+                                            {prog}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Chord Selection */}
-                    <div className="mb-6">
-                        <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                            <Plus size={20} />
-                            Add Chords
-                        </h3>
-                        
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                            {allNotes.map(note => (
-                                <div key={note} className="bg-gray-50 rounded-lg p-3">
-                                    <div className="text-center font-bold text-gray-700 mb-2">{note}</div>
-                                    <div className="flex flex-wrap gap-1 justify-center">
-                                        {availableChordTypes.slice(0, 4).map(chordType => (
-                                            <button
-                                                key={`${note}-${chordType.type}`}
-                                                onClick={() => addChord(note, chordType.type)}
-                                                disabled={!isAudioReady}
-                                                className="px-2 py-1 text-xs rounded bg-blue-500 hover:bg-blue-600 text-white disabled:bg-gray-300 disabled:text-gray-500"
-                                            >
-                                                {chordType.name}
-                                            </button>
-                                        ))}
-                                    </div>
-                                    <details className="mt-2">
-                                        <summary className="text-xs text-gray-600 cursor-pointer">More...</summary>
-                                        <div className="flex flex-wrap gap-1 justify-center mt-1">
-                                            {availableChordTypes.slice(4).map(chordType => (
+                        {/* Chord Selection */}
+                        <div className="mb-6">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                                <Plus size={20} />
+                                Add Chords
+                            </h3>
+                            
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                                {allNotes.map(note => (
+                                    <div key={note} className="bg-gray-50 rounded-lg p-3">
+                                        <div className="text-center font-bold text-gray-700 mb-2">{note}</div>
+                                        <div className="flex flex-wrap gap-1 justify-center">
+                                            {availableChordTypes.slice(0, 4).map(chordType => (
                                                 <button
                                                     key={`${note}-${chordType.type}`}
                                                     onClick={() => addChord(note, chordType.type)}
                                                     disabled={!isAudioReady}
-                                                    className="px-2 py-1 text-xs rounded bg-purple-500 hover:bg-purple-600 text-white disabled:bg-gray-300 disabled:text-gray-500"
+                                                    className="px-2 py-1 text-xs rounded bg-blue-500 hover:bg-blue-600 text-white disabled:bg-gray-300 disabled:text-gray-500"
                                                 >
                                                     {chordType.name}
                                                 </button>
                                             ))}
                                         </div>
-                                    </details>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Progression Display */}
-                <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg p-6">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-                            <Eye size={20} />
-                            Progression ({progression.length} chords)
-                        </h3>
-                        <button
-                            onClick={clearProgression}
-                            disabled={!isAudioReady || progression.length === 0}
-                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white disabled:bg-gray-300 disabled:text-gray-500"
-                        >
-                            <Trash2 size={16} />
-                            Clear All
-                        </button>
-                    </div>
-
-                    {progression.length === 0 ? (
-                        <div className="text-center py-12 text-gray-500">
-                            <Music size={48} className="mx-auto mb-4 opacity-50" />
-                            <p className="text-lg">No chords added yet.</p>
-                            <p className="text-sm">Add some chords above to get started!</p>
-                        </div>
-                    ) : (
-                        <div className="flex flex-wrap gap-4 justify-center">
-                            {progression.map((chord, index) => (
-                                <ChordBlock
-                                    key={chord.id}
-                                    chord={chord}
-                                    index={index}
-                                    onRemove={removeChord}
-                                    isCurrent={currentChordIndex === index}
-                                    analyzeRomanNumeral={analyzeRomanNumeral}
-                                    onDragStart={handleDragStart}
-                                    onDragEnter={handleDragEnter}
-                                    onDragOver={handleDragOver}
-                                    onDrop={handleDrop}
-                                    isAudioReady={isAudioReady}
-                                />
-                            ))}
-                        </div>
-                    )}
-
-                    {progression.length > 0 && (
-                        <div className="mt-6 pt-4 border-t text-center text-sm text-gray-600">
-                            <p><strong>Roman Numeral Analysis:</strong> {selectedKey.root} {selectedKey.type}</p>
-                            <p className="mt-1">
-                                {progression.map((chord, index) => (
-                                    <span key={chord.id} className={currentChordIndex === index ? 'font-bold text-yellow-600' : ''}>
-                                        {analyzeRomanNumeral(chord.root, chord.type)}
-                                        {index < progression.length - 1 ? ' - ' : ''}
-                                    </span>
+                                        <details className="mt-2">
+                                            <summary className="text-xs text-gray-600 cursor-pointer">More...</summary>
+                                            <div className="flex flex-wrap gap-1 justify-center mt-1">
+                                                {availableChordTypes.slice(4).map(chordType => (
+                                                    <button
+                                                        key={`${note}-${chordType.type}`}
+                                                        onClick={() => addChord(note, chordType.type)}
+                                                        disabled={!isAudioReady}
+                                                        className="px-2 py-1 text-xs rounded bg-purple-500 hover:bg-purple-600 text-white disabled:bg-gray-300 disabled:text-gray-500"
+                                                    >
+                                                        {chordType.name}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </details>
+                                    </div>
                                 ))}
-                            </p>
+                            </div>
                         </div>
-                    )}
-                </div>
+                    </div>
 
-                {/* Footer */}
-                <div className="text-center mt-8 text-gray-600">
-                    <p className="text-sm">
-                        Enhanced Chord Progression Builder with Roman numeral analysis, drag & drop reordering, and advanced voicings.
-                    </p>
-                    <p className="text-xs mt-2">
-                        💡 Tip: Drag chords to reorder them, use common progressions as starting points, and experiment with different voicings!
-                    </p>
+                    {/* Progression Display */}
+                    <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg p-6">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                                <Eye size={20} />
+                                Progression ({progression.length} chords)
+                            </h3>
+                            <button
+                                onClick={clearProgression}
+                                disabled={!isAudioReady || progression.length === 0}
+                                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white disabled:bg-gray-300 disabled:text-gray-500"
+                            >
+                                <Trash2 size={16} />
+                                Clear All
+                            </button>
+                        </div>
+
+                        {progression.length === 0 ? (
+                            <div className="text-center py-12 text-gray-500">
+                                <Music size={48} className="mx-auto mb-4 opacity-50" />
+                                <p className="text-lg">No chords added yet.</p>
+                                <p className="text-sm">Add some chords above to get started!</p>
+                            </div>
+                        ) : (
+                            <div className="flex flex-wrap gap-4 justify-center">
+                                {progression.map((chord, index) => (
+                                    <ChordBlock
+                                        key={chord.id}
+                                        chord={chord}
+                                        index={index}
+                                        onRemove={removeChord}
+                                        isCurrent={currentChordIndex === index}
+                                        analyzeRomanNumeral={analyzeRomanNumeral}
+                                        onDragStart={handleDragStart}
+                                        onDragEnter={handleDragEnter}
+                                        onDragOver={handleDragOver}
+                                        onDrop={handleDrop}
+                                        isAudioReady={isAudioReady}
+                                    />
+                                ))}
+                            </div>
+                        )}
+
+                        {progression.length > 0 && (
+                            <div className="mt-6 pt-4 border-t text-center text-sm text-gray-600">
+                                <p><strong>Roman Numeral Analysis:</strong> {selectedKey.root} {selectedKey.type}</p>
+                                <p className="mt-1">
+                                    {progression.map((chord, index) => (
+                                        <span key={chord.id} className={currentChordIndex === index ? 'font-bold text-yellow-600' : ''}>
+                                            {analyzeRomanNumeral(chord.root, chord.type)}
+                                            {index < progression.length - 1 ? ' - ' : ''}
+                                        </span>
+                                    ))}
+                                </p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Footer */}
+                    <div className="text-center mt-8 text-gray-600">
+                        <p className="text-sm">
+                            Enhanced Chord Progression Builder with Roman numeral analysis, drag & drop reordering, and advanced voicings.
+                        </p>
+                        <p className="text-xs mt-2">
+                            💡 Tip: Drag chords to reorder them, use common progressions as starting points, and experiment with different voicings!
+                        </p>
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 
