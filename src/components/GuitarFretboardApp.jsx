@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef, createContext, useContext, useMemo } from 'react';
 import * as Tone from 'tone';
 import { Volume2, VolumeX, Guitar, Info, Settings } from 'lucide-react';
+import SEOHead from './SEOHead';
 
 // --- UTILITY FUNCTIONS ---
 // Simple throttle function
@@ -115,6 +116,21 @@ const AudioContextProvider = ({ children }) => {
     );
 };
 // --- END AUDIO CONTEXT ---
+
+    // 2. Guitar Fretboard
+    const guitarFretboardTool = {
+    id: 'guitar-fretboard',
+    name: 'Guitar Fretboard',
+    description: 'Interactive guitar fretboard visualization tool to learn notes, scales, and chords across the entire neck.',
+    path: '/guitar-fretboard',
+    categories: [
+        'Guitar Learning',
+        'Fretboard Visualization',
+        'Music Theory',
+        'String Instruments',
+        'Scale Practice'
+    ]
+    };
 
 
 // --- ENHANCED GUITAR SYNTH HOOK ---
@@ -398,6 +414,8 @@ const GuitarString = React.memo(({ stringNote, frets, pressedFrets, onNotePress,
 
 // --- MAIN GUITAR FRETBOARD COMPONENT ---
 const GuitarFretboard = () => {
+    // 2. Guitar Fretboard Component
+
     const {
         playNote,
         stopNote,
@@ -668,165 +686,177 @@ const GuitarFretboard = () => {
 
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-amber-900 to-slate-900 relative overflow-hidden">
-            {/* Background texture */}
-            <div className="absolute inset-0 opacity-10"
-                style={{ backgroundImage: svgBackground, backgroundSize: '60px 60px' }} // Apply encoded SVG here
+        <>
+            
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+                pageId="guitar-fretboard" 
+                tool={guitarFretboardTool}
+                customData={{}}
             />
 
-            <div className="relative z-10 flex flex-col min-h-screen">
-                {/* Header */}
-                <header className="text-center py-6 px-4">
-                    <div className="flex items-center justify-center gap-3 mb-4">
-                        <Guitar className="text-amber-400" size={40} />
-                        <h1 className="text-4xl md:text-6xl font-bold text-white drop-shadow-2xl">
-                            Virtual Fretboard
-                        </h1>
-                    </div>
 
-                    <p className="text-amber-200 text-lg mb-4">
-                        Professional guitar fretboard simulator
-                    </p>
+            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-amber-900 to-slate-900 relative overflow-hidden">
+                {/* Background texture */}
+                <div className="absolute inset-0 opacity-10"
+                    style={{ backgroundImage: svgBackground, backgroundSize: '60px 60px' }} // Apply encoded SVG here
+                />
 
-                    {/* Status indicators */}
-                    <div className="flex justify-center gap-4 text-sm">
-                        {audioContextError && (
-                            <div className="bg-red-500 text-white p-2 rounded-md flex items-center gap-2">
-                                <Info size={16} />
-                                <span>Error: {audioContextError}</span>
-                            </div>
-                        )}
-                        {!isAudioReady && !audioContextError && (
-                            <div className="bg-yellow-500 text-slate-900 p-2 rounded-md flex items-center gap-2 animate-pulse">
-                                <Info size={16} />
-                                <span>Click/Press to enable audio!</span>
-                            </div>
-                        )}
-                        {isAudioReady && (
-                            <div className="bg-green-500 text-white p-2 rounded-md flex items-center gap-2">
-                                <Volume2 size={16} />
-                                <span>Audio Ready</span>
-                            </div>
-                        )}
-                    </div>
-                </header>
+                <div className="relative z-10 flex flex-col min-h-screen">
+                    {/* Header */}
+                    <header className="text-center py-6 px-4">
+                        <div className="flex items-center justify-center gap-3 mb-4">
+                            <Guitar className="text-amber-400" size={40} />
+                            <h1 className="text-4xl md:text-6xl font-bold text-white drop-shadow-2xl">
+                                Virtual Fretboard
+                            </h1>
+                        </div>
 
-                {/* Main Fretboard and Controls */}
-                <main className="flex-1 flex flex-col items-center justify-center p-4">
-                    <div className="fretboard-container bg-amber-950 shadow-2xl rounded-lg p-4 flex flex-col overflow-hidden max-w-full w-[1200px] aspect-[3/1] relative">
-                        {fullFretboardNotes.map((string, index) => (
-                            <GuitarString
-                                key={string.baseNote}
-                                stringNote={string.baseNote}
-                                frets={string.frets}
-                                pressedFrets={pressedFrets}
-                                onNotePress={handleFretPress}
-                                onNoteRelease={handleFretRelease}
-                                stringIndex={string.stringIndex}
-                                onHoverNotePlay={playHoverNote}
-                            />
-                        ))}
+                        <p className="text-amber-200 text-lg mb-4">
+                            Professional guitar fretboard simulator
+                        </p>
 
-                        {/* Fretboard number markers */}
-                        <div className="absolute bottom-2 left-16 right-16 flex justify-around text-amber-200 text-xs font-semibold select-none">
-                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24].map(fretNum => (
-                                <div key={fretNum} className="flex-grow text-center">
-                                    {fretNum}
+                        {/* Status indicators */}
+                        <div className="flex justify-center gap-4 text-sm">
+                            {audioContextError && (
+                                <div className="bg-red-500 text-white p-2 rounded-md flex items-center gap-2">
+                                    <Info size={16} />
+                                    <span>Error: {audioContextError}</span>
                                 </div>
+                            )}
+                            {!isAudioReady && !audioContextError && (
+                                <div className="bg-yellow-500 text-slate-900 p-2 rounded-md flex items-center gap-2 animate-pulse">
+                                    <Info size={16} />
+                                    <span>Click/Press to enable audio!</span>
+                                </div>
+                            )}
+                            {isAudioReady && (
+                                <div className="bg-green-500 text-white p-2 rounded-md flex items-center gap-2">
+                                    <Volume2 size={16} />
+                                    <span>Audio Ready</span>
+                                </div>
+                            )}
+                        </div>
+                    </header>
+
+                    {/* Main Fretboard and Controls */}
+                    <main className="flex-1 flex flex-col items-center justify-center p-4">
+                        <div className="fretboard-container bg-amber-950 shadow-2xl rounded-lg p-4 flex flex-col overflow-hidden max-w-full w-[1200px] aspect-[3/1] relative">
+                            {fullFretboardNotes.map((string, index) => (
+                                <GuitarString
+                                    key={string.baseNote}
+                                    stringNote={string.baseNote}
+                                    frets={string.frets}
+                                    pressedFrets={pressedFrets}
+                                    onNotePress={handleFretPress}
+                                    onNoteRelease={handleFretRelease}
+                                    stringIndex={string.stringIndex}
+                                    onHoverNotePlay={playHoverNote}
+                                />
                             ))}
+
+                            {/* Fretboard number markers */}
+                            <div className="absolute bottom-2 left-16 right-16 flex justify-around text-amber-200 text-xs font-semibold select-none">
+                                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24].map(fretNum => (
+                                    <div key={fretNum} className="flex-grow text-center">
+                                        {fretNum}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
+                    </main>
+
+                    {/* Controls Bar */}
+                    <div className="bg-slate-800 text-white p-4 flex justify-center items-center gap-6 shadow-lg">
+                        {/* Volume Control */}
+                        <div className="flex items-center gap-2">
+                            {isSynthMuted ? (
+                                <VolumeX className="cursor-pointer text-red-400 hover:text-red-300 transition-colors" size={24} onClick={toggleMute} />
+                            ) : (
+                                <Volume2 className="cursor-pointer text-green-400 hover:text-green-300 transition-colors" size={24} onClick={toggleMute} />
+                            )}
+                            <input
+                                type="range"
+                                min="0"
+                                max="1"
+                                step="0.05"
+                                value={synthVolume}
+                                onChange={(e) => setSynthVolume(parseFloat(e.target.value))}
+                                className="w-24 md:w-32 accent-amber-500 cursor-pointer"
+                                aria-label="Volume slider"
+                            />
+                        </div>
+
+                        {/* Instructions Button */}
+                        <button
+                            onClick={() => setShowInstructions(!showInstructions)}
+                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md transition-colors text-sm font-medium"
+                        >
+                            <Info size={18} />
+                            Instructions
+                        </button>
+
+                        {/* Settings Button (Placeholder) */}
+                        <button
+                            onClick={() => setShowSettings(!showSettings)}
+                            className="flex items-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-md transition-colors text-sm font-medium"
+                        >
+                            <Settings size={18} />
+                            Settings (Soon!)
+                        </button>
                     </div>
-                </main>
 
-                {/* Controls Bar */}
-                <div className="bg-slate-800 text-white p-4 flex justify-center items-center gap-6 shadow-lg">
-                    {/* Volume Control */}
-                    <div className="flex items-center gap-2">
-                        {isSynthMuted ? (
-                            <VolumeX className="cursor-pointer text-red-400 hover:text-red-300 transition-colors" size={24} onClick={toggleMute} />
-                        ) : (
-                            <Volume2 className="cursor-pointer text-green-400 hover:text-green-300 transition-colors" size={24} onClick={toggleMute} />
-                        )}
-                        <input
-                            type="range"
-                            min="0"
-                            max="1"
-                            step="0.05"
-                            value={synthVolume}
-                            onChange={(e) => setSynthVolume(parseFloat(e.target.value))}
-                            className="w-24 md:w-32 accent-amber-500 cursor-pointer"
-                            aria-label="Volume slider"
-                        />
-                    </div>
+                    {/* Instructions Modal */}
+                    {showInstructions && (
+                        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+                            <div className="bg-slate-800 text-white rounded-lg p-6 max-w-lg w-full shadow-2xl relative">
+                                <h2 className="text-2xl font-bold mb-4 text-amber-300">How to Play</h2>
+                                <ul className="list-disc list-inside space-y-2 mb-4 text-gray-200">
+                                    <li>**Click/Tap:** Click or tap on a fret to play a sustained note. Click/tap again or move off the fret to release.</li>
+                                    <li>**Right-Click Drag:** Hold down the **right mouse button** and drag across frets to quickly play individual notes as you hover over them.</li>
+                                    <li>**Keyboard:** Use your **QWERTY** keyboard to play notes:
+                                        <ul className="list-disc list-inside ml-4 mt-1 text-gray-300">
+                                            <li>**Row 1 (`1` to `=`):** High E String</li>
+                                            <li>**Row 2 (`Q` to `]`):** B String</li>
+                                            <li>**Row 3 (`A` to `'`):** G String</li>
+                                            <li>**Row 4 (`Z` to `/`):** D String</li>
+                                            <li>**Function Keys (`F1` to `F12`):** A String (A2-G#3) and Low E String (E2-D#3)</li>
+                                        </ul>
+                                    </li>
+                                    <li>**Hover:** Simply **hover your mouse** over a fret to hear a light, transient pluck sound (without needing to click).</li>
+                                    <li>**Mute/Volume:** Use the **speaker icon** and **volume slider** at the bottom to control the sound.</li>
+                                </ul>
+                                <button
+                                    onClick={() => setShowInstructions(false)}
+                                    className="absolute top-3 right-3 text-gray-400 hover:text-white transition-colors"
+                                    aria-label="Close instructions"
+                                >
+                                    <VolumeX size={24} />
+                                </button>
+                            </div>
+                        </div>
+                    )}
 
-                    {/* Instructions Button */}
-                    <button
-                        onClick={() => setShowInstructions(!showInstructions)}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md transition-colors text-sm font-medium"
-                    >
-                        <Info size={18} />
-                        Instructions
-                    </button>
-
-                    {/* Settings Button (Placeholder) */}
-                    <button
-                        onClick={() => setShowSettings(!showSettings)}
-                        className="flex items-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-md transition-colors text-sm font-medium"
-                    >
-                        <Settings size={18} />
-                        Settings (Soon!)
-                    </button>
+                    {/* Settings Modal (Placeholder) */}
+                    {showSettings && (
+                        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+                            <div className="bg-slate-800 text-white rounded-lg p-6 max-w-lg w-full shadow-2xl relative">
+                                <h2 className="text-2xl font-bold mb-4 text-amber-300">Settings</h2>
+                                <p className="text-gray-200">Settings will be available in a future update!</p>
+                                <button
+                                    onClick={() => setShowSettings(false)}
+                                    className="absolute top-3 right-3 text-gray-400 hover:text-white transition-colors"
+                                    aria-label="Close settings"
+                                >
+                                    <VolumeX size={24} />
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
-
-                {/* Instructions Modal */}
-                {showInstructions && (
-                    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-                        <div className="bg-slate-800 text-white rounded-lg p-6 max-w-lg w-full shadow-2xl relative">
-                            <h2 className="text-2xl font-bold mb-4 text-amber-300">How to Play</h2>
-                            <ul className="list-disc list-inside space-y-2 mb-4 text-gray-200">
-                                <li>**Click/Tap:** Click or tap on a fret to play a sustained note. Click/tap again or move off the fret to release.</li>
-                                <li>**Right-Click Drag:** Hold down the **right mouse button** and drag across frets to quickly play individual notes as you hover over them.</li>
-                                <li>**Keyboard:** Use your **QWERTY** keyboard to play notes:
-                                    <ul className="list-disc list-inside ml-4 mt-1 text-gray-300">
-                                        <li>**Row 1 (`1` to `=`):** High E String</li>
-                                        <li>**Row 2 (`Q` to `]`):** B String</li>
-                                        <li>**Row 3 (`A` to `'`):** G String</li>
-                                        <li>**Row 4 (`Z` to `/`):** D String</li>
-                                        <li>**Function Keys (`F1` to `F12`):** A String (A2-G#3) and Low E String (E2-D#3)</li>
-                                    </ul>
-                                </li>
-                                <li>**Hover:** Simply **hover your mouse** over a fret to hear a light, transient pluck sound (without needing to click).</li>
-                                <li>**Mute/Volume:** Use the **speaker icon** and **volume slider** at the bottom to control the sound.</li>
-                            </ul>
-                            <button
-                                onClick={() => setShowInstructions(false)}
-                                className="absolute top-3 right-3 text-gray-400 hover:text-white transition-colors"
-                                aria-label="Close instructions"
-                            >
-                                <VolumeX size={24} />
-                            </button>
-                        </div>
-                    </div>
-                )}
-
-                {/* Settings Modal (Placeholder) */}
-                {showSettings && (
-                    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-                        <div className="bg-slate-800 text-white rounded-lg p-6 max-w-lg w-full shadow-2xl relative">
-                            <h2 className="text-2xl font-bold mb-4 text-amber-300">Settings</h2>
-                            <p className="text-gray-200">Settings will be available in a future update!</p>
-                            <button
-                                onClick={() => setShowSettings(false)}
-                                className="absolute top-3 right-3 text-gray-400 hover:text-white transition-colors"
-                                aria-label="Close settings"
-                            >
-                                <VolumeX size={24} />
-                            </button>
-                        </div>
-                    </div>
-                )}
             </div>
-        </div>
+        </>
+        
     );
 };
 

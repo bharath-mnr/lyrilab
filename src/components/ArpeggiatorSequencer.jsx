@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import * as Tone from 'tone';
 import { Play, Pause, FastForward, Repeat, Music4, ArrowUp, ArrowDown, Shuffle } from 'lucide-react'; // Icons for controls and patterns
+import SEOHead from './SEOHead';
 
 // --- AUDIO CONTEXT ---
 // This context manages the global Tone.js audio state, ensuring only one audio context.

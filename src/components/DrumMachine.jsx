@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import * as Tone from 'tone';
 import { Drumstick, Volume2, Plus, Minus } from 'lucide-react'; // Icons for drumstick, volume, and controls
+import SEOHead from './SEOHead';
 
 // --- AUDIO CONTEXT ---
 // This context manages the global Tone.js audio state, ensuring only one audio context.
@@ -83,6 +84,23 @@ const AudioContextProvider = ({ children }) => {
     );
 };
 // --- END AUDIO CONTEXT ---
+
+
+    // 3. Drum Machine
+    const drumMachineTool = {
+        id: 'drum-machine',
+        name: 'Drum Machine',
+        description: 'Create beats and rhythms with our versatile online drum machine featuring multiple drum kits and sequencing.',
+        path: '/drum-machine',
+        categories: [
+            'Beat Making',
+            'Drum Programming',
+            'Music Production',
+            'Rhythm Training',
+            'Sequencing'
+        ]
+    };
+
 
 
 // --- useDrumMachine Hook ---
@@ -267,6 +285,7 @@ const ParameterSlider = ({ label, value, setter, min, max, step, explanation, un
 
 // --- DrumMachineContent (Main UI Logic) ---
 const DrumMachineContent = () => {
+
     const {
         playDrum,
         masterVolume, setMasterVolume,
@@ -285,122 +304,132 @@ const DrumMachineContent = () => {
     };
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center justify-center p-3 sm:p-4 md:p-8 relative overflow-hidden w-full"
-            style={{
-                background: 'linear-gradient(135deg, #e6ffe6 0%, #ccffcc 50%, #80ff80 100%)',
-                fontFamily: 'Inter, sans-serif',
-            }}
-        >
-            {/* Floating Icons Background */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+        <>
+            {/* SEO Head - Add this at the very beginning */}
+            <SEOHead 
+            pageId="drum-machine" 
+            tool={drumMachineTool}
+            customData={{}}
+            />
+            <div
+                className="min-h-screen flex flex-col items-center justify-center p-3 sm:p-4 md:p-8 relative overflow-hidden w-full"
                 style={{
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%2368d391' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
-                    backgroundSize: '200px 200px'
+                    background: 'linear-gradient(135deg, #e6ffe6 0%, #ccffcc 50%, #80ff80 100%)',
+                    fontFamily: 'Inter, sans-serif',
                 }}
-            ></div>
+            >
+                {/* Floating Icons Background */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{
+                        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%2368d391' d='M0 0h10v10H0zm20 0h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 20h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 40h10v10H0zm20 40h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 60h10v10H0zm20 20h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80zM0 80h10v10H0zm20 80h10v10H20zm20 0h10v10H40zm20 0h10v10H60zm20 0h10v10H80z'/%3E%3C/svg%3E\")",
+                        backgroundSize: '200px 200px'
+                    }}
+                ></div>
 
-            <div className="text-center mb-4 sm:mb-6 md:mb-10 z-10 w-full max-w-4xl">
-                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-green-900 drop-shadow-lg mb-2 sm:mb-4 leading-tight">
-                    Drum Machine
-                </h1>
-                
-                {/* Status Messages */}
-                <div className="min-h-[1.5rem] flex items-center justify-center">
-                    {error && (
-                        <p className="text-red-600 text-sm sm:text-base font-semibold animate-pulse">
-                            Error: {error}
-                        </p>
-                    )}
-                    {!isAudioReady && isLoading && (
-                        <p className="text-green-700 text-sm sm:text-base animate-pulse">
-                            Loading samples...
-                        </p>
-                    )}
-                    {!isAudioReady && !isLoading && !error && (
-                        <p className="text-green-700 text-sm sm:text-base">
-                            Tap any pad to activate audio
-                        </p>
-                    )}
-                    {isAudioReady && !isLoading && (
-                        <p className="text-green-600 text-sm sm:text-base font-medium">
-                            🎵 Ready! Tap the pads
-                        </p>
-                    )}
-                </div>
+                <div className="text-center mb-4 sm:mb-6 md:mb-10 z-10 w-full max-w-4xl">
+                    <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-green-900 drop-shadow-lg mb-2 sm:mb-4 leading-tight">
+                        Drum Machine
+                    </h1>
+                    
+                    {/* Status Messages */}
+                    <div className="min-h-[1.5rem] flex items-center justify-center">
+                        {error && (
+                            <p className="text-red-600 text-sm sm:text-base font-semibold animate-pulse">
+                                Error: {error}
+                            </p>
+                        )}
+                        {!isAudioReady && isLoading && (
+                            <p className="text-green-700 text-sm sm:text-base animate-pulse">
+                                Loading samples...
+                            </p>
+                        )}
+                        {!isAudioReady && !isLoading && !error && (
+                            <p className="text-green-700 text-sm sm:text-base">
+                                Tap any pad to activate audio
+                            </p>
+                        )}
+                        {isAudioReady && !isLoading && (
+                            <p className="text-green-600 text-sm sm:text-base font-medium">
+                                🎵 Ready! Tap the pads
+                            </p>
+                        )}
+                    </div>
 
-                {/* Only show "Activate Audio" button if specifically suspended and not loading/erroring */}
-                {!isLoading && error && error.includes("suspended") && (
-                    <button
-                        onClick={startGlobalAudio} 
-                        className="mt-4 px-6 py-3 sm:px-8 sm:py-4 bg-green-600 text-white rounded-xl font-bold shadow-lg hover:bg-green-700 active:scale-95 transition-all duration-200 text-base sm:text-lg"
-                    >
-                        🔊 Activate Audio
-                    </button>
-                )}
-            </div>
-
-            <div className="bg-white/90 backdrop-blur-md p-4 sm:p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-2xl lg:max-w-4xl flex flex-col items-center space-y-6 sm:space-y-8 z-10 border border-green-200/50 mx-2">
-
-                {/* Drum Pads Grid - Mobile First Design */}
-                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 w-full max-w-3xl">
-                    {drumKeys.map(drumKey => (
+                    {/* Only show "Activate Audio" button if specifically suspended and not loading/erroring */}
+                    {!isLoading && error && error.includes("suspended") && (
                         <button
-                            key={drumKey}
-                            onClick={() => handleDrumPadInteraction(drumKey)} 
-                            className={`
-                                relative overflow-hidden
-                                py-8 sm:py-10 md:py-12 lg:py-16
-                                rounded-xl sm:rounded-2xl 
-                                text-sm sm:text-base md:text-lg lg:text-xl 
-                                font-bold 
-                                transition-all duration-150 ease-out transform
-                                touch-manipulation select-none
-                                min-h-[80px] sm:min-h-[100px] md:min-h-[120px]
-                                ${activePad === drumKey 
-                                    ? 'scale-95 shadow-inner bg-green-700 text-white ring-4 ring-green-400' 
-                                    : 'shadow-lg hover:shadow-xl'}
-                                ${!isLoading && !error 
-                                    ? 'bg-green-500 hover:bg-green-600 active:scale-95 text-white hover:scale-105' 
-                                    : 'bg-gray-400 cursor-not-allowed text-gray-700'}
-                            `}
-                            disabled={isLoading || !!error}
-                            style={{
-                                WebkitTapHighlightColor: 'transparent',
-                                touchAction: 'manipulation'
-                            }}
+                            onClick={startGlobalAudio} 
+                            className="mt-4 px-6 py-3 sm:px-8 sm:py-4 bg-green-600 text-white rounded-xl font-bold shadow-lg hover:bg-green-700 active:scale-95 transition-all duration-200 text-base sm:text-lg"
                         >
-                            {/* Ripple effect background */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-xl sm:rounded-2xl"></div>
-                            
-                            {/* Button text */}
-                            <span className="relative z-10 leading-tight">
-                                {drumKey.replace(/_/g, ' ').toUpperCase()}
-                            </span>
+                            🔊 Activate Audio
                         </button>
-                    ))}
+                    )}
                 </div>
 
-                {/* Master Volume Slider */}
-                <div className="w-full max-w-2xl mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-green-200 px-2">
-                    <ParameterSlider
-                        label="Volume" 
-                        value={masterVolume} 
-                        setter={setMasterVolume}
-                        min="-40" 
-                        max="0" 
-                        step="1" 
-                        unit=" dB"
-                        explanation="Adjust overall loudness"
-                        isDisabled={isLoading || !!error}
-                        colorClass="accent-green-700 bg-green-200"
-                    />
+                <div className="bg-white/90 backdrop-blur-md p-4 sm:p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-2xl lg:max-w-4xl flex flex-col items-center space-y-6 sm:space-y-8 z-10 border border-green-200/50 mx-2">
+
+                    {/* Drum Pads Grid - Mobile First Design */}
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 w-full max-w-3xl">
+                        {drumKeys.map(drumKey => (
+                            <button
+                                key={drumKey}
+                                onClick={() => handleDrumPadInteraction(drumKey)} 
+                                className={`
+                                    relative overflow-hidden
+                                    py-8 sm:py-10 md:py-12 lg:py-16
+                                    rounded-xl sm:rounded-2xl 
+                                    text-sm sm:text-base md:text-lg lg:text-xl 
+                                    font-bold 
+                                    transition-all duration-150 ease-out transform
+                                    touch-manipulation select-none
+                                    min-h-[80px] sm:min-h-[100px] md:min-h-[120px]
+                                    ${activePad === drumKey 
+                                        ? 'scale-95 shadow-inner bg-green-700 text-white ring-4 ring-green-400' 
+                                        : 'shadow-lg hover:shadow-xl'}
+                                    ${!isLoading && !error 
+                                        ? 'bg-green-500 hover:bg-green-600 active:scale-95 text-white hover:scale-105' 
+                                        : 'bg-gray-400 cursor-not-allowed text-gray-700'}
+                                `}
+                                disabled={isLoading || !!error}
+                                style={{
+                                    WebkitTapHighlightColor: 'transparent',
+                                    touchAction: 'manipulation'
+                                }}
+                            >
+                                {/* Ripple effect background */}
+                                <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-xl sm:rounded-2xl"></div>
+                                
+                                {/* Button text */}
+                                <span className="relative z-10 leading-tight">
+                                    {drumKey.replace(/_/g, ' ').toUpperCase()}
+                                </span>
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Master Volume Slider */}
+                    <div className="w-full max-w-2xl mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-green-200 px-2">
+                        <ParameterSlider
+                            label="Volume" 
+                            value={masterVolume} 
+                            setter={setMasterVolume}
+                            min="-40" 
+                            max="0" 
+                            step="1" 
+                            unit=" dB"
+                            explanation="Adjust overall loudness"
+                            isDisabled={isLoading || !!error}
+                            colorClass="accent-green-700 bg-green-200"
+                        />
+                    </div>
                 </div>
+                
+                {/* Footer spacing for mobile */}
+                <div className="h-8 sm:h-4"></div>
             </div>
-            
-            {/* Footer spacing for mobile */}
-            <div className="h-8 sm:h-4"></div>
-        </div>
+
+        </>
+        
     );
 };
 
