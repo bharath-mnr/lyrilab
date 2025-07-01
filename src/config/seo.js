@@ -3,7 +3,7 @@ export const SEO_CONFIG = {
   // Global defaults
   global: {
     siteName: "LiriLab",
-    domain: "http://localhost:3000",
+    domain: "https://lyrilab.vercel.app/",
     twitterHandle: "...",
     locale: "en_US",
     type: "website",
