@@ -15,6 +15,7 @@
     "howler": "^2.2.4",
     "lucide-react": "^0.525.0",
     "react": "^19.1.0",
+    "react-autosuggest": "^10.1.0",
     "react-dom": "^19.1.0",
     "react-helmet-async": "^2.0.5",
     "react-router-dom": "^7.6.2",
@@ -34,6 +35,10 @@
   },
   "overrides": {
     "react-helmet-async": {
+      "react": "^19.1.0",
+      "react-dom": "^19.1.0"
+    },
+    "react-autosuggest": {
       "react": "^19.1.0",
       "react-dom": "^19.1.0"
     }
