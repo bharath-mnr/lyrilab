@@ -26,16 +26,6 @@ export const TOOLS = [
     categories: ['Instruments', 'Fun']
   },
   {
-    id: 'guitar-fretboard',
-    name: 'Guitar Fretboard',
-    path: '/guitar-fretboard',
-    component: 'GuitarFretboardApp',
-    importPath: './components/GuitarFretboardApp.jsx', // Corrected: direct to file in components/
-    description: 'Interactive guitar neck visualization. Learn note positions, scales, and chord shapes across the fretboard.',
-    icon: '',
-    categories: ['Instruments', 'Theory']
-  },
-  {
     id: 'drum-machine',
     name: 'Drum Machine',
     path: '/drum-machine',
