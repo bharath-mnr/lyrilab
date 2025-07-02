@@ -97,6 +97,8 @@ export const TOOLS = [
     icon: '',
     categories: ['Rhythm', 'Effects', 'Fun']
   },
+  
+
   // THEORY SECTION (Chords, Intervals, Scales)
   {
     id: 'chord-explorer',
