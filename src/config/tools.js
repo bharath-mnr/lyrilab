@@ -97,17 +97,6 @@ export const TOOLS = [
     icon: '',
     categories: ['Rhythm', 'Effects', 'Fun']
   },
-  {
-    id: 'swing-groove-visualizer',
-    name: 'Swing',
-    path: '/swing-groove-visualizer',
-    component: 'SwingGrooveVisualizer',
-    importPath: './components/SwingGrooveVisualizer.jsx', // Corrected
-    description: 'Groove quantizer. Adjust swing percentage and visualize timing variations.',
-    icon: '',
-    categories: ['Rhythm', 'Theory']
-  },
-
   // THEORY SECTION (Chords, Intervals, Scales)
   {
     id: 'chord-explorer',
