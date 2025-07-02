@@ -19,13 +19,6 @@ export const SEO_CONFIG = {
       canonical: "/virtual-piano"
     },
 
-    'guitar-fretboard': {
-      title: "Guitar Fretboard Practice Online - Interactive Note Learning | LiriLab",
-      description: "Master guitar fretboard online with real-time interactive practice. Learn guitar notes, scales, and chord positions with our online guitar fretboard trainer and visualization tool.",
-      keywords: "guitar fretboard online practice, learn guitar fretboard online, guitar notes online practice, guitar fretboard trainer online, interactive guitar fretboard online, online guitar practice fretboard, guitar neck practice online, guitar scale practice online, fretboard visualization online, guitar theory online practice, online guitar learning fretboard",
-      image: "/images/og-guitar-fretboard.jpg",
-      canonical: "/guitar-fretboard"
-    },
 
     'drum-machine': {
       title: "Online Drum Machine Practice - Real-Time Beat Making | LiriLab",
