@@ -963,51 +963,54 @@ const EQContent = () => {
     }
 
     return (
-        <div className="min-h-screen flex flex-col items-center p-8 bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100 font-inter">
-            <div className="text-center mb-10">
-                <div className="flex items-center justify-center gap-4 mb-4">
-                    <SlidersHorizontal size={48} className="text-indigo-600" />
-                    <h1 className="text-5xl font-bold text-indigo-800">Audio EQ</h1>
+        <div className="min-h-screen flex flex-col items-center p-4 md:p-8 bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100 font-inter">
+            <div className="text-center mb-6 md:mb-10 w-full">
+                <div className="flex items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
+                    <SlidersHorizontal size={32} className="text-indigo-600 md:hidden" />
+                    <SlidersHorizontal size={48} className="text-indigo-600 hidden md:block" />
+                    <h1 className="text-3xl md:text-5xl font-bold text-indigo-800">Audio EQ</h1>
                 </div>
-                <p className="text-indigo-600 text-lg">
-                    Professional audio equalizer with real-time visualization
+                <p className="text-indigo-600 text-sm md:text-lg">
+                    Professional audio equalizer
                 </p>
                 {isLoadingAudio && (
-                    <p className="text-blue-600 text-sm mt-4 animate-pulse">
+                    <p className="text-blue-600 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
                         Loading audio: {audioFileName}... Please wait.
                     </p>
                 )}
                 {audioLoadError && (
-                    <p className="text-red-600 text-sm mt-4">
+                    <p className="text-red-600 text-xs md:text-sm mt-2 md:mt-4">
                         Error: {audioLoadError}
                     </p>
                 )}
                 {isAudioReady && (
-                    <p className="text-indigo-700 text-sm mt-2">
+                    <p className="text-indigo-700 text-xs md:text-sm mt-1 md:mt-2 truncate max-w-full px-2">
                         Current: <span className="font-semibold">{audioFileName}</span>
                     </p>
                 )}
             </div>
 
-            <div className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-xl w-full max-w-7xl">
+            <div className="bg-white/80 backdrop-blur-sm p-4 md:p-8 rounded-xl md:rounded-2xl shadow-lg md:shadow-xl w-full max-w-7xl">
                 {/* Control Panel */}
-                <div className="flex flex-wrap justify-center gap-4 mb-8">
+                <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-4 md:mb-8">
                     <button
                         onClick={togglePlay}
                         disabled={!isAudioReady || isLoadingAudio}
-                        className={`px-6 py-3 rounded-full font-semibold flex items-center gap-2 transition-all duration-200 ${
+                        className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold flex items-center gap-1 md:gap-2 transition-all duration-200 text-sm md:text-base ${
                             isPlaying
                                 ? 'bg-red-500 hover:bg-red-600 text-white'
                                 : 'bg-green-500 hover:bg-green-600 text-white'
                         } ${(!isAudioReady || isLoadingAudio) ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
-                        {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-                        {isPlaying ? 'Stop' : 'Play'}
+                        {isPlaying ? <Pause size={16} className="md:hidden" /> : <Play size={16} className="md:hidden" />}
+                        {isPlaying ? <Pause size={20} className="hidden md:block" /> : <Play size={20} className="hidden md:block" />}
+                        <span className="hidden sm:inline">{isPlaying ? 'Stop' : 'Play'}</span>
                     </button>
 
-                    <label className={`px-6 py-3 rounded-full font-semibold bg-blue-500 hover:bg-blue-600 text-white cursor-pointer flex items-center gap-2 transition-all duration-200 ${isLoadingAudio ? 'opacity-50 cursor-not-allowed' : ''}`}>
-                        <Upload size={20} />
-                        Upload New Audio
+                    <label className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold bg-blue-500 hover:bg-blue-600 text-white cursor-pointer flex items-center gap-1 md:gap-2 transition-all duration-200 text-sm md:text-base ${isLoadingAudio ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                        <Upload size={16} className="md:hidden" />
+                        <Upload size={20} className="hidden md:block" />
+                        <span className="hidden sm:inline">Upload New</span>
                         <input
                             type="file"
                             accept="audio/*"
@@ -1020,32 +1023,38 @@ const EQContent = () => {
                     <button
                         onClick={downloadManipulatedAudio}
                         disabled={!isAudioReady || isLoadingAudio || isDownloading}
-                        className={`px-6 py-3 rounded-full font-semibold bg-indigo-500 hover:bg-indigo-600 text-white flex items-center gap-2 transition-all duration-200 ${(!isAudioReady || isLoadingAudio || isDownloading) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold bg-indigo-500 hover:bg-indigo-600 text-white flex items-center gap-1 md:gap-2 transition-all duration-200 text-sm md:text-base ${(!isAudioReady || isLoadingAudio || isDownloading) ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                         {isDownloading ? (
-                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            <div className="w-4 h-4 md:w-5 md:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                         ) : (
-                            <Download size={20} />
+                            <>
+                                <Download size={16} className="md:hidden" />
+                                <Download size={20} className="hidden md:block" />
+                            </>
                         )}
-                        {isDownloading ? 'Processing...' : 'Download Processed Audio'}
+                        <span className="hidden sm:inline">
+                            {isDownloading ? 'Processing...' : 'Download'}
+                        </span>
                     </button>
 
                     <button
                         onClick={resetEQ}
                         disabled={!isAudioReady || isLoadingAudio || isDownloading}
-                        className={`px-6 py-3 rounded-full font-semibold bg-gray-500 hover:bg-gray-600 text-white flex items-center gap-2 transition-all duration-200 ${(!isAudioReady || isLoadingAudio || isDownloading) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold bg-gray-500 hover:bg-gray-600 text-white flex items-center gap-1 md:gap-2 transition-all duration-200 text-sm md:text-base ${(!isAudioReady || isLoadingAudio || isDownloading) ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
-                        <RotateCcw size={20} />
-                        Reset EQ
+                        <RotateCcw size={16} className="md:hidden" />
+                        <RotateCcw size={20} className="hidden md:block" />
+                        <span className="hidden sm:inline">Reset</span>
                     </button>
 
-                    {/* Preset Selector */}
-                    <div className="relative inline-block text-left">
+                    {/* Preset Selector - Mobile version shows as a button that opens a modal */}
+                    <div className="relative inline-block text-left w-full sm:w-auto">
                         <select
                             value={selectedPreset}
                             onChange={(e) => applyPreset(e.target.value)}
                             disabled={!isAudioReady || isLoadingAudio || isDownloading}
-                            className={`block w-full px-6 py-3 rounded-full bg-purple-500 text-white font-semibold cursor-pointer appearance-none transition-all duration-200 hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent ${(!isAudioReady || isLoadingAudio || isDownloading) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            className={`block w-full px-4 py-2 md:px-6 md:py-3 rounded-full bg-purple-500 text-white font-semibold cursor-pointer appearance-none transition-all duration-200 hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent text-sm md:text-base ${(!isAudioReady || isLoadingAudio || isDownloading) ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
                             {Object.keys(EQ_PRESETS).map((presetName) => (
                                 <option key={presetName} value={presetName}>
@@ -1053,8 +1062,9 @@ const EQContent = () => {
                                 </option>
                             ))}
                         </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-white">
-                            <ChevronDown size={20} />
+                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 md:px-4 text-white">
+                            <ChevronDown size={16} className="md:hidden" />
+                            <ChevronDown size={20} className="hidden md:block" />
                         </div>
                     </div>
 
@@ -1062,51 +1072,57 @@ const EQContent = () => {
                     <button
                         onClick={toggleReverb}
                         disabled={!isAudioReady || isLoadingAudio || isDownloading}
-                        className={`px-6 py-3 rounded-full font-semibold flex items-center gap-2 transition-all duration-200 ${
+                        className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold flex items-center gap-1 md:gap-2 transition-all duration-200 text-sm md:text-base ${
                             isReverbActive
                                 ? 'bg-orange-500 hover:bg-orange-600 text-white'
                                 : 'bg-gray-400 hover:bg-gray-500 text-white'
                         } ${(!isAudioReady || isLoadingAudio || isDownloading) ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
-                        <Waves size={20} />
-                        Reverb {isReverbActive ? 'On' : 'Off'}
+                        <Waves size={16} className="md:hidden" />
+                        <Waves size={20} className="hidden md:block" />
+                        <span className="hidden sm:inline">Reverb {isReverbActive ? 'On' : 'Off'}</span>
                     </button>
                 </div>
 
                 {/* Reverb Decay Slider */}
-                <div className="flex justify-center mb-8">
-                    <HorizontalSlider
-                        label="Reverb Decay"
-                        value={reverbDecay}
-                        onChange={setReverbDecayValue}
-                        min={0.1}
-                        max={10}
-                        step={0.1}
-                        disabled={!isAudioReady || isLoadingAudio || isDownloading || !isReverbActive}
-                    />
-                </div>
+                {isReverbActive && (
+                    <div className="flex justify-center mb-4 md:mb-8">
+                        <HorizontalSlider
+                            label="Reverb Decay"
+                            value={reverbDecay}
+                            onChange={setReverbDecayValue}
+                            min={0.1}
+                            max={10}
+                            step={0.1}
+                            disabled={!isAudioReady || isLoadingAudio || isDownloading || !isReverbActive}
+                        />
+                    </div>
+                )}
 
                 {/* Frequency Visualizer */}
-                <div className="mb-8">
+                <div className="mb-4 md:mb-8 w-full overflow-hidden">
                     <FrequencyVisualizer 
                         analyser={analyserNode} 
                         filterCurve={filterCurveData} 
-                        width={700} // Fixed width for canvas, will be scaled by CSS
-                        height={250} // Fixed height for canvas, will be scaled by CSS
+                        width={Math.min(window.innerWidth - 32, 700)} // Responsive width
+                        height={200} // Slightly reduced height for mobile
                     />
                 </div>
 
-                {/* EQ Sliders */}
-                <div className="flex flex-wrap justify-center gap-4 md:gap-6 lg:gap-8">
-                    {bands.map((band, index) => (
-                        <VerticalSlider
-                            key={band.frequency}
-                            frequency={band.frequency}
-                            value={band.gain}
-                            onChange={(newGain) => setBandGain(index, newGain)}
-                            disabled={!isAudioReady || isLoadingAudio}
-                        />
-                    ))}
+                {/* EQ Sliders - Horizontal scroll on mobile */}
+                <div className="w-full overflow-x-auto pb-4">
+                    <div className="flex gap-2 md:gap-4 lg:gap-6 xl:gap-8 min-w-max">
+                        {bands.map((band, index) => (
+                            <VerticalSlider
+                                key={band.frequency}
+                                frequency={band.frequency}
+                                value={band.gain}
+                                onChange={(newGain) => setBandGain(index, newGain)}
+                                disabled={!isAudioReady || isLoadingAudio}
+                                compact={true} // You might want to add this prop to your VerticalSlider
+                            />
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
