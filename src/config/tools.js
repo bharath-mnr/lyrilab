@@ -358,6 +358,17 @@ export const TOOLS = [
   description: 'Professional audio equalizer with real-time visualization and vertical frequency controls.',
   icon: 'SlidersHorizontal',
   categories: ['Audio', 'Tools', 'EQ']
+  },
+  {
+    id: 'reverb-studio',
+    name: 'Reverb Studio',
+    path: '/reverb-studio',
+    component: 'ReverbStudio',
+    importPath: './components/ReverbStudio.jsx',
+    description: 'Professional audio Reverb with real-time visualization.',
+    icon: '',
+    categories: ['Audio', 'Tools', 'Reverb']
+
   }
 ];
 

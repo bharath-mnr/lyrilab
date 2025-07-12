@@ -386,76 +386,104 @@ const useEQSynth = () => {
 
     // Downloads the manipulated audio (offline rendering)
     const downloadManipulatedAudio = useCallback(async () => {
-        if (!currentAudioBufferRef.current || isDownloading) return;
+    if (!currentAudioBufferRef.current || isDownloading) return;
 
-        setIsDownloading(true);
-        setAudioLoadError(null);
+    setIsDownloading(true);
+    setAudioLoadError(null);
 
-        try {
-            console.log('Starting offline rendering...');
+    try {
+        console.log('Starting offline rendering...');
+        
+        // Create a temporary offline context
+        const offlineContext = new OfflineAudioContext(
+            currentAudioBufferRef.current.numberOfChannels,
+            currentAudioBufferRef.current.length, // Use exact length of original audio
+            currentAudioBufferRef.current.sampleRate
+        );
+
+        // Create source node
+        const source = offlineContext.createBufferSource();
+        source.buffer = currentAudioBufferRef.current;
+
+        // Create all EQ filters using Web Audio API
+        const filters = EQ_BAND_FREQUENCIES.map((freq, index) => {
+            const filter = offlineContext.createBiquadFilter();
+            filter.type = 'peaking';
+            filter.frequency.value = freq;
+            filter.Q.value = 1;
+            filter.gain.value = bands[index].gain;
+            return filter;
+        });
+
+        // Create reverb node if active
+        let reverb = null;
+        if (isReverbActive) {
+            reverb = offlineContext.createConvolver();
+            // Create a simple impulse response for reverb
+            const decay = reverbDecay;
+            const sampleRate = offlineContext.sampleRate;
+            const length = sampleRate * decay;
+            const impulse = offlineContext.createBuffer(2, length, sampleRate);
+            const left = impulse.getChannelData(0);
+            const right = impulse.getChannelData(1);
             
-            // Tone.Offline.context is deprecated. Use Tone.Offline.render directly.
-            // Create a temporary player for offline rendering
-            const offlinePlayer = new Tone.Player(currentAudioBufferRef.current).sync().start(0);
-
-            // Create temporary filters for offline rendering
-            const offlineFilters = EQ_BAND_FREQUENCIES.map((freq, index) => {
-                const filter = new Tone.Filter(freq, 'peaking');
-                filter.Q.value = 1;
-                filter.gain.value = bands[index].gain; // Apply current gains
-                return filter;
-            });
-
-            // Create temporary reverb for offline rendering
-            const offlineReverb = new Tone.Reverb({
-                decay: reverbDecay,
-                wet: isReverbActive ? 1 : 0
-            });
-
-            // Connect offline chain
-            offlinePlayer.connect(offlineFilters[0]);
-            for (let i = 0; i < offlineFilters.length - 1; i++) {
-                offlineFilters[i].connect(offlineFilters[i + 1]);
+            for (let i = 0; i < length; i++) {
+                const n = length - i;
+                left[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
+                right[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
             }
-            offlineFilters[offlineFilters.length - 1].connect(offlineReverb);
+            
+            reverb.buffer = impulse;
+        }
 
-            // Render the audio
-            const renderedBuffer = await Tone.Offline.render(() => {
-                offlineReverb.toDestination(); // Connect the final effect to the offline destination
-            }, currentAudioBufferRef.current.duration); // Render for the duration of the original audio
+        // Connect the audio chain
+        let lastNode = source;
+        for (const filter of filters) {
+            lastNode.connect(filter);
+            lastNode = filter;
+        }
 
-            console.log('Offline rendering complete');
+        if (isReverbActive && reverb) {
+            lastNode.connect(reverb);
+            reverb.connect(offlineContext.destination);
+        } else {
+            lastNode.connect(offlineContext.destination);
+        }
 
-            // Convert to WAV and download
-            const wavBlob = audioBufferToWav(renderedBuffer);
-            const url = URL.createObjectURL(wavBlob);
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = url;
+        // Start playback
+        source.start(0);
 
-            // Get the base name of the uploaded file without its extension
-            const baseFileName = audioFileName.split('.').slice(0, -1).join('.') || 'audio';
-            a.download = `${baseFileName}-processed.wav`; // Set download name
+        // Render the audio
+        const renderedBuffer = await offlineContext.startRendering();
+        console.log('Offline rendering complete');
 
-            document.body.appendChild(a);
-            a.click();
+        // Convert to WAV and download
+        const wavBlob = audioBufferToWav(renderedBuffer);
+        const url = URL.createObjectURL(wavBlob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        
+        // Get the base name of the uploaded file without its extension
+        const baseFileName = audioFileName.split('.').slice(0, -1).join('.') || 'audio';
+        a.download = `${baseFileName}-processed.wav`;
+        
+        document.body.appendChild(a);
+        a.click();
+        
+        // Clean up
+        setTimeout(() => {
             URL.revokeObjectURL(url);
             document.body.removeChild(a);
+        }, 100);
 
-            // Dispose temporary nodes
-            offlinePlayer.dispose();
-            offlineFilters.forEach(f => f.dispose());
-            offlineReverb.dispose();
-
-            console.log('Download complete');
-
-        } catch (error) {
-            console.error('Error during download:', error);
-            setAudioLoadError(`Failed to download processed audio: ${error.message || error}`);
-        } finally {
-            setIsDownloading(false);
-        }
-    }, [currentAudioBufferRef, bands, audioFileName, isDownloading, isReverbActive, reverbDecay]);
+    } catch (error) {
+        console.error('Error during download:', error);
+        setAudioLoadError(`Failed to download processed audio: ${error.message || error}`);
+    } finally {
+        setIsDownloading(false);
+    }
+}, [currentAudioBufferRef, bands, audioFileName, isDownloading, isReverbActive, reverbDecay]);
 
 
     // Gets frequency data from the analyser for visualization
