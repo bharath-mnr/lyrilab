@@ -348,6 +348,16 @@ export const TOOLS = [
     description: 'Sound design puzzles. Recreate target sounds using provided synth parameters.',
     icon: '',
     categories: ['Games', 'Synth', 'Challenge']
+  },
+  {
+  id: 'eq-studio',
+  name: 'EQ Studio',
+  path: '/eq-studio',
+  component: 'EQStudio',
+  importPath: './components/EQStudio.jsx',
+  description: 'Professional audio equalizer with real-time visualization and vertical frequency controls.',
+  icon: 'SlidersHorizontal',
+  categories: ['Audio', 'Tools', 'EQ']
   }
 ];
 
