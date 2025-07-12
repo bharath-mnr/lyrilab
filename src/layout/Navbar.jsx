@@ -293,23 +293,3 @@ const Navbar = ({ allTools, categorizedTools }) => {
 
 export default Navbar;
 
-/* 
-Add this CSS to your global styles or index.css to fix the white background:
-
-body, html {
-  background-color: #000; // or your preferred background color
-  margin: 0;
-  padding: 0;
-}
-
-#root {
-  background-color: #000; // or your preferred background color
-  min-height: 100vh;
-}
-
-// If you're using React Router, also add:
-.App {
-  background-color: #000; // or your preferred background color
-  min-height: 100vh;
-}
-*/

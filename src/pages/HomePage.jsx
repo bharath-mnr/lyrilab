@@ -257,37 +257,37 @@ const HomePage = ({ tools, allTools, categorizedTools }) => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden flex flex-col p-3 sm:p-4 md:p-8 bg-slate-900">
-      {/* Canvas for background visualization */}
+    <div className="min-h-screen relative overflow-hidden flex flex-col p-3 sm:p-4 md:p-8 bg-gradient-to-br from-slate-50 to-slate-100">
+      {/* Canvas for background visualization - kept for animation */}
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 z-0"
+        className="absolute inset-0 z-0 opacity-20"
       />
 
       {/* Content */}
       <div className="relative z-10 flex flex-col flex-grow">
         {/* Header Section */}
         <header className="text-center mb-6 sm:mb-8 md:mb-12 mt-4 sm:mt-6 md:mt-10">
-          <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold text-slate-100 mb-2 sm:mb-4">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold text-slate-800 mb-2 sm:mb-4">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-cyan-600">
               LyriLab
             </span>
           </h1>
           <div className="max-w-2xl mx-auto">
-            <p className="text-slate-300 text-sm sm:text-base md:text-lg mb-3 sm:mb-4">
+            <p className="text-slate-700 text-sm sm:text-base md:text-lg mb-3 sm:mb-4 bg-white py-3 px-6 rounded-2xl border border-slate-200 shadow-sm">
               Learn music production the easy way with 
-              <span className="text-emerald-400 font-semibold"> visual tools</span> and 
-              <span className="text-cyan-400 font-semibold"> interactive tutorials</span>
+              <span className="text-emerald-600 font-semibold"> visual tools</span> and 
+              <span className="text-cyan-600 font-semibold"> interactive tutorials</span>
             </p>
-            <p className="text-slate-400 text-xs sm:text-sm">
+            <p className="text-slate-600 text-xs sm:text-sm">
               Master music theory, instruments, and production techniques through hands-on learning
             </p>
           </div>
         </header>
 
-        {/* Search Bar */}
+        {/* Search Bar - Fixed contrast for suggestions */}
         <div className="relative mb-6 sm:mb-8 md:mb-10 mx-auto w-full max-w-xl">
-          <div className="relative">
+          <div className="relative bg-white rounded-2xl shadow-sm p-1 border border-slate-200">
             <Autosuggest
               suggestions={suggestions}
               onSuggestionsFetchRequested={onSuggestionsFetchRequested}
@@ -297,18 +297,19 @@ const HomePage = ({ tools, allTools, categorizedTools }) => {
               inputProps={inputProps}
               theme={{
                 container: 'relative',
-                input: 'w-full p-3 sm:p-4 pl-10 sm:pl-12 pr-6 rounded-xl sm:rounded-2xl bg-slate-800/60 backdrop-blur-lg text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-slate-800/80 shadow-xl border border-slate-700/50 text-sm sm:text-base transition-all duration-300',
-                suggestionsContainer: 'absolute mt-1 w-full bg-slate-800/95 backdrop-blur-md border border-slate-700/50 rounded-lg shadow-xl max-h-60 overflow-y-auto z-20',
+                input: 'w-full p-3 sm:p-4 pl-10 sm:pl-12 pr-6 rounded-xl bg-white text-slate-800 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white text-sm sm:text-base transition-all duration-300',
+                // FIXED: Dark text on light background for suggestions
+                suggestionsContainer: 'absolute mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-lg max-h-60 overflow-y-auto z-20',
                 suggestionsList: 'list-none p-0 m-0',
-                suggestion: 'p-3 hover:bg-slate-700/50 transition-colors duration-200 cursor-pointer',
-                suggestionHighlighted: 'bg-slate-700/60'
+                suggestion: 'p-3 hover:bg-slate-100 transition-colors duration-200 cursor-pointer text-slate-800',
+                suggestionHighlighted: 'bg-slate-100'
               }}
             />
-            <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-slate-400 z-20" size={20} />
+            <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-slate-500 z-20" size={20} />
             {searchTerm && (
               <button
                 onClick={() => setSearchTerm('')}
-                className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-300 z-20"
+                className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-slate-500 hover:text-slate-700 z-20"
                 aria-label="Clear search"
               >
                 <X size={18} />
@@ -324,10 +325,10 @@ const HomePage = ({ tools, allTools, categorizedTools }) => {
               key={category}
               onClick={() => setActiveCategory(category)}
               className={`flex items-center px-3 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-300
-                          shadow-lg backdrop-blur-sm border ${
+                          shadow-sm border ${
                             activeCategory === category
-                              ? 'bg-gradient-to-r from-emerald-600/90 to-teal-600/90 text-white border-emerald-500/50 shadow-emerald-500/25'
-                              : 'bg-slate-800/60 text-slate-300 border-slate-700/50 hover:bg-slate-700/60 hover:text-slate-100 hover:border-slate-600/50'
+                              ? 'bg-emerald-600 text-white border-emerald-600'
+                              : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
                           }`}
               aria-pressed={activeCategory === category}
             >
@@ -352,7 +353,7 @@ const HomePage = ({ tools, allTools, categorizedTools }) => {
         {displayTools.length > 0 && activeCategory === 'All' && (
           <div className="mb-8 sm:mb-10 relative overflow-hidden">
             <div className="flex items-center justify-between mb-4 sm:mb-6">
-              <h2 className="text-lg sm:text-xl font-bold text-slate-100 pl-2 border-l-4 border-emerald-500">
+              <h2 className="text-lg sm:text-xl font-bold text-slate-800 pl-2 border-l-4 border-emerald-500">
                 Discover Random Tools
               </h2>
               <button
@@ -361,9 +362,9 @@ const HomePage = ({ tools, allTools, categorizedTools }) => {
                   setRandomTools(shuffledTools.slice(0, 6));
                   setCurrentFeaturedIndex(0);
                 }}
-                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-emerald-600/70 hover:bg-emerald-600/90 
+                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-emerald-600 hover:bg-emerald-700 
                            rounded-full text-white text-xs sm:text-sm font-medium transition-all duration-300
-                           border border-emerald-500/50 hover:border-emerald-400 shadow-lg"
+                           shadow-sm"
               >
                 🎲 Shuffle
               </button>
@@ -382,42 +383,37 @@ const HomePage = ({ tools, allTools, categorizedTools }) => {
                     <Link
                       to={tool.path}
                       className="block relative overflow-hidden rounded-xl sm:rounded-2xl 
-                                 bg-gradient-to-br from-slate-800/80 to-slate-900/80
-                                 backdrop-blur-lg border border-slate-700/50 hover:border-emerald-500/50
-                                 shadow-xl hover:shadow-2xl transition-all duration-300 group h-full
+                                 bg-white border border-slate-200 hover:border-emerald-400
+                                 shadow-md hover:shadow-lg transition-all duration-300 group h-full
                                  hover:scale-105 hover:-translate-y-1"
                     >
-                      <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/10 to-teal-500/10 
-                                   opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl sm:rounded-2xl" />
-                      
                       <div className="absolute top-2 right-2 z-20">
-                        <div className="w-6 h-6 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full 
-                                        flex items-center justify-center shadow-lg">
+                        <div className="w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center">
                           <span className="text-white text-xs font-bold">🎯</span>
                         </div>
                       </div>
                       
                       <div className="relative z-10 p-4 sm:p-6 h-full flex flex-col">
                         <div className="flex items-center mb-3 sm:mb-4">
-                          <div className="w-10 sm:w-12 h-10 sm:h-12 rounded-lg bg-slate-700/60 flex items-center justify-center mr-3 sm:mr-4 
-                                         group-hover:bg-slate-600/80 transition-colors duration-300">
+                          <div className="w-10 sm:w-12 h-10 sm:h-12 rounded-lg bg-slate-100 flex items-center justify-center mr-3 sm:mr-4 
+                                         group-hover:bg-emerald-50 transition-colors duration-300">
                             {getToolIcon(tool)}
                           </div>
-                          <h3 className="text-base sm:text-lg font-bold text-slate-100 group-hover:text-emerald-100 transition-colors duration-300">
+                          <h3 className="text-base sm:text-lg font-bold text-slate-800 group-hover:text-emerald-700 transition-colors duration-300">
                             {tool.name}
                           </h3>
                         </div>
-                        <p className="text-slate-300 mb-3 sm:mb-4 text-xs sm:text-sm flex-grow group-hover:text-slate-200 transition-colors duration-300">
+                        <p className="text-slate-600 mb-3 sm:mb-4 text-xs sm:text-sm flex-grow group-hover:text-slate-700 transition-colors duration-300">
                           {tool.description}
                         </p>
                         <div className="flex justify-between items-center mt-auto">
-                          <span className="text-xs px-2 py-1 bg-slate-700/70 rounded text-emerald-400 
-                                           group-hover:bg-slate-600/80 group-hover:text-emerald-300 transition-all duration-300">
+                          <span className="text-xs px-2 py-1 bg-emerald-100 rounded text-emerald-800 
+                                           group-hover:bg-emerald-200 transition-all duration-300">
                             {tool.categories && tool.categories[0]}
                           </span>
-                          <div className="w-7 sm:w-8 h-7 sm:h-8 rounded-full bg-slate-700/60 flex items-center justify-center 
+                          <div className="w-7 sm:w-8 h-7 sm:h-8 rounded-full bg-slate-100 flex items-center justify-center 
                                          group-hover:bg-emerald-600 group-hover:scale-110 transition-all duration-300">
-                            <Play size={14} className="text-slate-300 group-hover:text-white ml-0.5" />
+                            <Play size={14} className="text-slate-600 group-hover:text-white ml-0.5" />
                           </div>
                         </div>
                       </div>
@@ -433,17 +429,16 @@ const HomePage = ({ tools, allTools, categorizedTools }) => {
                     key={idx}
                     onClick={() => setCurrentFeaturedIndex(idx)}
                     className={`w-2 sm:w-3 h-2 sm:h-3 rounded-full transition-colors duration-300 ${
-                      currentFeaturedIndex === idx ? 'bg-emerald-500' : 'bg-slate-600 hover:bg-slate-500'
+                      currentFeaturedIndex === idx ? 'bg-emerald-600' : 'bg-slate-300 hover:bg-slate-400'
                     }`}
                   />
                 ))}
               </div>
             )}
             
-            <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-gradient-to-r from-slate-800/60 to-slate-900/60 
-                            backdrop-blur-sm rounded-xl border border-slate-700/50">
-              <div className="flex items-center text-slate-300 text-xs sm:text-sm">
-                <div className="w-6 h-6 bg-cyan-500/60 rounded-full flex items-center justify-center mr-2 flex-shrink-0">
+            <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-cyan-50 rounded-xl border border-cyan-100">
+              <div className="flex items-center text-slate-700 text-xs sm:text-sm">
+                <div className="w-6 h-6 bg-cyan-600 rounded-full flex items-center justify-center mr-2 flex-shrink-0">
                   <span className="text-white text-xs">💡</span>
                 </div>
                 <span>
@@ -456,7 +451,7 @@ const HomePage = ({ tools, allTools, categorizedTools }) => {
 
         {/* Tools Grid */}
         <div className="mb-6">
-          <h2 className="text-lg sm:text-xl font-bold text-slate-100 mb-4 sm:mb-6 pl-2 border-l-4 border-emerald-500">
+          <h2 className="text-lg sm:text-xl font-bold text-slate-800 mb-4 sm:mb-6 pl-2 border-l-4 border-emerald-500">
             {activeCategory === 'All' ? 'All Tools' : activeCategory}
           </h2>
 
@@ -467,51 +462,44 @@ const HomePage = ({ tools, allTools, categorizedTools }) => {
                   key={tool.id}
                   to={tool.path}
                   className="block relative overflow-hidden rounded-xl sm:rounded-2xl 
-                             bg-slate-800/60 backdrop-blur-lg border border-slate-700/50 hover:border-emerald-500/50
-                             shadow-lg hover:shadow-xl transform hover:-translate-y-1
+                             bg-white border border-slate-200 hover:border-emerald-400
+                             shadow-md hover:shadow-lg transform hover:-translate-y-1
                              transition-all duration-300 group"
                   style={{
                     animation: `fadeInUp 0.5s ease-out ${index * 0.05}s both`
                   }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/10 to-teal-500/10 
-                                   opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl sm:rounded-2xl" />
-                  
                   <div className="relative z-10 p-3 sm:p-5 h-full flex flex-col">
                     <div className="flex items-start mb-2 sm:mb-4">
-                      <div className="bg-gradient-to-br from-emerald-600/80 to-teal-600/80 w-8 sm:w-10 h-8 sm:h-10 rounded-lg 
-                                       flex items-center justify-center flex-shrink-0 mr-2 sm:mr-3 
-                                       group-hover:from-emerald-500 group-hover:to-teal-500 transition-all duration-300">
+                      <div className="bg-emerald-600 w-8 sm:w-10 h-8 sm:h-10 rounded-lg 
+                                       flex items-center justify-center flex-shrink-0 mr-2 sm:mr-3">
                         {getToolIcon(tool)}
                       </div>
-                      <h3 className="text-sm sm:text-lg font-bold text-slate-100 group-hover:text-emerald-100 transition-colors duration-300 leading-tight">
+                      <h3 className="text-sm sm:text-lg font-bold text-slate-800 group-hover:text-emerald-700 transition-colors duration-300 leading-tight">
                         {tool.name}
                       </h3>
                     </div>
-                    <p className="text-slate-300 text-xs sm:text-sm mb-2 sm:mb-4 flex-grow group-hover:text-slate-200 transition-colors duration-300 line-clamp-2">
+                    <p className="text-slate-600 text-xs sm:text-sm mb-2 sm:mb-4 flex-grow group-hover:text-slate-700 transition-colors duration-300 line-clamp-2">
                       {tool.description}
                     </p>
                     <div className="flex flex-wrap gap-1 sm:gap-2 mb-2 sm:mb-4">
                       {tool.categories && tool.categories.slice(0, 2).map(cat => (
                         <span
                           key={cat}
-                          className="text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 bg-slate-700/70 rounded text-emerald-400
-                                     group-hover:bg-slate-600/80 group-hover:text-emerald-300 transition-all duration-300"
+                          className="text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 bg-emerald-100 rounded text-emerald-800
+                                     group-hover:bg-emerald-200 transition-all duration-300"
                         >
                           {cat}
                         </span>
                       ))}
                     </div>
-                    <div className="flex justify-between items-center pt-2 sm:pt-3 border-t border-slate-700/50 group-hover:border-slate-600/50 transition-colors duration-300">
-                      <span className="text-xs text-slate-400 group-hover:text-slate-300 transition-colors duration-300 hidden sm:block">
+                    <div className="flex justify-between items-center pt-2 sm:pt-3 border-t border-slate-200 group-hover:border-emerald-200 transition-colors duration-300">
+                      <span className="text-xs text-slate-500 group-hover:text-slate-600 transition-colors duration-300 hidden sm:block">
                         Click to explore
                       </span>
-                      <span className="text-xs text-slate-400 group-hover:text-slate-300 transition-colors duration-300 sm:hidden">
-                        Tap to open
-                      </span>
-                      <div className="w-6 sm:w-8 h-6 sm:h-8 rounded-full bg-slate-700/60 flex items-center justify-center 
+                      <div className="w-6 sm:w-8 h-6 sm:h-8 rounded-full bg-slate-100 flex items-center justify-center 
                                        group-hover:bg-emerald-600 group-hover:scale-110 transition-all duration-300">
-                        <Play size={12} className="text-slate-400 group-hover:text-white ml-0.5" />
+                        <Play size={12} className="text-slate-600 group-hover:text-white ml-0.5" />
                       </div>
                     </div>
                   </div>
@@ -519,11 +507,11 @@ const HomePage = ({ tools, allTools, categorizedTools }) => {
               ))}
             </div>
           ) : (
-            <div className="col-span-full text-center py-12 sm:py-16 rounded-xl sm:rounded-2xl bg-slate-800/60 backdrop-blur-lg border border-slate-700/50">
-              <div className="text-slate-300 mb-4 text-sm sm:text-base">No tools found matching your criteria</div>
+            <div className="col-span-full text-center py-12 sm:py-16 rounded-xl sm:rounded-2xl bg-white border border-slate-200">
+              <div className="text-slate-600 mb-4 text-sm sm:text-base">No tools found matching your criteria</div>
               <button
                 onClick={() => { setSearchTerm(''); setActiveCategory('All'); }}
-                className="px-4 sm:px-6 py-2 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-500 hover:to-teal-500 transition-all duration-300 text-sm sm:text-base shadow-lg"
+                className="px-4 sm:px-6 py-2 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition-all duration-300 text-sm sm:text-base shadow-sm"
               >
                 Reset Filters
               </button>

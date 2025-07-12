@@ -2,7 +2,7 @@
 export const SEO_CONFIG = {
   // Global defaults
   global: {
-    siteName: "LiriLab",
+    siteName: "LyriLab",
     domain: "https://lyrilab.vercel.app/",
     twitterHandle: "...",
     locale: "en_US",
@@ -12,7 +12,7 @@ export const SEO_CONFIG = {
 
   pages: {
     'virtual-piano': {
-      title: "Online Piano Practice No Download - Visual Keyboard Learning | LiriLab",
+      title: "Online Piano Practice No Download - Visual Keyboard Learning | LyriLab",
       description: "Practice piano online with visual keyboard feedback - no software download needed. Learn piano basics with real-time visual guides and instant audio response.",
       keywords: "online piano practice no download, visual piano learning online, piano practice no software needed, virtual piano visual learning, online piano no DAW, piano keyboard visual practice, learn piano visually online, piano practice browser only, visual piano training online",
       image: "/images/og-piano.jpg",
@@ -21,7 +21,7 @@ export const SEO_CONFIG = {
 
 
     'drum-machine': {
-      title: "Online Drum Machine Practice - Real-Time Beat Making | LiriLab",
+      title: "Online Drum Machine Practice - Real-Time Beat Making | LyriLab",
       description: "Create beats online with our real-time drum machine. Practice drum patterns, make beats online, and learn rhythm production with instant audio feedback and multiple drum kits.",
       keywords: "online drum machine practice, drum machine online free, beat maker online practice, online drum practice, drum sequencer online, make beats online practice, drum pattern practice online, online rhythm practice, drum programming online, beat production online practice, drum kit online practice, electronic drums online",
       image: "/images/og-drum-machine.jpg",
@@ -29,7 +29,7 @@ export const SEO_CONFIG = {
     },
 
     'tap-tempo-tool': {
-      title: "Online Tap Tempo Practice - Real-Time BPM Calculator | LiriLab",
+      title: "Online Tap Tempo Practice - Real-Time BPM Calculator | LyriLab",
       description: "Practice tempo recognition online with our real-time tap tempo tool. Calculate BPM instantly by tapping, perfect for online music practice and tempo training.",
       keywords: "tap tempo online practice, BPM calculator online, tempo practice online, online metronome practice, tap BPM online practice, tempo training online, rhythm tempo practice online, beat tempo online practice, music tempo practice online, tempo finder online practice, BPM practice online",
       image: "/images/og-tap-tempo.jpg",
@@ -37,7 +37,7 @@ export const SEO_CONFIG = {
     },
 
     'time-signature-metronome': {
-      title: "Online Metronome Practice - All Time Signatures Real-Time | LiriLab",
+      title: "Online Metronome Practice - All Time Signatures Real-Time | LyriLab",
       description: "Practice with advanced online metronome supporting all time signatures. Real-time tempo practice for complex rhythms, perfect for online music practice sessions.",
       keywords: "online metronome practice, metronome online practice, time signature practice online, rhythm practice online metronome, online music practice metronome, complex rhythm practice online, polyrhythm metronome online, metronome training online, tempo practice online tool, beat practice online metronome",
       image: "/images/og-metronome.jpg",
@@ -45,7 +45,7 @@ export const SEO_CONFIG = {
     },
 
     'chord-explorer': {
-      title: "Online Chord Practice - Interactive Guitar & Piano Chords | LiriLab",
+      title: "Online Chord Practice - Interactive Guitar & Piano Chords | LyriLab",
       description: "Practice chords online with real-time audio feedback. Learn guitar and piano chords with our interactive online chord practice tool and chord dictionary.",
       keywords: "online chord practice, chord practice online, guitar chords online practice, piano chords online practice, chord trainer online, online music practice chords, chord learning online practice, chord dictionary online practice, interactive chord practice online, chord progression practice online",
       image: "/images/og-chord-explorer.jpg",
@@ -53,7 +53,7 @@ export const SEO_CONFIG = {
     },
 
     'chord-progression-builder': {
-      title: "Online Chord Progression Practice - Real-Time Song Building | LiriLab",
+      title: "Online Chord Progression Practice - Real-Time Song Building | LyriLab",
       description: "Practice chord progressions online with real-time playback. Build song progressions, practice chord changes, and learn harmony with our online chord progression tool.",
       keywords: "chord progression practice online, online chord progression practice, chord changes practice online, songwriting practice online, harmony practice online, chord sequence practice online, online music composition practice, chord progression trainer online, online chord progression builder",
       image: "/images/og-chord-progressions.jpg",
@@ -61,7 +61,7 @@ export const SEO_CONFIG = {
     },
 
     'scale-explorer': {
-      title: "Online Scale Practice - Interactive Music Scales Learning | LiriLab",
+      title: "Online Scale Practice - Interactive Music Scales Learning | LyriLab",
       description: "Practice music scales online with real-time audio and visual feedback. Learn guitar and piano scales with our comprehensive online scale practice tool.",
       keywords: "online scale practice, music scales practice online, guitar scales online practice, piano scales online practice, scale training online, pentatonic scale practice online, major scale practice online, minor scale practice online, modal scales practice online, blues scales online practice, jazz scales practice online",
       image: "/images/og-scales.jpg",
@@ -69,7 +69,7 @@ export const SEO_CONFIG = {
     },
 
     'interval-training': {
-      title: "Online Interval Training Practice - Real-Time Ear Training | LiriLab",
+      title: "Online Interval Training Practice - Real-Time Ear Training | LyriLab",
       description: "Practice interval recognition online with real-time audio feedback. Improve your musical ear with our interactive online interval training and ear practice tool.",
       keywords: "online interval training practice, ear training online practice, interval practice online, music interval training online, online ear training practice, interval recognition online practice, perfect pitch practice online, relative pitch training online, music ear practice online, audio interval training online",
       image: "/images/og-interval-training.jpg",
@@ -77,7 +77,7 @@ export const SEO_CONFIG = {
     },
 
     'circle-of-fifths': {
-      title: "Circle of Fifths Online Practice - Interactive Music Theory | LiriLab",
+      title: "Circle of Fifths Online Practice - Interactive Music Theory | LyriLab",
       description: "Learn circle of fifths online with real-time interactive practice. Master key relationships and music theory with our online circle of fifths training tool.",
       keywords: "circle of fifths online practice, circle of fifths practice online, music theory online practice, key signature practice online, online music theory practice, circle of fifths trainer online, harmonic relationships practice online, key relationships online practice, music theory circle of fifths online",
       image: "/images/og-circle-fifths.jpg",
@@ -85,7 +85,7 @@ export const SEO_CONFIG = {
     },
 
     'arpeggiator-sequencer': {
-      title: "Online Arpeggiator Practice - Real-Time Arpeggio Sequencer | LiriLab",
+      title: "Online Arpeggiator Practice - Real-Time Arpeggio Sequencer | LyriLab",
       description: "Practice arpeggios online with our real-time arpeggiator sequencer. Create and practice arpeggio patterns with instant audio feedback and customizable sequences.",
       keywords: "online arpeggiator practice, arpeggio practice online, arpeggio sequencer online, arpeggiator online practice, online arpeggio training, arpeggio pattern practice online, electronic music practice online, synth arpeggiator online practice, MIDI arpeggiator practice online",
       image: "/images/og-arpeggiator.jpg",
@@ -93,7 +93,7 @@ export const SEO_CONFIG = {
     },
 
     'wavetable-editor': {
-      title: "Learn Sine Square Saw Triangle Waves Online - Visual Waveform Editor | LiriLab",
+      title: "Learn Sine Square Saw Triangle Waves Online - Visual Waveform Editor | LyriLab",
       description: "Master sine, square, saw, triangle waveforms visually online. No DAW needed - learn waveform fundamentals with real-time visual feedback and audio synthesis practice.",
       keywords: "learn sine wave online, square wave practice online, sawtooth wave online training, triangle wave visual learning, waveform editor no DAW, visual waveform learning online, basic waveforms practice online, oscillator waveforms online, fundamental waves online practice, waveform synthesis visual learning",
       image: "/images/og-wavetable.jpg",
@@ -101,7 +101,7 @@ export const SEO_CONFIG = {
     },
 
     'lfo-modulation': {
-      title: "Learn LFO Visually Online - Visual Low Frequency Oscillator No DAW | LiriLab",
+      title: "Learn LFO Visually Online - Visual Low Frequency Oscillator No DAW | LyriLab",
       description: "Learn LFO modulation visually online without DAW software. Master sine, square, triangle LFO waves with real-time visual feedback and parameter modulation practice.",
       keywords: "learn LFO visually online, visual LFO training, LFO modulation visual learning, low frequency oscillator visual practice, LFO waves visual training, sine square triangle LFO online, modulation visual learning no DAW, LFO parameter visual training",
       image: "/images/og-lfo.jpg",
@@ -109,7 +109,7 @@ export const SEO_CONFIG = {
     },
 
     'adsr-envelope-tool': {
-      title: "Learn ADSR Visually Online - Visual Envelope Shaping No DAW | LiriLab",
+      title: "Learn ADSR Visually Online - Visual Envelope Shaping No DAW | LyriLab",
       description: "Learn ADSR envelope visually online without DAW. Master Attack, Decay, Sustain, Release with real-time visual curves and instant audio feedback for sound shaping.",
       keywords: "learn ADSR visually online, visual ADSR training, ADSR envelope visual learning, attack decay sustain release visual, envelope shaping no DAW, ADSR curves visual practice, synthesizer ADSR visual training, sound envelope visual learning, envelope generator visual practice",
       image: "/images/og-adsr.jpg",
@@ -117,7 +117,7 @@ export const SEO_CONFIG = {
     },
 
     'eq-explorer': {
-      title: "Learn EQ Visually Online - No DAW EQ Training with Real Audio | LiriLab",
+      title: "Learn EQ Visually Online - No DAW EQ Training with Real Audio | LyriLab",
       description: "Learn EQ visually online without DAW software. Master frequency bands, Q settings, and gain control with real-time visual EQ curves and instant audio feedback.",
       keywords: "learn EQ visually online, visual EQ training online, EQ practice no DAW needed, frequency bands visual learning, parametric EQ visual training, EQ curves online learning, audio EQ visual practice, frequency response visual learning, EQ settings visual training, graphic EQ visual practice",
       image: "/images/og-eq.jpg",
@@ -125,7 +125,7 @@ export const SEO_CONFIG = {
     },
 
     'compression-explorer': {
-      title: "Learn Compressor Visually Online - Visual Compression No DAW Training | LiriLab",
+      title: "Learn Compressor Visually Online - Visual Compression No DAW Training | LyriLab",
       description: "Learn audio compression visually online without DAW. Master threshold, ratio, attack, release with real-time visual compression curves and instant audio feedback.",
       keywords: "learn compressor visually online, visual compression training, compressor visual learning no DAW, threshold ratio visual training, attack release visual learning, compression curves visual practice, audio dynamics visual training, vocal compressor visual learning",
       image: "/images/og-compressor.jpg",
@@ -133,7 +133,7 @@ export const SEO_CONFIG = {
     },
 
     'reverb-explorer': {
-      title: "Learn Reverb Online Practice - Real-Time Spatial Audio Training | LiriLab",
+      title: "Learn Reverb Online Practice - Real-Time Spatial Audio Training | LyriLab",
       description: "Practice reverb effects online with real-time audio processing. Learn room, hall, plate reverb with instant feedback in our interactive online reverb trainer.",
       keywords: "learn reverb online practice, reverb practice online, spatial audio training online, online reverb practice, room reverb online practice, hall reverb online training, plate reverb practice online, reverb mixing online practice, audio ambience online training, sound space online practice",
       image: "/images/og-reverb.jpg",
@@ -141,7 +141,7 @@ export const SEO_CONFIG = {
     },
 
     'delay-explorer': {
-      title: "Learn Delay Effects Online - Real-Time Echo Practice Training | LiriLab",
+      title: "Learn Delay Effects Online - Real-Time Echo Practice Training | LyriLab",
       description: "Practice delay effects online with real-time audio processing. Master echo and time-based effects with instant feedback in our interactive online delay trainer.",
       keywords: "learn delay online practice, delay effects practice online, echo training online, online delay practice, audio delay online practice, ping pong delay online training, rhythmic delay online practice, delay mixing online training, echo effects online practice, time delay online training",
       image: "/images/og-delay.jpg",
@@ -149,7 +149,7 @@ export const SEO_CONFIG = {
     },
 
     'polyrhythm-sequencer': {
-      title: "Online Polyrhythm Practice - Real-Time Complex Rhythm Training | LiriLab",
+      title: "Online Polyrhythm Practice - Real-Time Complex Rhythm Training | LyriLab",
       description: "Practice polyrhythms online with real-time sequencing. Master complex rhythm patterns with our interactive online polyrhythm trainer and visualization tool.",
       keywords: "polyrhythm practice online, online polyrhythm training, complex rhythm practice online, polyrhythmic practice online, rhythm layering online practice, advanced rhythm online training, percussion polyrhythm online practice, drum polyrhythm practice online, rhythmic complexity online training",
       image: "/images/og-polyrhythm.jpg",
@@ -157,7 +157,7 @@ export const SEO_CONFIG = {
     },
 
     'euclidean-rhythm-generator': {
-      title: "Online Euclidean Rhythm Practice - Algorithmic Beat Training | LiriLab",
+      title: "Online Euclidean Rhythm Practice - Algorithmic Beat Training | LyriLab",
       description: "Practice Euclidean rhythms online with real-time generation. Learn mathematical rhythm patterns with our interactive online Euclidean rhythm trainer.",
       keywords: "euclidean rhythm practice online, online euclidean rhythm training, algorithmic rhythm practice online, mathematical rhythm online practice, euclidean algorithm online practice, rhythm generator online practice, percussion pattern online training, drum pattern online practice, algorithmic composition online training",
       image: "/images/og-euclidean.jpg",
@@ -165,7 +165,7 @@ export const SEO_CONFIG = {
     },
 
     'chord-training-quiz': {
-      title: "Online Chord Recognition Practice - Real-Time Musical Quiz Training | LiriLab",
+      title: "Online Chord Recognition Practice - Real-Time Musical Quiz Training | LyriLab",
       description: "Practice chord recognition online with real-time audio quizzes. Improve your musical ear with our interactive online chord training games and exercises.",
       keywords: "chord recognition practice online, online chord training practice, chord quiz online practice, music theory quiz online practice, chord identification online training, ear training chord practice online, chord game online practice, music education online practice, chord recognition online training",
       image: "/images/og-chord-quiz.jpg",
@@ -173,7 +173,7 @@ export const SEO_CONFIG = {
     },
 
     'ear-training-quiz': {
-      title: "Online Ear Training Practice - Comprehensive Musical Hearing Games | LiriLab",
+      title: "Online Ear Training Practice - Comprehensive Musical Hearing Games | LyriLab",
       description: "Practice ear training online with real-time audio exercises. Improve interval, chord, and scale recognition with our comprehensive online ear training platform.",
       keywords: "ear training practice online, online ear training practice, music ear training online practice, interval recognition online practice, pitch training online practice, musical hearing online training, ear training exercises online practice, perfect pitch online training, relative pitch online practice",
       image: "/images/og-ear-training.jpg",
@@ -181,7 +181,7 @@ export const SEO_CONFIG = {
     },
 
     'synthesis-challenge': {
-      title: "Online Sound Design Practice - Real-Time Synthesizer Training | LiriLab",
+      title: "Online Sound Design Practice - Real-Time Synthesizer Training | LyriLab",
       description: "Practice sound design online with real-time synthesis challenges. Master synthesizer programming with our interactive online sound design training games.",
       keywords: "sound design practice online, online synthesis practice, synthesizer training online, synth programming online practice, electronic music production online practice, sound design online training, synthesis challenge online practice, synthesizer practice online, audio synthesis online training",
       image: "/images/og-synth-challenge.jpg",
@@ -189,7 +189,7 @@ export const SEO_CONFIG = {
     },
 
     'humanizer-panel': {
-      title: "Online MIDI Humanization Practice - Real-Time Performance Enhancement | LiriLab",
+      title: "Online MIDI Humanization Practice - Real-Time Performance Enhancement | LyriLab",
       description: "Practice MIDI humanization online with real-time parameter control. Learn to add natural feel to digital performances with our online MIDI humanizer trainer.",
       keywords: "MIDI humanizer online practice, online MIDI practice, music humanization online training, MIDI variation online practice, timing variation online practice, natural MIDI online training, human feel online practice, MIDI processing online practice, performance enhancement online training",
       image: "/images/og-humanizer.jpg",
@@ -197,7 +197,7 @@ export const SEO_CONFIG = {
     },
 
     'portamento-glide': {
-      title: "Online Portamento Practice - Real-Time Pitch Transition Training | LiriLab",
+      title: "Online Portamento Practice - Real-Time Pitch Transition Training | LyriLab",
       description: "Practice portamento effects online with real-time pitch control. Learn smooth pitch transitions and glide techniques with our interactive online portamento trainer.",
       keywords: "portamento practice online, online portamento training, pitch glide online practice, smooth pitch online training, synthesizer portamento online practice, pitch bend online practice, legato playing online training, musical expression online practice, expressive playing online training",
       image: "/images/og-portamento.jpg",
@@ -205,7 +205,7 @@ export const SEO_CONFIG = {
     },
 
     'waveform-combiner': {
-      title: "Online Waveform Mixing Practice - Real-Time Audio Wave Synthesis | LiriLab",
+      title: "Online Waveform Mixing Practice - Real-Time Audio Wave Synthesis | LyriLab",
       description: "Practice waveform mixing online with real-time audio synthesis. Learn to combine and manipulate audio waveforms with our interactive online waveform trainer.",
       keywords: "waveform mixing online practice, online waveform practice, audio waveform online training, wave synthesis online practice, harmonic mixing online practice, waveform synthesis online training, sound synthesis online practice, audio wave online training, waveform blending online practice",
       image: "/images/og-waveform-mixer.jpg",
@@ -213,7 +213,7 @@ export const SEO_CONFIG = {
     },
 
   'consonance-dissonance': {
-  title: "Advanced Harmony Training - Interactive Consonance Dissonance Analyzer | LiriLab",
+  title: "Advanced Harmony Training - Interactive Consonance Dissonance Analyzer | LyriLab",
   description: "Master harmony with real-time consonance and dissonance analysis. Interactive wave visualization, interval training, and dynamic harmonic tension analysis. Features live waveform display, customizable frequencies, and instant feedback on musical intervals from unison to octave.",
   keywords: "harmony practice online, consonance dissonance analyzer, interactive music theory training, real-time harmonic analysis, interval relationship trainer, harmonic tension analyzer, music interval visualizer, wave interference patterns music, audio harmony generator, chord tension analysis tool, musical frequency relationships, harmonic series training, interval ear training online, practice consonance dissonance online, visual harmony training waveforms, musical interval mathematics, frequency ratio harmony training, acoustic harmony visualization, online pitch relationship trainer",
   image: "/images/og-consonance.jpg",
@@ -221,7 +221,7 @@ export const SEO_CONFIG = {
   },
 
     'piano-roll-basics': {
-      title: "Online Piano Roll Practice - Real-Time MIDI Sequencing Training | LiriLab",
+      title: "Online Piano Roll Practice - Real-Time MIDI Sequencing Training | LyriLab",
       description: "Practice MIDI sequencing online with our real-time piano roll editor. Learn music production basics with interactive online MIDI programming exercises.",
       keywords: "piano roll online practice, online MIDI practice, MIDI sequencing online training, music production online practice, digital audio workstation online training, MIDI programming online practice, music composition online practice, MIDI editor online training, note editing online practice",
       image: "/images/og-piano-roll.jpg",
@@ -229,7 +229,7 @@ export const SEO_CONFIG = {
     },
 
     'panner-tool': {
-      title: "Online Audio Panning Practice - Real-Time Stereo Positioning Training | LiriLab",
+      title: "Online Audio Panning Practice - Real-Time Stereo Positioning Training | LyriLab",
       description: "Practice audio panning online with real-time stereo control. Learn stereo positioning techniques with our interactive online panning trainer for professional mixing.",
       keywords: "audio panning online practice, online panning practice, stereo positioning online training, stereo field online practice, audio mixing panning online practice, stereo imaging online training, sound placement online practice, stereo width online training, audio spatialization online practice",
       image: "/images/og-panner.jpg",
@@ -237,7 +237,7 @@ export const SEO_CONFIG = {
     },
 
     'mid-side-explorer': {
-      title: "Online Mid/Side Processing Practice - Real-Time Stereo Training | LiriLab",
+      title: "Online Mid/Side Processing Practice - Real-Time Stereo Training | LyriLab",
       description: "Practice Mid/Side processing online with real-time stereo manipulation. Master advanced stereo techniques with our interactive online M/S training tool.",
       keywords: "mid side processing online practice, MS processing online training, stereo processing online practice, advanced mixing online training, stereo separation online practice, center side processing online training, mastering techniques online practice, stereo imaging online training",
       image: "/images/og-mid-side.jpg",
@@ -245,7 +245,7 @@ export const SEO_CONFIG = {
     },
 
     'pitch-shift-explorer': {
-      title: "Online Pitch Shifting Practice - Real-Time Pitch Manipulation Training | LiriLab",
+      title: "Online Pitch Shifting Practice - Real-Time Pitch Manipulation Training | LyriLab",
       description: "Practice pitch shifting online with real-time audio manipulation. Learn harmony creation and pitch effects with our interactive online pitch shifter trainer.",
       keywords: "pitch shifting online practice, online pitch shifter practice, pitch manipulation online training, harmony generator online practice, octave shifter online training, pitch correction online practice, vocal pitch online training, audio pitch online practice, pitch effects online training",
       image: "/images/og-pitch-shift.jpg",
@@ -253,7 +253,7 @@ export const SEO_CONFIG = {
     },
 
     'stereo-imager-explorer': {
-      title: "Online Stereo Imaging Practice - Real-Time Width Control Training | LiriLab",
+      title: "Online Stereo Imaging Practice - Real-Time Width Control Training | LyriLab",
       description: "Practice stereo imaging online with real-time width control. Master stereo enhancement techniques with our interactive online stereo imager trainer.",
       keywords: "stereo imaging online practice, online stereo imager practice, stereo width online training, stereo enhancement online practice, width control online training, stereo expansion online practice, mono compatibility online training, stereo field online practice",
       image: "/images/og-stereo-imager.jpg",
@@ -261,7 +261,7 @@ export const SEO_CONFIG = {
     },
 
     'limiter-explorer': {
-      title: "Learn Audio Limiter Online - Real-Time Peak Control Training | LiriLab",
+      title: "Learn Audio Limiter Online - Real-Time Peak Control Training | LyriLab",
       description: "Practice audio limiting online with real-time peak control. Master loudness maximization and professional mastering with our interactive online limiter trainer.",
       keywords: "learn limiter online practice, audio limiter online training, peak limiter online practice, loudness maximizer online training, mastering limiter online practice, audio limiting online training, peak control online practice, clipping prevention online training, mastering techniques online practice",
       image: "/images/og-limiter.jpg",
@@ -269,7 +269,7 @@ export const SEO_CONFIG = {
     },
 
     'saturation-explorer': {
-      title: "Learn Audio Saturation Online - Real-Time Harmonic Enhancement Training | LiriLab",
+      title: "Learn Audio Saturation Online - Real-Time Harmonic Enhancement Training | LyriLab",
       description: "Practice audio saturation online with real-time harmonic processing. Learn tape, tube, and digital saturation with our interactive online saturation trainer.",
       keywords: "learn saturation online practice, audio saturation online training, harmonic saturation online practice, tape saturation online training, tube saturation online practice, analog warmth online training, vintage sound online practice, saturation mixing online training",
       image: "/images/og-saturation.jpg",
@@ -277,7 +277,7 @@ export const SEO_CONFIG = {
     },
 
     'chorus-explorer': {
-      title: "Online Chorus Effect Practice - Real-Time Modulation Training | LiriLab",
+      title: "Online Chorus Effect Practice - Real-Time Modulation Training | LyriLab",
       description: "Practice chorus effects online with real-time modulation control. Create lush textures and learn modulation techniques with our interactive online chorus trainer.",
       keywords: "chorus effect online practice, online chorus practice, modulation effects online training, chorus modulation online practice, vintage chorus online training, stereo chorus online practice, guitar chorus online training, vocal chorus online practice",
       image: "/images/og-chorus.jpg",
@@ -285,7 +285,7 @@ export const SEO_CONFIG = {
     },
 
     'tremolo-explorer': {
-      title: "Online Tremolo Effect Practice - Real-Time Amplitude Modulation Training | LiriLab",
+      title: "Online Tremolo Effect Practice - Real-Time Amplitude Modulation Training | LyriLab",
       description: "Practice tremolo effects online with real-time amplitude modulation. Learn volume pulsation techniques with our interactive online tremolo trainer.",
       keywords: "tremolo effect online practice, online tremolo practice, amplitude modulation online training, tremolo guitar online practice, vintage tremolo online training, volume modulation online practice, tremolo rate online training, guitar tremolo online practice",
       image: "/images/og-tremolo.jpg",
@@ -293,7 +293,7 @@ export const SEO_CONFIG = {
     },
 
     'granular-explorer': {
-      title: "Online Granular Synthesis Practice - Real-Time Microscopic Sound Design | LiriLab",
+      title: "Online Granular Synthesis Practice - Real-Time Microscopic Sound Design | LyriLab",
       description: "Practice granular synthesis online with real-time granular processing. Master advanced sound design techniques with our interactive online granular trainer.",
       keywords: "granular synthesis online practice, online granular practice, microsound online training, granular processing online practice, sound granulation online training, texture synthesis online practice, advanced sound design online training, granular sampler online practice",
       image: "/images/og-granular.jpg",
@@ -301,7 +301,7 @@ export const SEO_CONFIG = {
     },
 
     'beat-repeat-looper': {
-      title: "Online Beat Repeater Practice - Real-Time Creative Loop Training | LiriLab",
+      title: "Online Beat Repeater Practice - Real-Time Creative Loop Training | LyriLab",
       description: "Practice beat repeating online with real-time loop manipulation. Master stutter effects and creative looping with our interactive online beat repeater trainer.",
       keywords: "beat repeater online practice, online beat repeat practice, loop effects online training, stutter effects online practice, beat chopper online training, rhythmic effects online practice, creative looping online training, rhythm effects online practice",
       image: "/images/og-beat-repeat.jpg",
@@ -309,7 +309,7 @@ export const SEO_CONFIG = {
     },
 
     'swing-groove-visualizer': {
-      title: "Online Swing & Groove Practice - Real-Time Rhythm Feel Training | LiriLab",
+      title: "Online Swing & Groove Practice - Real-Time Rhythm Feel Training | LyriLab",
       description: "Practice swing and groove online with real-time timing visualization. Master rhythmic feel and swing percentage with our interactive online groove trainer.",
       keywords: "swing rhythm online practice, online groove practice, swing feel online training, rhythm swing online practice, jazz swing online training, shuffle rhythm online practice, groove quantization online training, rhythmic feel online practice, timing variation online practice",
       image: "/images/og-swing.jpg",
@@ -317,7 +317,7 @@ export const SEO_CONFIG = {
     },
 
     'drum-sequencer-game': {
-      title: "Online Drum Pattern Game - Real-Time Rhythm Challenge Training | LiriLab",
+      title: "Online Drum Pattern Game - Real-Time Rhythm Challenge Training | LyriLab",
       description: "Practice drum patterns online with real-time rhythm challenges. Improve timing and beat creation skills with our interactive online drum pattern game.",
       keywords: "drum pattern game online practice, online rhythm game practice, drum game online training, beat game online practice, percussion game online training, rhythm challenge online practice, drum training game online, beat matching online practice, rhythm practice game online",
       image: "/images/og-drum-game.jpg",

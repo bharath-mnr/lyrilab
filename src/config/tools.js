@@ -35,16 +35,6 @@ export const TOOLS = [
     icon: '',
     categories: ['Instruments', 'Rhythm', 'Fun']
   },
-  {
-    id: 'humanizer-panel',
-    name: 'Humanizer',
-    path: '/humanizer-panel',
-    component: 'HumanizerPanel',
-    importPath: './components/HumanizerPanel.jsx', // Corrected
-    description: 'Add human-like variations to your performances with timing, velocity, and micro-tuning controls.',
-    icon: '',
-    categories: ['Instruments', 'Rhythm']
-  },
 
   // RHYTHM/TEMPO SECTION
   {
@@ -77,26 +67,7 @@ export const TOOLS = [
     icon: '',
     categories: ['Rhythm', 'Challenge']
   },
-  {
-    id: 'euclidean-rhythm-generator',
-    name: 'Euclidean Rhythms',
-    path: '/euclidean-rhythm-generator',
-    component: 'EuclideanRhythmGenerator',
-    importPath: './components/EuclideanRhythmGenerator.jsx', // Corrected
-    description: 'Algorithmic rhythm generator. Create balanced patterns based on mathematical distributions.',
-    icon: '',
-    categories: ['Rhythm']
-  },
-  {
-    id: 'beat-repeat-looper',
-    name: 'Beat Repeater',
-    path: '/beat-repeat-looper',
-    component: 'BeatRepeatLooper',
-    importPath: './components/BeatRepeatLooper.jsx', // Corrected
-    description: 'Creative looping tool. Capture and manipulate rhythmic fragments in real-time.',
-    icon: '',
-    categories: ['Rhythm', 'Effects', 'Fun']
-  },
+ 
   
 
   // THEORY SECTION (Chords, Intervals, Scales)
@@ -110,16 +81,7 @@ export const TOOLS = [
     icon: '',
     categories: ['Theory']
   },
-  {
-    id: 'chord-progression-builder',
-    name: 'Chord Progressions',
-    path: '/chord-progression-builder',
-    component: 'ChordProgressionBuilder',
-    importPath: './components/ChordProgressionBuilder.jsx', // Corrected
-    description: 'Build and audition chord sequences. Explore common progressions in different keys.',
-    icon: '',
-    categories: ['Theory', 'Challenge']
-  },
+ 
   {
     id: 'interval-training',
     name: 'Interval Trainer',
@@ -157,16 +119,6 @@ export const TOOLS = [
     component: 'ConsonanceDissonance',
     importPath: './components/ConsonanceDissonance.jsx', // Corrected
     description: 'Experiment with harmonic tension. Compare consonant and dissonant intervals.',
-    icon: '',
-    categories: ['Theory']
-  },
-  {
-    id: 'piano-roll-basics',
-    name: 'Piano Roll',
-    path: '/piano-roll',
-    component: 'PianoRollBasics',
-    importPath: './components/PianoRollBasics.jsx', // Corrected
-    description: 'Learn MIDI sequencing fundamentals with this interactive piano roll editor.',
     icon: '',
     categories: ['Theory']
   },
@@ -376,16 +328,7 @@ export const TOOLS = [
     icon: '',
     categories: ['Games', 'Theory', 'Challenge']
   },
-  {
-    id: 'drum-sequencer-game',
-    name: 'Drum Game',
-    path: '/drum-sequencer-game',
-    component: 'DrumSequencerGame',
-    importPath: './games/DrumSequencerGame.jsx', // Corrected
-    description: 'Rhythm challenge game. Recreate drum patterns and test your timing.',
-    icon: '',
-    categories: ['Games', 'Rhythm', 'Fun']
-  },
+  
   {
     id: 'ear-training-quiz',
     name: 'Ear Trainer',
