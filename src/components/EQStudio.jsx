@@ -590,8 +590,8 @@ const UploadSection = ({ onFileUpload, isLoading }) => {
         <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-gray-50 font-inter">
             <div className="text-center mb-12">
                 <div className="flex items-center justify-center gap-4 mb-6">
-                    <SlidersHorizontal size={56} className="text-red-600" />
-                    <h1 className="text-6xl font-bold text-gray-900">Audio EQ</h1>
+                    {/* <SlidersHorizontal size={56} className="text-red-600" /> */}
+                    <h1 className="text-6xl font-bold text-gray-900">EQ Studio</h1>
                 </div>
                 <p className="text-gray-600 text-xl max-w-2xl mx-auto">
                     Professional audio equalizer with real-time visualization. 

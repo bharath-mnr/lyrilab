@@ -369,6 +369,17 @@ export const TOOLS = [
     icon: '',
     categories: ['Audio', 'Tools', 'Reverb']
 
+  },
+  {
+    id: 'slowed-reverb-studio',
+    name: 'Slowed Reverb Studio',
+    path: '/slowed-reverb-studio',
+    component: 'SlowedReverbStudio',
+    importPath: './components/SlowedReverbStudio.jsx',
+    description: 'Professional audio Reverb with real-time visualization.',
+    icon: '',
+    categories: ['Audio', 'Tools', 'Reverb']
+
   }
 ];
 

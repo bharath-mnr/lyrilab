@@ -488,13 +488,12 @@ const UploadSection = ({ onFileUpload, isLoading }) => {
     }, [onFileUpload]);
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 font-inter">
+        <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-gray-50 font-inter">
             <div className="text-center mb-12">
                 <div className="flex items-center justify-center gap-4 mb-6">
-                    <Waves size={56} className="text-cyan-400" />
-                    <h1 className="text-6xl font-bold text-white">Reverb Studio</h1>
+                    <h1 className="text-6xl font-bold text-gray-900">Reverb Studio</h1>
                 </div>
-                <p className="text-cyan-200 text-xl max-w-2xl mx-auto">
+                <p className="text-gray-600 text-xl max-w-2xl mx-auto">
                     Professional reverb processor with multiple acoustic spaces. 
                     Upload your audio file to add stunning reverb effects.
                 </p>
@@ -504,8 +503,8 @@ const UploadSection = ({ onFileUpload, isLoading }) => {
                 <div 
                     className={`relative border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all duration-200 ${
                         dragActive 
-                            ? 'border-cyan-400 bg-cyan-900/20 scale-105' 
-                            : 'border-cyan-300/50 hover:border-cyan-400 hover:bg-cyan-900/10'
+                            ? 'border-red-400 bg-red-50 scale-105' 
+                            : 'border-gray-300 hover:border-red-400 hover:bg-gray-50'
                     } ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}
                     onClick={() => {
                         if (fileInputRef.current) {
@@ -519,7 +518,7 @@ const UploadSection = ({ onFileUpload, isLoading }) => {
                     onDrop={handleDrop}
                 >
                     <div className="flex flex-col items-center space-y-4">
-                        <div className="bg-gradient-to-r from-cyan-500 to-purple-500 p-4 rounded-full"> 
+                        <div className="bg-red-600 p-4 rounded-full"> 
                             {isLoading ? (
                                 <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                             ) : (
@@ -527,14 +526,14 @@ const UploadSection = ({ onFileUpload, isLoading }) => {
                             )}
                         </div>
                         <div>
-                            <h3 className="text-2xl font-bold text-white mb-2">
+                            <h3 className="text-2xl font-bold text-gray-900 mb-2">
                                 {isLoading ? 'Processing Audio...' : 'Select Audio File'}
                             </h3>
-                            <p className="text-cyan-200 mb-4">
+                            <p className="text-gray-600 mb-4">
                                 {isLoading ? 'Please wait while we load your audio file' : 'or drop file here'}
                             </p>
-                            <div className="bg-cyan-900/30 backdrop-blur-sm rounded-lg px-4 py-2 inline-block">
-                                <span className="text-sm text-cyan-200">Only audio files allowed</span>
+                            <div className="bg-gray-100 rounded-lg px-4 py-2 inline-block">
+                                <span className="text-sm text-gray-700">Only audio files allowed</span>
                             </div>
                         </div>
                     </div>
@@ -776,27 +775,31 @@ const ReverbContent = () => {
     return (
         <div className="min-h-screen flex flex-col items-center p-4 md:p-8 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 font-inter">
             {/* Header Section */}
-            <div className="text-center mb-6 md:mb-10 w-full">
-                <div className="flex items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4">
-                    <Waves size={32} className="text-cyan-400 md:hidden" />
-                    <Waves size={48} className="text-cyan-400 hidden md:block" />
-                    <h1 className="text-3xl md:text-5xl font-bold text-white">Reverb Studio</h1>
+            <div className="text-center mb-4 sm:mb-6 md:mb-8 lg:mb-10 w-full px-2">
+                <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 mb-1 sm:mb-2 md:mb-3 lg:mb-4">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white">
+                        Reverb Studio
+                    </h1>
                 </div>
-                <p className="text-cyan-200 text-sm md:text-lg">
+                
+                <p className="text-cyan-200 text-xs sm:text-sm md:text-base lg:text-lg">
                     Professional reverb processor
                 </p>
+                
                 {isLoadingAudio && (
-                    <p className="text-cyan-300 text-xs md:text-sm mt-2 md:mt-4 animate-pulse">
+                    <p className="text-cyan-300 text-[0.65rem] xs:text-xs sm:text-sm mt-1 sm:mt-2 md:mt-3 lg:mt-4 animate-pulse">
                         Loading audio: {audioFileName}...
                     </p>
                 )}
+                
                 {audioLoadError && (
-                    <p className="text-red-400 text-xs md:text-sm mt-2 md:mt-4">
+                    <p className="text-red-400 text-[0.65rem] xs:text-xs sm:text-sm mt-1 sm:mt-2 md:mt-3 lg:mt-4">
                         Error: {audioLoadError}
                     </p>
                 )}
+                
                 {isAudioReady && (
-                    <p className="text-cyan-300 text-xs md:text-sm mt-1 md:mt-2 truncate max-w-full px-2">
+                    <p className="text-cyan-300 text-[0.65rem] xs:text-xs sm:text-sm mt-1 sm:mt-2 truncate max-w-full">
                         Current: <span className="font-semibold">{audioFileName}</span>
                     </p>
                 )}
