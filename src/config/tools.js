@@ -3,6 +3,19 @@
 // descriptions, icons, and categories.
 
 export const TOOLS = [
+  
+  {
+    id: 'home',
+    name: 'Home',
+    path: '/',
+    component: 'HomePage',
+    importPath: './pages/HomePage.jsx', // Correct for pages directory
+    description: 'Explore all the musical experiments and sound design tools.',
+    icon: '',
+    categories: ['Navigation']
+  },
+  
+  // INSTRUMENTS SECTION
   {
   id: 'eq-studio',
   name: 'EQ Studio',
@@ -30,23 +43,21 @@ export const TOOLS = [
     path: '/slowed-reverb-studio',
     component: 'SlowedReverbStudio',
     importPath: './components/SlowedReverbStudio.jsx',
-    description: 'Professional audio Reverb with real-time visualization.',
+    description: 'Professional Slowed audio + Reverb with real-time visualization.',
     icon: '',
     categories: ['Audio']
 
   },
   {
-    id: 'home',
-    name: 'Home',
-    path: '/',
-    component: 'HomePage',
-    importPath: './pages/HomePage.jsx', // Correct for pages directory
-    description: 'Explore all the musical experiments and sound design tools.',
+    id: '3D-audio-studio',
+    name: '3D Audio Studio',
+    path: '/3D-audio-studio',
+    component: '3DAudioStudio',
+    importPath: './components/ThreeDAudioStudio.jsx',
+    description: 'Professional 3d audio with real-time visualization.',
     icon: '',
-    categories: ['Navigation']
+    categories: ['Audio']
   },
-  
-  // INSTRUMENTS SECTION
   {
     id: 'virtual-piano',
     name: 'Piano',
