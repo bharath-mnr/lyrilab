@@ -67,41 +67,81 @@ const MAX_FILE_SIZE = 50 * 1024 * 1024;
 // Helper function to convert AudioBuffer to WAV Blob
 const audioBufferToWav = (buffer) => {
     const numChannels = buffer.numberOfChannels;
+    const sampleRate = buffer.sampleRate;
     const length = buffer.length * numChannels * 2 + 44;
-    const view = new DataView(new ArrayBuffer(length));
+    const arrayBuffer = new ArrayBuffer(length);
+    const view = new DataView(arrayBuffer);
 
     // Helper functions
     let pos = 0;
     const writeString = (str) => {
-        for (let i = 0; i < str.length; i++) view.setUint8(pos++, str.charCodeAt(i));
+        for (let i = 0; i < str.length; i++) {
+            view.setUint8(pos++, str.charCodeAt(i));
+        }
     };
-    const setUint16 = (val) => { view.setUint16(pos, val, true); pos += 2; };
-    const setUint32 = (val) => { view.setUint32(pos, val, true); pos += 4; };
+    const setUint16 = (val) => { 
+        view.setUint16(pos, val, true); 
+        pos += 2; 
+    };
+    const setUint32 = (val) => { 
+        view.setUint32(pos, val, true); 
+        pos += 4; 
+    };
 
+    // WAV header
     writeString("RIFF");
     setUint32(length - 8);
     writeString("WAVE");
     writeString("fmt ");
-    setUint32(16);
-    setUint16(1); // PCM format
+    setUint32(16); // PCM chunk size
+    setUint16(1);  // PCM format
     setUint16(numChannels);
-    setUint32(buffer.sampleRate);
-    setUint32(buffer.sampleRate * numChannels * 2); // Byte rate
+    setUint32(sampleRate);
+    setUint32(sampleRate * numChannels * 2); // Byte rate
     setUint16(numChannels * 2); // Block align
     setUint16(16); // Bits per sample
     writeString("data");
     setUint32(buffer.length * numChannels * 2);
 
-    // Write each channel's data
+    // Convert float samples to 16-bit PCM
     for (let i = 0; i < buffer.length; i++) {
         for (let ch = 0; ch < numChannels; ch++) {
             const sample = Math.max(-1, Math.min(1, buffer.getChannelData(ch)[i]));
-            view.setInt16(pos, sample < 0 ? sample * 32768 : sample * 32767, true);
+            const intSample = sample < 0 ? sample * 32768 : sample * 32767;
+            view.setInt16(pos, intSample, true);
             pos += 2;
         }
     }
 
-    return new Blob([view], { type: "audio/wav" });
+    return new Blob([arrayBuffer], { type: "audio/wav" });
+};
+
+// Improved linear interpolation function for smooth resampling
+const linearInterpolate = (data, position) => {
+    const index = Math.floor(position);
+    const fraction = position - index;
+    
+    if (index >= data.length - 1) {
+        return data[data.length - 1] || 0;
+    }
+    
+    const sample1 = data[index] || 0;
+    const sample2 = data[index + 1] || 0;
+    
+    return sample1 + (sample2 - sample1) * fraction;
+};
+
+// Apply anti-aliasing filter (simple low-pass filter)
+const applyAntiAliasing = (data, cutoffFreq = 0.4) => {
+    const filteredData = new Float32Array(data.length);
+    const alpha = Math.exp(-2 * Math.PI * cutoffFreq);
+    
+    filteredData[0] = data[0];
+    for (let i = 1; i < data.length; i++) {
+        filteredData[i] = alpha * filteredData[i - 1] + (1 - alpha) * data[i];
+    }
+    
+    return filteredData;
 };
 
 // Custom hook for Slowed Reverb functionality
@@ -131,71 +171,71 @@ const useSlowedReverbProcessor = () => {
     const [isEffectActive, setIsEffectActive] = useState(true);
 
     const initAudioNodes = useCallback(async (audioBuffer) => {
-    try {
-        setIsLoadingAudio(true);
-        setAudioLoadError(null);
-        setIsPlaying(false);
+        try {
+            setIsLoadingAudio(true);
+            setAudioLoadError(null);
+            setIsPlaying(false);
 
-        // Dispose existing nodes
-        if (playerRef.current) {
-            playerRef.current.stop();
-            playerRef.current.dispose();
-            playerRef.current = null;
-        }
-        if (reverbRef.current) {
-            reverbRef.current.dispose();
-            reverbRef.current = null;
-        }
-        if (delayRef.current) {
-            delayRef.current.dispose();
-            delayRef.current = null;
-        }
-
-        console.log('Initializing slowed reverb processor...');
-
-        // Set playback rate conditionally based on effect state
-        const playbackRate = isEffectActive ? slowRate : 1.0;
-
-        // Create new player with conditional playback rate
-        const player = new Tone.Player({
-            url: audioBuffer,
-            loop: true,
-            autostart: false,
-            playbackRate: playbackRate,
-            onload: () => {
-                console.log('Audio loaded successfully');
-                setIsAudioReady(true);
-                setIsLoadingAudio(false);
+            // Dispose existing nodes
+            if (playerRef.current) {
+                playerRef.current.stop();
+                playerRef.current.dispose();
+                playerRef.current = null;
             }
-        });
+            if (reverbRef.current) {
+                reverbRef.current.dispose();
+                reverbRef.current = null;
+            }
+            if (delayRef.current) {
+                delayRef.current.dispose();
+                delayRef.current = null;
+            }
 
-        // Create reverb with slowed reverb settings
-        const reverb = new Tone.Reverb({
-            decay: reverbDecay,
-            wet: isEffectActive ? wetLevel : 0,
-        });
+            console.log('Initializing slowed reverb processor...');
 
-        // Create pre-delay
-        const delay = new Tone.Delay(preDelay);
+            // Set playback rate conditionally based on effect state
+            const playbackRate = isEffectActive ? slowRate : 1.0;
 
-        // Connect audio chain: Player -> Delay -> Reverb -> Destination
-        player.connect(delay);
-        delay.connect(reverb);
-        reverb.connect(Tone.Destination);
+            // Create new player with conditional playback rate
+            const player = new Tone.Player({
+                url: audioBuffer,
+                loop: true,
+                autostart: false,
+                playbackRate: playbackRate,
+                onload: () => {
+                    console.log('Audio loaded successfully');
+                    setIsAudioReady(true);
+                    setIsLoadingAudio(false);
+                }
+            });
 
-        playerRef.current = player;
-        reverbRef.current = reverb;
-        delayRef.current = delay;
+            // Create reverb with slowed reverb settings
+            const reverb = new Tone.Reverb({
+                decay: reverbDecay,
+                wet: isEffectActive ? wetLevel : 0,
+            });
 
-        console.log('Slowed reverb processor initialized successfully.');
+            // Create pre-delay
+            const delay = new Tone.Delay(preDelay);
 
-    } catch (error) {
-        console.error("Error initializing slowed reverb processor:", error);
-        setAudioLoadError(`Failed to load audio: ${error.message || error}`);
-        setIsAudioReady(false);
-        setIsLoadingAudio(false);
-    }
-}, [reverbDecay, wetLevel, slowRate, preDelay, isEffectActive]);
+            // Connect audio chain: Player -> Delay -> Reverb -> Destination
+            player.connect(delay);
+            delay.connect(reverb);
+            reverb.connect(Tone.Destination);
+
+            playerRef.current = player;
+            reverbRef.current = reverb;
+            delayRef.current = delay;
+
+            console.log('Slowed reverb processor initialized successfully.');
+
+        } catch (error) {
+            console.error("Error initializing slowed reverb processor:", error);
+            setAudioLoadError(`Failed to load audio: ${error.message || error}`);
+            setIsAudioReady(false);
+            setIsLoadingAudio(false);
+        }
+    }, [reverbDecay, wetLevel, slowRate, preDelay, isEffectActive]);
 
     const disposeAudioNodes = useCallback(() => {
         if (playerRef.current) {
@@ -250,7 +290,6 @@ const useSlowedReverbProcessor = () => {
         }
     }, [slowRate, isEffectActive]);
 
-
     const togglePlay = useCallback(async () => {
         if (!isAudioGloballyReady) {
             await startGlobalAudio();
@@ -291,10 +330,10 @@ const useSlowedReverbProcessor = () => {
             
             const arrayBuffer = await file.arrayBuffer();
             const audioBuffer = await Tone.context.decodeAudioData(arrayBuffer);
-            currentAudioBufferRef.current = audioBuffer;
+            currentAudioBufferRef.current = audioBuffer; // Store the decoded AudioBuffer
 
             const audioBlobUrl = URL.createObjectURL(file);
-            await initAudioNodes(audioBlobUrl);
+            await initAudioNodes(audioBlobUrl); // Use Blob URL for playback player
             setHasAudioFile(true);
             
             setTimeout(() => {
@@ -329,95 +368,128 @@ const useSlowedReverbProcessor = () => {
     }, [applyPreset]);
 
     const downloadProcessedAudio = useCallback(async () => {
-    if (!playerRef.current || !isAudioReady || isDownloading) return;
+        // Ensure currentAudioBufferRef.current is available for offline rendering
+        if (!currentAudioBufferRef.current || isDownloading) return;
 
-    setIsDownloading(true);
-    setDownloadProgress(0);
-    setAudioLoadError(null);
+        setIsDownloading(true);
+        setDownloadProgress(0);
+        setAudioLoadError(null);
 
-    try {
-        console.log("Starting offline render...");
-
-        // Calculate duration (accounting for slow rate + reverb decay)
-        const duration = playerRef.current.buffer.duration / slowRate + reverbDecay;
-
-        // Create a promise to track progress
-        const progressPromise = new Promise((resolve) => {
-            const interval = setInterval(() => {
-                setDownloadProgress(prev => {
-                    const newProgress = Math.min(prev + 5, 90);
-                    if (newProgress >= 90) {
-                        clearInterval(interval);
-                        resolve();
-                    }
-                    return newProgress;
-                });
-            }, 200);
-        });
-
-        // Render using Tone.Offline
-        const renderedBuffer = await Tone.Offline(async ({ transport }) => {
-            // Create new instances of all effects for the offline context
-            const offlinePlayer = new Tone.Player({
-                buffer: playerRef.current.buffer,
-                playbackRate: isEffectActive ? slowRate : 1.0
+        try {
+            console.log("Starting high-quality audio processing for download...");
+            
+            const originalBuffer = currentAudioBufferRef.current;
+            const originalSampleRate = originalBuffer.sampleRate;
+            const originalChannels = originalBuffer.numberOfChannels;
+            
+            // Calculate new length based on slow rate
+            const effectiveSlowRate = isEffectActive ? slowRate : 1.0;
+            const newLength = Math.floor(originalBuffer.length / effectiveSlowRate); // Corrected: removed duplicate 'effective'
+            
+            // Create new buffer with adjusted length
+            const processedBuffer = new AudioBuffer({
+                numberOfChannels: originalChannels,
+                length: newLength,
+                sampleRate: originalSampleRate
             });
 
-            const offlineReverb = new Tone.Reverb({
-                decay: reverbDecay,
-                wet: isEffectActive ? wetLevel : 0
-            }).toDestination();
+            // Progress tracking
+            const totalSteps = originalChannels * 2; // Slowing + reverb for each channel
+            let currentStep = 0;
 
-            const offlineDelay = new Tone.Delay(preDelay).toDestination();
+            // Apply HIGH-QUALITY slowing effect with linear interpolation and anti-aliasing
+            for (let channel = 0; channel < originalChannels; channel++) {
+                const originalData = originalBuffer.getChannelData(channel);
+                const newData = processedBuffer.getChannelData(channel);
+                
+                // Apply anti-aliasing filter first to prevent high-frequency artifacts
+                const filteredData = applyAntiAliasing(originalData, 0.4);
+                
+                // Use linear interpolation for smooth resampling
+                for (let i = 0; i < newLength; i++) {
+                    const originalPosition = i * effectiveSlowRate;
+                    newData[i] = linearInterpolate(filteredData, originalPosition);
+                }
+                
+                currentStep++;
+                setDownloadProgress(Math.floor((currentStep / totalSteps) * 50));
+            }
 
-            // Connect the chain
-            offlinePlayer.chain(offlineDelay, offlineReverb, Tone.Destination);
+            // Apply reverb effect if active
+            if (isEffectActive && wetLevel > 0) {
+                for (let channel = 0; channel < originalChannels; channel++) {
+                    const channelData = processedBuffer.getChannelData(channel);
+                    const reverbData = new Float32Array(channelData.length);
+                    
+                    // Apply pre-delay
+                    const delaySamples = Math.floor(preDelay * originalSampleRate);
+                    for (let i = 0; i < channelData.length; i++) {
+                        reverbData[i] = i >= delaySamples ? channelData[i - delaySamples] : 0;
+                    }
+                    
+                    // Improved reverb simulation with decay envelope
+                    const reverbSamples = Math.floor(reverbDecay * originalSampleRate);
+                    const numEchoes = Math.min(12, Math.floor(reverbDecay * 3));
+                    
+                    for (let echo = 1; echo <= numEchoes; echo++) {
+                        const echoDelay = Math.floor((echo / numEchoes) * reverbSamples);
+                        const echoGain = Math.pow(0.65, echo) * wetLevel;
+                        
+                        // Apply exponential decay for more realistic reverb
+                        const decayFactor = Math.exp(-echo * 0.3);
+                        const finalGain = echoGain * decayFactor;
+                        
+                        for (let i = echoDelay; i < channelData.length; i++) {
+                            reverbData[i] += channelData[i - echoDelay] * finalGain;
+                        }
+                    }
+                    
+                    // Mix dry and wet signals with proper gain compensation
+                    const dryGain = 1 - (wetLevel * 0.3); // Prevent overload
+                    for (let i = 0; i < channelData.length; i++) {
+                        channelData[i] = channelData[i] * dryGain + reverbData[i] * 0.7;
+                        
+                        // Apply soft clipping to prevent distortion
+                        if (channelData[i] > 1) {
+                            channelData[i] = 1 - Math.exp(-(channelData[i] - 1));
+                        } else if (channelData[i] < -1) {
+                            channelData[i] = -1 + Math.exp(channelData[i] + 1);
+                        }
+                    }
+                    
+                    currentStep++;
+                    setDownloadProgress(Math.floor(50 + (currentStep - originalChannels) / originalChannels * 50));
+                }
+            }
 
-            // Start playback
-            offlinePlayer.start(0);
-            transport.start(0);
+            setDownloadProgress(100);
 
-            // Wait for progress to reach 90%
-            await progressPromise;
+            // Convert to WAV and download
+            const wavBlob = audioBufferToWav(processedBuffer);
+            const url = URL.createObjectURL(wavBlob);
 
-            // Wait for the audio to finish playing
-            await new Promise(resolve => 
-                setTimeout(resolve, duration * 1000)
-            );
-
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${audioFileName.replace(/\.[^/.]+$/, "")}-slowed-reverb.wav`;
+            document.body.appendChild(a);
+            a.click();
+            
             // Clean up
-            offlinePlayer.dispose();
-            offlineReverb.dispose();
-            offlineDelay.dispose();
-        }, duration);
+            setTimeout(() => {
+                URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                setIsDownloading(false);
+                setDownloadProgress(0);
+            }, 100);
 
-        // Complete progress
-        setDownloadProgress(100);
+            console.log("High-quality download completed successfully!");
 
-        // Convert to WAV
-        const wavBlob = audioBufferToWav(renderedBuffer);
-        const url = URL.createObjectURL(wavBlob);
-
-        // Trigger download
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `${audioFileName.replace(/\.[^/.]+$/, "")}-slowed-reverb.wav`;
-        document.body.appendChild(a);
-        a.click();
-        
-        // Clean up
-        setTimeout(() => {
-            URL.revokeObjectURL(url);
-            document.body.removeChild(a);
+        } catch (error) {
+            console.error("Download failed:", error);
+            setAudioLoadError(`Download failed: ${error.message || error}`);
             setIsDownloading(false);
-        }, 100);
-
-    } catch (error) {
-        console.error("Offline render failed:", error);
-        setAudioLoadError("Download failed. Please try again.");
-        setIsDownloading(false);
-        setDownloadProgress(0);
-    }
+            setDownloadProgress(0);
+        }
     }, [isAudioReady, slowRate, reverbDecay, audioFileName, isDownloading, wetLevel, preDelay, isEffectActive]);
 
     return {
@@ -469,7 +541,6 @@ const UploadSection = ({ onFileUpload, isLoading, fileSizeWarning }) => {
         <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-gray-50 font-inter">
             <div className="text-center mb-12">
                 <div className="flex items-center justify-center gap-4 mb-6">
-                    
                     <h1 className="text-6xl font-bold text-gray-900">Slowed Reverb Studio</h1>
                 </div>
                 <p className="text-gray-600 text-xl max-w-2xl mx-auto">
@@ -604,8 +675,6 @@ const SlowedReverbContent = () => {
 
     const toggleEffectActive = useCallback(() => {
         setIsEffectActive(prev => !prev);
-        // The playbackRate and wet level changes are handled by useEffects in useSlowedReverbProcessor
-        // that watch `slowRate`, `wetLevel`, and `isEffectActive`.
     }, [setIsEffectActive]);
     
     if (!hasAudioFile) {
