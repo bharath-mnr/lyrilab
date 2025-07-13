@@ -1,395 +1,468 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { Upload, Play, Pause, Power, Loader2 } from 'lucide-react';
+import { Upload, Play, Pause, Power, Loader2, Volume2, Download } from 'lucide-react';
 
-// --- Custom Hook for Bass Boosting Logic ---
+// --- Custom Hook for Advanced Bass Boosting Logic ---
 const useBassBooster = () => {
-    // AudioContext instance, created on first user interaction.
-    // This is crucial for browser autoplay policies and ensuring the context is active.
+    // Refs for Web Audio API nodes
     const audioContextRef = useRef(null);
-    // Current audio source node (BufferSourceNode). Needs to be recreated for each playback
-    // because an AudioBufferSourceNode can only be started once.
     const sourceNodeRef = useRef(null);
-    // BiquadFilter node for bass boosting.
-    const filterNodeRef = useRef(null);
-    // Analyser node for frequency data visualization.
-    const analyserNodeRef = useRef(null);
-    // Gain node for overall volume control (though not exposed in UI yet).
-    const gainNodeRef = useRef(null);
-    // Stores the decoded audio buffer.
     const audioBufferRef = useRef(null);
 
-    // State variables for UI feedback and control.
-    const [isReady, setIsReady] = useState(false); // True when an audio file is loaded and decoded.
-    const [isPlaying, setIsPlaying] = useState(false); // True when audio is actively playing.
-    const [isLoading, setIsLoading] = useState(false); // True when an audio file is being loaded/decoded.
-    const [error, setError] = useState(null); // Stores any error messages for user feedback.
-    const [isFilterActive, setIsFilterActive] = useState(true); // Controls whether the bass filter is applied.
-    const [frequency, setFrequency] = useState(120); // Frequency cutoff for the bass filter (Hz), typical bass range.
-    const [boost, setBoost] = useState(8); // Q factor for the bass filter (resonance/boost).
+    // Core audio processing nodes
+    const analyserNodeRef = useRef(null);
+    const filterNodeRef = useRef(null);
+    const compressorNodeRef = useRef(null);
+    const masterGainNodeRef = useRef(null);
+    const wetGainNodeRef = useRef(null);
+    const dryGainNodeRef = useRef(null);
 
-    /**
-     * Sets up the core audio graph (filter, analyser, gain nodes and their connections).
-     * This function ensures the main audio processing chain is correctly configured.
-     * It does NOT create the source node, as that is handled just before playback starts.
-     */
-    const setupAudioGraph = useCallback(() => {
-        // Initialize AudioContext if it doesn't exist. This is typically triggered by a user gesture.
-        if (!audioContextRef.current) {
-            audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+    // State management
+    const [isReady, setIsReady] = useState(false);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isRendering, setIsRendering] = useState(false);
+    const [error, setError] = useState(null);
+    
+    // Audio parameter state
+    const [isFilterActive, setIsFilterActive] = useState(true);
+    const [frequency, setFrequency] = useState(80);
+    const [boost, setBoost] = useState(12);
+    const [masterVolume, setMasterVolume] = useState(0.8);
+
+    const setupAudioGraph = useCallback((context, source) => {
+        // This function sets up the graph for a given context (online or offline)
+        const filter = context.createBiquadFilter();
+        filter.type = 'peaking';
+        filter.frequency.value = frequency;
+        filter.gain.value = boost;
+        filter.Q.value = 1;
+
+        const compressor = context.createDynamicsCompressor();
+        compressor.threshold.value = -30;
+        compressor.knee.value = 30;
+        compressor.ratio.value = 6;
+        compressor.attack.value = 0.01;
+        compressor.release.value = 0.25;
+
+        const analyser = context.createAnalyser();
+        analyser.fftSize = 256;
+
+        const masterGain = context.createGain();
+        masterGain.gain.value = masterVolume;
+
+        const wetGain = context.createGain();
+        const dryGain = context.createGain();
+
+        // Connect graph
+        source.connect(analyser);
+        
+        analyser.connect(filter);
+        filter.connect(compressor);
+        compressor.connect(wetGain);
+        wetGain.connect(masterGain);
+
+        analyser.connect(dryGain);
+        dryGain.connect(masterGain);
+
+        masterGain.connect(context.destination);
+
+        // For live playback, store references to the nodes
+        if (context instanceof AudioContext) {
+            filterNodeRef.current = filter;
+            compressorNodeRef.current = compressor;
+            analyserNodeRef.current = analyser;
+            masterGainNodeRef.current = masterGain;
+            wetGainNodeRef.current = wetGain;
+            dryGainNodeRef.current = dryGain;
         }
-        const context = audioContextRef.current;
+        
+        // Return gains for bypass control
+        return { wetGain, dryGain };
 
-        // Create or reconfigure the BiquadFilter node.
-        if (!filterNodeRef.current) {
-            filterNodeRef.current = context.createBiquadFilter();
-        }
-        filterNodeRef.current.type = 'lowpass'; // Emphasizes lower frequencies.
-        filterNodeRef.current.frequency.value = frequency; // Set cutoff dynamically.
-        filterNodeRef.current.Q.value = boost; // Set Q factor dynamically for resonance.
+    }, [frequency, boost, masterVolume]);
 
-        // Create or reconfigure the Analyser node.
-        if (!analyserNodeRef.current) {
-            analyserNodeRef.current = context.createAnalyser();
-            analyserNodeRef.current.fftSize = 256; // Defines the number of frequency bins for visualization.
-        }
-
-        // Create or reconfigure the Gain node.
-        if (!gainNodeRef.current) {
-            gainNodeRef.current = context.createGain();
-            gainNodeRef.current.gain.value = 1; // Default volume.
-        }
-
-        // Disconnect any existing connections from these nodes to prevent multiple connections
-        // when `setupAudioGraph` might be called multiple times (e.g., on filter toggle).
-        filterNodeRef.current.disconnect();
-        analyserNodeRef.current.disconnect();
-        gainNodeRef.current.disconnect();
-
-        // Connect the graph: Filter -> Analyser -> Gain -> Output.
-        // The source node will connect to either the filter or the analyser directly, depending on `isFilterActive`.
-        if (isFilterActive) {
-            filterNodeRef.current.connect(analyserNodeRef.current);
-        }
-        analyserNodeRef.current.connect(gainNodeRef.current);
-        gainNodeRef.current.connect(context.destination);
-
-    }, [frequency, boost, isFilterActive]); // Dependencies ensure graph updates when these parameters change.
-
-    /**
-     * Loads and decodes an audio file. Includes error handling and loading state management.
-     * @param {File} file - The audio file to load.
-     */
     const loadAudioFile = useCallback(async (file) => {
-        if (!file) return; // Quality control: Exit if no file is provided.
-        setIsLoading(true); // Set loading state for UI feedback.
-        setError(null); // Clear previous errors.
-        setIsPlaying(false); // Stop any current playback before loading new audio.
-        setIsReady(false); // Mark as not ready until new audio is decoded.
-
-        // Ensure AudioContext is initialized and resumed. Browsers require user gestures
-        // to start or resume an AudioContext to prevent unwanted autoplay.
-        if (!audioContextRef.current) {
-            audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+        if (!file) return;
+        setIsLoading(true);
+        setError(null);
+        if (isPlaying) {
+            sourceNodeRef.current?.stop();
+            setIsPlaying(false);
         }
-        if (audioContextRef.current.state === 'suspended') {
-            await audioContextRef.current.resume().catch(e => {
-                console.error("Failed to resume AudioContext:", e);
-                setError("Browser prevented audio playback. Please interact with the page to enable audio.");
-            });
-        }
+        setIsReady(false);
 
         try {
-            const arrayBuffer = await file.arrayBuffer(); // Read file content as an ArrayBuffer.
-            // Decode the audio data into an AudioBuffer. This is an asynchronous operation.
+            // Ensure AudioContext is initialized and running
+            if (!audioContextRef.current) {
+                audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            await audioContextRef.current.resume();
+
+            const arrayBuffer = await file.arrayBuffer();
+            
+            // Add a check for an empty buffer before attempting to decode
+            if (!arrayBuffer || arrayBuffer.byteLength === 0) {
+                throw new Error("Audio file is empty or could not be read.");
+            }
+
             audioBufferRef.current = await audioContextRef.current.decodeAudioData(arrayBuffer);
-            setIsReady(true); // Mark as ready for playback.
+            setIsReady(true);
         } catch (e) {
-            console.error("Error decoding audio data:", e); // Log detailed error for debugging.
-            setError("Couldn't process this audio file. Please try another one (e.g., MP3 or WAV)."); // User-friendly error message.
+            console.error("Error decoding audio data:", e);
+            // Provide a more detailed error message to the user
+            let friendlyError = "Couldn't process this audio file. Please try a different file (MP3, WAV, FLAC are best). The file might be corrupted or in an unsupported format.";
+            if (e instanceof DOMException) {
+                friendlyError = `Error decoding audio data: ${e.message}. This often happens with unsupported file types or corrupted files.`;
+            } else if (e.message.includes("empty")) {
+                friendlyError = e.message;
+            }
+            setError(friendlyError);
         } finally {
-            setIsLoading(false); // Always reset loading state.
+            setIsLoading(false);
         }
-    }, []);
+    }, [isPlaying]);
 
-    /**
-     * Toggles audio playback (play/pause). Handles creating new source nodes and connecting them.
-     */
     const togglePlayback = useCallback(async () => {
-        // Quality control: Prevent actions if not ready or still loading.
         if (!isReady || isLoading) return;
-
-        // Ensure AudioContext is initialized and resumed before attempting playback.
-        if (!audioContextRef.current) {
-            audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (audioContextRef.current.state === 'suspended') {
-            await audioContextRef.current.resume().catch(e => {
-                console.error("Failed to resume AudioContext:", e);
-                setError("Browser prevented audio playback. Please interact with the page to enable audio.");
-            });
-            // If context remains suspended, prevent playback
-            if (audioContextRef.current.state !== 'running') return;
-        }
+        await audioContextRef.current.resume();
 
         if (isPlaying) {
-            // If currently playing, stop the source node.
             sourceNodeRef.current?.stop();
-            sourceNodeRef.current?.disconnect(); // Disconnect to clean up the graph.
-            sourceNodeRef.current = null; // Clear reference to allow garbage collection and new creation.
-            setIsPlaying(false); // Update UI state.
+            setIsPlaying(false);
         } else {
-            // If not playing, prepare and start playback.
-            if (!audioBufferRef.current) {
-                setError("No audio buffer loaded. Please upload an audio file.");
-                return; // Quality control: Exit if no audio data is available.
-            }
-
-            // Create a NEW AudioBufferSourceNode each time playback starts.
-            // This is a fundamental requirement of the Web Audio API.
             sourceNodeRef.current = audioContextRef.current.createBufferSource();
-            sourceNodeRef.current.buffer = audioBufferRef.current; // Assign the loaded audio buffer.
-            sourceNodeRef.current.loop = true; // Loop the audio for continuous playback.
+            sourceNodeRef.current.buffer = audioBufferRef.current;
+            sourceNodeRef.current.loop = true;
 
-            // Set up the audio graph connections (filter, analyser, gain).
-            setupAudioGraph();
-
-            // Connect the source node to the appropriate starting point in the graph
-            // based on whether the filter is active.
+            const { wetGain, dryGain } = setupAudioGraph(audioContextRef.current, sourceNodeRef.current);
+            
             if (isFilterActive) {
-                sourceNodeRef.current.connect(filterNodeRef.current);
+                wetGain.gain.value = 1;
+                dryGain.gain.value = 0;
             } else {
-                sourceNodeRef.current.connect(analyserNodeRef.current);
+                wetGain.gain.value = 0;
+                dryGain.gain.value = 1;
             }
 
-            // Start playback.
             sourceNodeRef.current.start();
-            setIsPlaying(true); // Update UI state.
+            sourceNodeRef.current.onended = () => setIsPlaying(false);
+            setIsPlaying(true);
         }
-    }, [isReady, isLoading, isPlaying, isFilterActive, setupAudioGraph]);
+    }, [isReady, isLoading, isPlaying, setupAudioGraph, isFilterActive]);
+    
+    // --- DOWNLOAD LOGIC ---
+    const downloadProcessedAudio = useCallback(async () => {
+        if (!audioBufferRef.current || isRendering) return;
+        setIsRendering(true);
+        setError(null);
 
-    // Effect to update filter settings dynamically when frequency or boost changes.
-    // `setTargetAtTime` is used for smooth parameter transitions, improving audio quality.
+        try {
+            const offlineContext = new OfflineAudioContext(
+                audioBufferRef.current.numberOfChannels,
+                audioBufferRef.current.length,
+                audioBufferRef.current.sampleRate
+            );
+
+            const offlineSource = offlineContext.createBufferSource();
+            offlineSource.buffer = audioBufferRef.current;
+
+            const { wetGain, dryGain } = setupAudioGraph(offlineContext, offlineSource);
+
+            if (isFilterActive) {
+                wetGain.gain.value = 1;
+                dryGain.gain.value = 0;
+            } else {
+                wetGain.gain.value = 1; // When bypassed, render the original
+                dryGain.gain.value = 1;
+            }
+            
+            offlineSource.start();
+            const renderedBuffer = await offlineContext.startRendering();
+            
+            // Convert AudioBuffer to WAV blob
+            const wavBlob = bufferToWave(renderedBuffer);
+            
+            // Trigger download
+            const url = URL.createObjectURL(wavBlob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'bass-boosted-track.wav';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove();
+
+        } catch(e) {
+            console.error("Error rendering audio:", e);
+            setError("Failed to render audio for download.");
+        } finally {
+            setIsRendering(false);
+        }
+    }, [audioBufferRef, isRendering, setupAudioGraph, isFilterActive]);
+
+    // Helper to convert AudioBuffer to a WAV file (Blob)
+    function bufferToWave(abuffer) {
+        let numOfChan = abuffer.numberOfChannels,
+            length = abuffer.length * numOfChan * 2 + 44,
+            buffer = new ArrayBuffer(length),
+            view = new DataView(buffer),
+            channels = [], i, sample,
+            offset = 0,
+            pos = 0;
+
+        // write WAVE header
+        setUint32(0x46464952);                         // "RIFF"
+        setUint32(length - 8);                         // file length - 8
+        setUint32(0x45564157);                         // "WAVE"
+
+        setUint32(0x20746d66);                         // "fmt " chunk
+        setUint32(16);                                 // length = 16
+        setUint16(1);                                  // PCM (uncompressed)
+        setUint16(numOfChan);
+        setUint32(abuffer.sampleRate);
+        setUint32(abuffer.sampleRate * 2 * numOfChan); // avg. bytes/sec
+        setUint16(numOfChan * 2);                      // block-align
+        setUint16(16);                                 // 16-bit audio
+
+        setUint32(0x61746164);                         // "data" - chunk
+        setUint32(length - pos - 4);                   // chunk length
+
+        // write interleaved data
+        for(i = 0; i < abuffer.numberOfChannels; i++)
+            channels.push(abuffer.getChannelData(i));
+
+        while(pos < length) {
+            for(i = 0; i < numOfChan; i++) {             // interleave channels
+                sample = Math.max(-1, Math.min(1, channels[i][offset])); // clamp
+                sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0; // scale to 16-bit signed int
+                view.setInt16(pos, sample, true);          // write 16-bit sample
+                pos += 2;
+            }
+            offset++                                     // next source sample
+        }
+
+        function setUint16(data) {
+            view.setUint16(pos, data, true);
+            pos += 2;
+        }
+
+        function setUint32(data) {
+            view.setUint32(pos, data, true);
+            pos += 4;
+        }
+
+        return new Blob([buffer], {type: "audio/wav"});
+    }
+
+
     useEffect(() => {
-        if (filterNodeRef.current && audioContextRef.current && audioContextRef.current.state === 'running') {
-            filterNodeRef.current.frequency.setTargetAtTime(frequency, audioContextRef.current.currentTime, 0.01);
-            filterNodeRef.current.Q.setTargetAtTime(boost, audioContextRef.current.currentTime, 0.01);
+        if (isPlaying && wetGainNodeRef.current && dryGainNodeRef.current) {
+            const context = audioContextRef.current;
+            if (isFilterActive) {
+                wetGainNodeRef.current.gain.setTargetAtTime(1, context.currentTime, 0.015);
+                dryGainNodeRef.current.gain.setTargetAtTime(0, context.currentTime, 0.015);
+            } else {
+                wetGainNodeRef.current.gain.setTargetAtTime(0, context.currentTime, 0.015);
+                dryGainNodeRef.current.gain.setTargetAtTime(1, context.currentTime, 0.015);
+            }
         }
-    }, [frequency, boost]);
+    }, [isFilterActive, isPlaying]);
 
-    // Effect to handle filter bypass toggle.
-    // When the filter state changes while playing, we stop and restart playback
-    // to correctly re-route the audio graph. A small timeout ensures proper disconnection.
     useEffect(() => {
-        if (isPlaying) {
-            togglePlayback(); // Stop current playback.
-            setTimeout(() => togglePlayback(), 50); // Restart with new graph connections after a slight delay.
+        if (audioContextRef.current?.state === 'running') {
+            const context = audioContextRef.current;
+            if (filterNodeRef.current) {
+                filterNodeRef.current.frequency.setTargetAtTime(frequency, context.currentTime, 0.01);
+                filterNodeRef.current.gain.setTargetAtTime(boost, context.currentTime, 0.01);
+            }
+            if (masterGainNodeRef.current) {
+                masterGainNodeRef.current.gain.setTargetAtTime(masterVolume, context.currentTime, 0.01);
+            }
         }
-    }, [isFilterActive]); // eslint-disable-line react-hooks/exhaustive-deps -- togglePlayback dependency would cause infinite loop if included here.
+    }, [frequency, boost, masterVolume]);
 
-    /**
-     * Retrieves frequency data from the analyser node for visualization.
-     * @returns {Uint8Array} - An array of frequency data (0-255 values).
-     */
     const getFrequencyData = useCallback(() => {
         if (analyserNodeRef.current && isPlaying) {
-            const bufferLength = analyserNodeRef.current.frequencyBinCount;
-            const dataArray = new Uint8Array(bufferLength);
-            analyserNodeRef.current.getByteFrequencyData(dataArray); // Populates dataArray with frequency data.
+            const dataArray = new Uint8Array(analyserNodeRef.current.frequencyBinCount);
+            analyserNodeRef.current.getByteFrequencyData(dataArray);
             return dataArray;
         }
-        // Return a silent array if not playing or analyser not ready, ensuring visualizer doesn't break.
         return new Uint8Array(128).fill(0);
     }, [isPlaying]);
 
     return {
-        loadAudioFile,
-        togglePlayback,
-        getFrequencyData,
-        isReady,
-        isPlaying,
-        isLoading,
-        error,
-        isFilterActive,
-        setIsFilterActive,
-        frequency,
-        setFrequency,
-        boost,
-        setBoost,
+        loadAudioFile, togglePlayback, getFrequencyData, downloadProcessedAudio,
+        isReady, isPlaying, isLoading, isRendering, error,
+        isFilterActive, setIsFilterActive,
+        frequency, setFrequency,
+        boost, setBoost,
+        masterVolume, setMasterVolume,
     };
 };
 
 // --- 3D Visualizer Component ---
 const BassVisualizer = ({ getFrequencyData, boost, isPlaying }) => {
-    const mountRef = useRef(null); // Ref for the DOM element where Three.js canvas will be mounted.
-    const animationFrameId = useRef(null); // Stores the requestAnimationFrame ID for cleanup.
-    const orbRef = useRef(null); // Ref for the main 3D orb object.
+    const mountRef = useRef(null);
+    const animationFrameId = useRef(null);
+    const orbRef = useRef(null);
+    const originalPositionsRef = useRef(null);
 
     useEffect(() => {
         const mount = mountRef.current;
-        if (!mount) return; // Quality control: Ensure mount ref is available before proceeding.
+        if (!mount) return;
 
-        // Scene, Camera, Renderer setup for Three.js.
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, mount.clientWidth / mount.clientHeight, 0.1, 1000);
-        camera.position.z = 25; // Position camera back to see the orb.
+        camera.position.z = 20;
 
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); // Antialiasing for smooth edges, alpha for transparent background.
-        renderer.setSize(mount.clientWidth, mount.clientHeight); // Set renderer size to match parent container.
-        renderer.setPixelRatio(window.devicePixelRatio); // Adjust for high-DPI screens for better visual quality.
-        mount.appendChild(renderer.domElement); // Add canvas to DOM.
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(mount.clientWidth, mount.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        mount.appendChild(renderer.domElement);
 
-        // OrbitControls allow user to rotate the camera with mouse/touch gestures.
-        // This enhances interactivity and responsiveness.
         const controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true; // Smooth camera movement.
-        controls.enablePan = false; // Disable panning.
-        controls.enableZoom = false; // Disable zooming.
+        controls.enableDamping = true;
+        controls.enablePan = false;
+        controls.enableZoom = false;
 
-        // The Core "Bass Orb" - an Icosahedron (a 20-sided polygon).
-        const geometry = new THREE.IcosahedronGeometry(5, 3); // Radius 5, detail 3 for more vertices for a smoother shape.
+        const geometry = new THREE.IcosahedronGeometry(7, 5);
+        originalPositionsRef.current = geometry.attributes.position.clone();
+        
         const material = new THREE.MeshStandardMaterial({
-            color: 0x00ffff, // Cyan base color.
-            emissive: 0x00ffff, // Emissive color for glow effect.
-            emissiveIntensity: 0, // Initial glow intensity (starts off).
-            metalness: 0.8, // High metalness for a reflective look.
-            roughness: 0.2, // Low roughness for a shiny appearance.
-            wireframe: true, // Display as a wireframe.
+            color: 0x00ffff, emissive: 0x00ffff, emissiveIntensity: 0,
+            metalness: 0.8, roughness: 0.2, wireframe: true,
         });
         orbRef.current = new THREE.Mesh(geometry, material);
         scene.add(orbRef.current);
 
-        // Ambient Light to illuminate the scene generally.
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.1); // Soft white light.
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
         scene.add(ambientLight);
-
-        // Point Light for reflections and dynamic lighting effects.
-        const pointLight = new THREE.PointLight(0x00ffff, 1, 100); // Cyan light, intensity 1, distance 100.
-        pointLight.position.set(10, 10, 10); // Position the light.
+        const pointLight = new THREE.PointLight(0x00ffff, 1, 100);
+        pointLight.position.set(10, 10, 10);
         scene.add(pointLight);
 
-        // Animation loop for the 3D visualizer.
         const animate = () => {
-            animationFrameId.current = requestAnimationFrame(animate); // Request next frame for smooth animation.
+            animationFrameId.current = requestAnimationFrame(animate);
 
-            if (isPlaying && orbRef.current) {
-                const freqData = getFrequencyData(); // Get current frequency data from the audio hook.
-                // Calculate an average "bass" value from the lowest frequency bins.
-                const bassBins = Math.floor(freqData.length * 0.1); // Consider lowest 10% of bins as bass frequencies.
+            if (isPlaying && orbRef.current && originalPositionsRef.current) {
+                const freqData = getFrequencyData();
+                const bassBins = Math.floor(freqData.length * 0.1);
                 let bassValue = 0;
-                for (let i = 0; i < bassBins; i++) {
-                    bassValue += freqData[i];
-                }
+                for (let i = 0; i < bassBins; i++) bassValue += freqData[i];
                 bassValue /= bassBins;
-                const normalizedBass = bassValue / 255; // Normalize to 0-1 range for easier scaling.
+                const normalizedBass = bassValue / 255;
 
-                // --- Visual Reactions based on bass and boost ---
-                // 1. Scale pulsation: Orb expands and contracts with bass intensity, influenced by boost.
-                const targetScale = 1 + normalizedBass * (boost / 10);
-                orbRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.1); // Lerp for smooth transitions.
+                const positions = orbRef.current.geometry.attributes.position;
+                const originalPositions = originalPositionsRef.current;
+                
+                // Clamp displacement to prevent visual artifacts from going "out of the park"
+                const displacementStrength = THREE.MathUtils.clamp(normalizedBass * (boost / 2), 0, 5);
+                
+                for (let i = 0; i < positions.count; i++) {
+                    const ox = originalPositions.getX(i);
+                    const oy = originalPositions.getY(i);
+                    const oz = originalPositions.getZ(i);
+                    const vertexVector = new THREE.Vector3(ox, oy, oz).normalize();
+                    const displacement = vertexVector.multiplyScalar(displacementStrength);
+                    positions.setXYZ(i, ox + displacement.x, oy + displacement.y, oz + displacement.z);
+                }
+                positions.needsUpdate = true;
 
-                // 2. Glow (emissive intensity): Orb glows brighter with stronger bass.
-                orbRef.current.material.emissiveIntensity = THREE.MathUtils.lerp(
-                    orbRef.current.material.emissiveIntensity,
-                    normalizedBass * 1.5, // Max glow intensity.
-                    0.1
-                );
-
-                // 3. Color shift: Orb color shifts based on boost amount (more boost, more vibrant cyan).
-                const targetColor = new THREE.Color().setHSL(0.5, 1, 0.5 + (boost / 30)); // Hue 0.5 is cyan.
+                orbRef.current.material.emissiveIntensity = THREE.MathUtils.lerp(orbRef.current.material.emissiveIntensity, normalizedBass * 1.5, 0.1);
+                const targetColor = new THREE.Color().setHSL(0.5, 1, 0.5 + (boost / 40));
                 orbRef.current.material.color.lerp(targetColor, 0.1);
                 orbRef.current.material.emissive.lerp(targetColor, 0.1);
                 pointLight.color.lerp(targetColor, 0.1);
-
-
-                // 4. Continuous Rotation for dynamic visual appeal.
                 orbRef.current.rotation.x += 0.001;
                 orbRef.current.rotation.y += 0.001;
+
             } else if (orbRef.current) {
-                // If not playing, smoothly return orb to its idle state.
-                orbRef.current.scale.lerp(new THREE.Vector3(1, 1, 1), 0.1); // Return to original scale.
-                orbRef.current.material.emissiveIntensity = THREE.MathUtils.lerp(orbRef.current.material.emissiveIntensity, 0, 0.1); // Fade out glow.
+                orbRef.current.material.emissiveIntensity = THREE.MathUtils.lerp(orbRef.current.material.emissiveIntensity, 0, 0.1);
+                const positions = orbRef.current.geometry.attributes.position;
+                const originalPositions = originalPositionsRef.current;
+                 for (let i = 0; i < positions.count; i++) {
+                    const ox = originalPositions.getX(i), oy = originalPositions.getY(i), oz = originalPositions.getZ(i);
+                    const currentX = positions.getX(i), currentY = positions.getY(i), currentZ = positions.getZ(i);
+                    positions.setXYZ(
+                        i,
+                        THREE.MathUtils.lerp(currentX, ox, 0.1),
+                        THREE.MathUtils.lerp(currentY, oy, 0.1),
+                        THREE.MathUtils.lerp(currentZ, oz, 0.1)
+                    );
+                }
+                positions.needsUpdate = true;
             }
 
-            controls.update(); // Update OrbitControls for smooth camera interaction.
-            renderer.render(scene, camera); // Render the scene.
+            controls.update();
+            renderer.render(scene, camera);
         };
+        animate();
 
-        animate(); // Start the animation loop.
-
-        // Handle window resizing to make the visualizer fully responsive.
         const handleResize = () => {
-            camera.aspect = mount.clientWidth / mount.clientHeight; // Adjust camera aspect ratio.
-            camera.updateProjectionMatrix(); // Update camera projection matrix after aspect ratio change.
-            renderer.setSize(mount.clientWidth, mount.clientHeight); // Resize renderer to fill the parent.
+            camera.aspect = mount.clientWidth / mount.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(mount.clientWidth, mount.clientHeight);
         };
         window.addEventListener('resize', handleResize);
 
-        // Cleanup function for useEffect. This is crucial for preventing memory leaks
-        // when the component unmounts or dependencies change.
         return () => {
-            window.removeEventListener('resize', handleResize); // Remove resize listener.
-            if (animationFrameId.current) {
-                cancelAnimationFrame(animationFrameId.current); // Cancel the animation loop.
-            }
-            if (mount && renderer.domElement) {
-                mount.removeChild(renderer.domElement); // Remove canvas from DOM.
-            }
-            // Dispose of Three.js resources to free up GPU memory.
-            geometry.dispose();
-            material.dispose();
-            renderer.dispose();
-            controls.dispose();
+            window.removeEventListener('resize', handleResize);
+            cancelAnimationFrame(animationFrameId.current);
+            if (mount && renderer.domElement) mount.removeChild(renderer.domElement);
+            geometry.dispose(); material.dispose(); renderer.dispose(); controls.dispose();
         };
-    }, [getFrequencyData, boost, isPlaying]); // Dependencies ensure effect re-runs when these props change.
+    }, [getFrequencyData, boost, isPlaying]);
 
-    // The visualizer container div. Tailwind classes ensure it's responsive.
     return <div ref={mountRef} className="w-full h-80 md:h-96 rounded-lg cursor-grab active:cursor-grabbing bg-black/20" />;
 };
 
-
 // --- Main Studio Component ---
-function BassBoosterStudio() {
-    // Destructure values and functions from the custom bass booster hook.
+export default function BassBoosterStudio() {
     const {
-        loadAudioFile, togglePlayback, getFrequencyData,
-        isReady, isPlaying, isLoading, error,
+        loadAudioFile, togglePlayback, getFrequencyData, downloadProcessedAudio,
+        isReady, isPlaying, isLoading, isRendering, error,
         isFilterActive, setIsFilterActive,
         frequency, setFrequency,
-        boost, setBoost
+        boost, setBoost,
+        masterVolume, setMasterVolume,
     } = useBassBooster();
 
-    const fileInputRef = useRef(null); // Ref for the hidden file input element.
-    const [fileName, setFileName] = useState(''); // State to display the loaded file name.
+    const fileInputRef = useRef(null);
+    const [fileName, setFileName] = useState('');
 
-    // Handler for when a file is selected.
+    const presets = {
+        "Subtle Warmth": { frequency: 80, boost: 6 },
+        "Punchy Kick": { frequency: 100, boost: 12 },
+        "Deep Rumble": { frequency: 60, boost: 15 },
+        "Max Rumble": { frequency: 70, boost: 20 },
+    };
+
+    const applyPreset = (preset) => {
+        setFrequency(preset.frequency);
+        setBoost(preset.boost);
+    };
+
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            setFileName(file.name); // Set the file name for display.
-            loadAudioFile(file); // Load the audio file using the hook's function.
+            setFileName(file.name);
+            loadAudioFile(file);
         }
     };
 
-    // Handler to programmatically trigger the hidden file input click.
-    const handleUploadClick = () => {
-        fileInputRef.current.click();
-    };
+    const handleUploadClick = () => fileInputRef.current.click();
 
     return (
-        // Main container with responsive padding and centering.
         <div className="min-h-screen bg-gray-900 text-white font-sans flex items-center justify-center p-4">
-            {/* Content card with responsive max-width, padding, and styling. */}
             <div className="w-full max-w-2xl bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl shadow-cyan-500/10 ring-1 ring-white/10 p-6 md:p-8">
-
-                {/* Header section with responsive text sizing. */}
                 <header className="text-center mb-6">
                     <h1 className="text-3xl md:text-4xl font-bold text-cyan-300">Bass Booster Studio</h1>
-                    <p className="text-gray-400 mt-1">Upload audio and feel the bass.</p>
+                    <p className="text-gray-400 mt-1">Upload, tweak, and download your perfect bass sound.</p>
                 </header>
 
-                {/* Initial upload state: shown when no audio is loaded/loading. */}
                 {!isReady && !isLoading && (
                     <div className="text-center">
                         <button onClick={handleUploadClick} className="w-full flex flex-col items-center justify-center p-10 border-2 border-dashed border-gray-600 rounded-xl hover:border-cyan-400 hover:bg-gray-800 transition-colors">
@@ -401,7 +474,6 @@ function BassBoosterStudio() {
                     </div>
                 )}
 
-                {/* Loading state: shown while audio is being processed. */}
                 {isLoading && (
                     <div className="flex items-center justify-center p-10">
                         <Loader2 size={48} className="animate-spin text-cyan-400 mr-4" />
@@ -409,52 +481,64 @@ function BassBoosterStudio() {
                     </div>
                 )}
 
-                {/* Error display: provides user feedback on issues. */}
-                {error && <p className="text-center text-red-400 p-4">{error}</p>}
+                {error && <p className="text-center text-red-400 p-4 bg-red-900/50 rounded-md">{error}</p>}
 
-                {/* Main studio controls and visualizer: shown when audio is ready. */}
                 {isReady && (
                     <main className="flex flex-col gap-6">
-                        {/* Displays the loaded file name, truncated for long names. */}
                         <p className="text-center text-gray-300 truncate" title={fileName}>
                             Now Loaded: <span className="font-bold text-cyan-400">{fileName}</span>
                         </p>
 
-                        {/* 3D Bass Visualizer component, which is responsive. */}
                         <BassVisualizer getFrequencyData={getFrequencyData} boost={boost} isPlaying={isPlaying} />
 
-                        {/* Control sliders for Frequency and Boost. Uses responsive grid layout. */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center bg-black/20 p-4 rounded-lg">
-                            {/* Frequency Slider */}
-                            <div className="flex flex-col">
-                                <label htmlFor="frequency" className="text-sm font-medium text-cyan-200">Bass Frequency Cutoff</label>
-                                <input id="frequency" type="range" min="40" max="250" step="1" value={frequency} onChange={(e) => setFrequency(Number(e.target.value))} className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-400"/>
-                                <span className="text-xs text-right text-gray-400">{frequency} Hz</span>
-                            </div>
-                            {/* Boost Slider */}
-                            <div className="flex flex-col">
-                                <label htmlFor="boost" className="text-sm font-medium text-cyan-200">Boost / Resonance</label>
-                                <input id="boost" type="range" min="0" max="20" step="0.5" value={boost} onChange={(e) => setBoost(Number(e.target.value))} className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-400"/>
-                                <span className="text-xs text-right text-gray-400">{boost.toFixed(1)}</span>
+                        {/* Presets */}
+                        <div className="bg-black/20 p-3 rounded-lg">
+                            <h3 className="text-sm font-medium text-cyan-200 text-center mb-2">Presets</h3>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                {Object.entries(presets).map(([name, values]) => (
+                                    <button key={name} onClick={() => applyPreset(values)} className="text-xs px-2 py-1.5 bg-gray-700 rounded-md hover:bg-cyan-600 transition-colors">
+                                        {name}
+                                    </button>
+                                ))}
                             </div>
                         </div>
 
-                        {/* Playback and control buttons. Uses flexbox for alignment. */}
+                        {/* Sliders */}
+                        <div className="space-y-4 bg-black/20 p-4 rounded-lg">
+                            <div className="flex flex-col">
+                                <label htmlFor="frequency" className="text-sm font-medium text-cyan-200">Bass Frequency</label>
+                                <input id="frequency" type="range" min="40" max="250" step="1" value={frequency} onChange={(e) => setFrequency(Number(e.target.value))} className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-400"/>
+                                <span className="text-xs text-right text-gray-400">{frequency} Hz</span>
+                            </div>
+                            <div className="flex flex-col">
+                                <label htmlFor="boost" className="text-sm font-medium text-cyan-200">Bass Boost</label>
+                                <input id="boost" type="range" min="0" max="24" step="0.5" value={boost} onChange={(e) => setBoost(Number(e.target.value))} className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-400"/>
+                                <span className="text-xs text-right text-gray-400">+{boost.toFixed(1)} dB</span>
+                            </div>
+                            <div className="flex flex-col">
+                                <label htmlFor="volume" className="text-sm font-medium text-cyan-200 flex items-center gap-2"><Volume2 size={16}/> Master Volume</label>
+                                <input id="volume" type="range" min="0" max="1.5" step="0.05" value={masterVolume} onChange={(e) => setMasterVolume(Number(e.target.value))} className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-400"/>
+                                <span className="text-xs text-right text-gray-400">{Math.round(masterVolume * 100)}%</span>
+                            </div>
+                        </div>
+
+                        {/* Controls */}
                         <div className="flex items-center justify-center gap-4">
-                           {/* Upload New File Button */}
                            <button onClick={handleUploadClick} title="Upload New File" className="p-3 bg-gray-700 rounded-full hover:bg-cyan-600 transition-colors">
                                 <Upload size={20} />
                            </button>
                            <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="audio/*" className="hidden" />
 
-                            {/* Play/Pause Button */}
                             <button onClick={togglePlayback} className="p-4 bg-cyan-500 rounded-full text-black shadow-lg shadow-cyan-500/30 hover:bg-cyan-400 transition-transform hover:scale-105">
                                 {isPlaying ? <Pause size={28} /> : <Play size={28} />}
                             </button>
 
-                            {/* Toggle Bass Booster On/Off */}
-                           <button onClick={() => setIsFilterActive(p => !p)} title={isFilterActive ? 'Disable Booster' : 'Enable Booster'} className={`p-3 rounded-full transition-colors ${isFilterActive ? 'bg-green-600' : 'bg-red-600'}`}>
+                           <button onClick={() => setIsFilterActive(p => !p)} title={isFilterActive ? 'Disable Booster' : 'Enable Booster'} className={`p-3 rounded-full transition-colors ${isFilterActive ? 'bg-green-500 shadow-green-500/20' : 'bg-red-600 shadow-red-500/20'}`}>
                                 <Power size={20} />
+                           </button>
+                           
+                           <button onClick={downloadProcessedAudio} disabled={isRendering} title="Download as WAV" className="p-3 bg-gray-700 rounded-full hover:bg-cyan-600 transition-colors disabled:bg-gray-800 disabled:cursor-not-allowed">
+                                {isRendering ? <Loader2 size={20} className="animate-spin"/> : <Download size={20} />}
                            </button>
                         </div>
                     </main>
@@ -463,6 +547,3 @@ function BassBoosterStudio() {
         </div>
     );
 }
-
-// Export the main component as default.
-export default BassBoosterStudio;
