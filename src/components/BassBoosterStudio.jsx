@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { Upload, Play, Pause, Power, Loader2, Volume2, Download } from 'lucide-react';
+import { Upload, Play, Pause, Power, Loader2, Volume2, Download, Settings } from 'lucide-react';
 
-// --- Custom Hook for Advanced Bass Boosting Logic ---
+// --- Enhanced Custom Hook for Advanced Bass Boosting Logic ---
 const useBassBooster = () => {
     // Refs for Web Audio API nodes
     const audioContextRef = useRef(null);
@@ -12,12 +11,14 @@ const useBassBooster = () => {
 
     // Core audio processing nodes
     const analyserNodeRef = useRef(null);
-    const filterNodeRef = useRef(null);
+    const primaryBassFilterRef = useRef(null);
+    const secondaryBassFilterRef = useRef(null);
+    const subBassFilterRef = useRef(null);
     const compressorNodeRef = useRef(null);
     const masterGainNodeRef = useRef(null);
     const wetGainNodeRef = useRef(null);
     const dryGainNodeRef = useRef(null);
-
+    
     // State management
     const [isReady, setIsReady] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -28,26 +29,42 @@ const useBassBooster = () => {
     // Audio parameter state
     const [isFilterActive, setIsFilterActive] = useState(true);
     const [frequency, setFrequency] = useState(80);
-    const [boost, setBoost] = useState(12);
-    const [masterVolume, setMasterVolume] = useState(0.8);
+    const [boost, setBoost] = useState(15);
+    const [subBoost, setSubBoost] = useState(8);
+    const [masterVolume, setMasterVolume] = useState(0.75);
 
     const setupAudioGraph = useCallback((context, source) => {
-        // This function sets up the graph for a given context (online or offline)
-        const filter = context.createBiquadFilter();
-        filter.type = 'peaking';
-        filter.frequency.value = frequency;
-        filter.gain.value = boost;
-        filter.Q.value = 1;
+        // Primary bass filter (peaking)
+        const primaryBassFilter = context.createBiquadFilter();
+        primaryBassFilter.type = 'peaking';
+        primaryBassFilter.frequency.value = frequency;
+        primaryBassFilter.gain.value = boost;
+        primaryBassFilter.Q.value = 1.2;
 
+        // Secondary bass filter (lowshelf for warmth)
+        const secondaryBassFilter = context.createBiquadFilter();
+        secondaryBassFilter.type = 'lowshelf';
+        secondaryBassFilter.frequency.value = 120;
+        secondaryBassFilter.gain.value = boost * 0.6;
+
+        // Sub-bass filter (highpass to clean up mud, then lowpass for sub emphasis)
+        const subBassFilter = context.createBiquadFilter();
+        subBassFilter.type = 'peaking';
+        subBassFilter.frequency.value = 45;
+        subBassFilter.gain.value = subBoost;
+        subBassFilter.Q.value = 2;
+
+        // Enhanced compressor for better dynamics
         const compressor = context.createDynamicsCompressor();
-        compressor.threshold.value = -30;
+        compressor.threshold.value = -24;
         compressor.knee.value = 30;
-        compressor.ratio.value = 6;
-        compressor.attack.value = 0.01;
-        compressor.release.value = 0.25;
+        compressor.ratio.value = 8;
+        compressor.attack.value = 0.005;
+        compressor.release.value = 0.2;
 
         const analyser = context.createAnalyser();
-        analyser.fftSize = 256;
+        analyser.fftSize = 512;
+        analyser.smoothingTimeConstant = 0.8;
 
         const masterGain = context.createGain();
         masterGain.gain.value = masterVolume;
@@ -55,22 +72,28 @@ const useBassBooster = () => {
         const wetGain = context.createGain();
         const dryGain = context.createGain();
 
-        // Connect graph
+        // Connect main audio graph
         source.connect(analyser);
         
-        analyser.connect(filter);
-        filter.connect(compressor);
+        // Bass processing chain
+        analyser.connect(primaryBassFilter);
+        primaryBassFilter.connect(secondaryBassFilter);
+        secondaryBassFilter.connect(subBassFilter);
+        subBassFilter.connect(compressor);
         compressor.connect(wetGain);
         wetGain.connect(masterGain);
 
+        // Dry signal path
         analyser.connect(dryGain);
         dryGain.connect(masterGain);
 
         masterGain.connect(context.destination);
 
-        // For live playback, store references to the nodes
+        // Store references for live playback
         if (context instanceof AudioContext) {
-            filterNodeRef.current = filter;
+            primaryBassFilterRef.current = primaryBassFilter;
+            secondaryBassFilterRef.current = secondaryBassFilter;
+            subBassFilterRef.current = subBassFilter;
             compressorNodeRef.current = compressor;
             analyserNodeRef.current = analyser;
             masterGainNodeRef.current = masterGain;
@@ -78,15 +101,16 @@ const useBassBooster = () => {
             dryGainNodeRef.current = dryGain;
         }
         
-        // Return gains for bypass control
         return { wetGain, dryGain };
 
-    }, [frequency, boost, masterVolume]);
+    }, [frequency, boost, subBoost, masterVolume]);
 
     const loadAudioFile = useCallback(async (file) => {
         if (!file) return;
         setIsLoading(true);
         setError(null);
+        
+        // Stop any playing audio
         if (isPlaying) {
             sourceNodeRef.current?.stop();
             setIsPlaying(false);
@@ -94,7 +118,6 @@ const useBassBooster = () => {
         setIsReady(false);
 
         try {
-            // Ensure AudioContext is initialized and running
             if (!audioContextRef.current) {
                 audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
             }
@@ -102,7 +125,6 @@ const useBassBooster = () => {
 
             const arrayBuffer = await file.arrayBuffer();
             
-            // Add a check for an empty buffer before attempting to decode
             if (!arrayBuffer || arrayBuffer.byteLength === 0) {
                 throw new Error("Audio file is empty or could not be read.");
             }
@@ -111,10 +133,9 @@ const useBassBooster = () => {
             setIsReady(true);
         } catch (e) {
             console.error("Error decoding audio data:", e);
-            // Provide a more detailed error message to the user
-            let friendlyError = "Couldn't process this audio file. Please try a different file (MP3, WAV, FLAC are best). The file might be corrupted or in an unsupported format.";
+            let friendlyError = "Couldn't process this audio file. Please try a different file (MP3, WAV, FLAC are best).";
             if (e instanceof DOMException) {
-                friendlyError = `Error decoding audio data: ${e.message}. This often happens with unsupported file types or corrupted files.`;
+                friendlyError = `Error decoding audio data: ${e.message}. This often happens with unsupported file types.`;
             } else if (e.message.includes("empty")) {
                 friendlyError = e.message;
             }
@@ -152,7 +173,6 @@ const useBassBooster = () => {
         }
     }, [isReady, isLoading, isPlaying, setupAudioGraph, isFilterActive]);
     
-    // --- DOWNLOAD LOGIC ---
     const downloadProcessedAudio = useCallback(async () => {
         if (!audioBufferRef.current || isRendering) return;
         setIsRendering(true);
@@ -174,22 +194,20 @@ const useBassBooster = () => {
                 wetGain.gain.value = 1;
                 dryGain.gain.value = 0;
             } else {
-                wetGain.gain.value = 1; // When bypassed, render the original
+                wetGain.gain.value = 1;
                 dryGain.gain.value = 1;
             }
             
             offlineSource.start();
             const renderedBuffer = await offlineContext.startRendering();
             
-            // Convert AudioBuffer to WAV blob
             const wavBlob = bufferToWave(renderedBuffer);
             
-            // Trigger download
             const url = URL.createObjectURL(wavBlob);
             const a = document.createElement('a');
             a.style.display = 'none';
             a.href = url;
-            a.download = 'bass-boosted-track.wav';
+            a.download = `bass-enhanced-track.wav`;
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
@@ -203,7 +221,6 @@ const useBassBooster = () => {
         }
     }, [audioBufferRef, isRendering, setupAudioGraph, isFilterActive]);
 
-    // Helper to convert AudioBuffer to a WAV file (Blob)
     function bufferToWave(abuffer) {
         let numOfChan = abuffer.numberOfChannels,
             length = abuffer.length * numOfChan * 2 + 44,
@@ -213,35 +230,33 @@ const useBassBooster = () => {
             offset = 0,
             pos = 0;
 
-        // write WAVE header
-        setUint32(0x46464952);                         // "RIFF"
-        setUint32(length - 8);                         // file length - 8
-        setUint32(0x45564157);                         // "WAVE"
+        setUint32(0x46464952);
+        setUint32(length - 8);
+        setUint32(0x45564157);
 
-        setUint32(0x20746d66);                         // "fmt " chunk
-        setUint32(16);                                 // length = 16
-        setUint16(1);                                  // PCM (uncompressed)
+        setUint32(0x20746d66);
+        setUint32(16);
+        setUint16(1);
         setUint16(numOfChan);
         setUint32(abuffer.sampleRate);
-        setUint32(abuffer.sampleRate * 2 * numOfChan); // avg. bytes/sec
-        setUint16(numOfChan * 2);                      // block-align
-        setUint16(16);                                 // 16-bit audio
+        setUint32(abuffer.sampleRate * 2 * numOfChan);
+        setUint16(numOfChan * 2);
+        setUint16(16);
 
-        setUint32(0x61746164);                         // "data" - chunk
-        setUint32(length - pos - 4);                   // chunk length
+        setUint32(0x61746164);
+        setUint32(length - pos - 4);
 
-        // write interleaved data
         for(i = 0; i < abuffer.numberOfChannels; i++)
             channels.push(abuffer.getChannelData(i));
 
         while(pos < length) {
-            for(i = 0; i < numOfChan; i++) {             // interleave channels
-                sample = Math.max(-1, Math.min(1, channels[i][offset])); // clamp
-                sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0; // scale to 16-bit signed int
-                view.setInt16(pos, sample, true);          // write 16-bit sample
+            for(i = 0; i < numOfChan; i++) {
+                sample = Math.max(-1, Math.min(1, channels[i][offset]));
+                sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0;
+                view.setInt16(pos, sample, true);
                 pos += 2;
             }
-            offset++                                     // next source sample
+            offset++
         }
 
         function setUint16(data) {
@@ -257,7 +272,7 @@ const useBassBooster = () => {
         return new Blob([buffer], {type: "audio/wav"});
     }
 
-
+    // Update filter parameters in real-time
     useEffect(() => {
         if (isPlaying && wetGainNodeRef.current && dryGainNodeRef.current) {
             const context = audioContextRef.current;
@@ -274,15 +289,21 @@ const useBassBooster = () => {
     useEffect(() => {
         if (audioContextRef.current?.state === 'running') {
             const context = audioContextRef.current;
-            if (filterNodeRef.current) {
-                filterNodeRef.current.frequency.setTargetAtTime(frequency, context.currentTime, 0.01);
-                filterNodeRef.current.gain.setTargetAtTime(boost, context.currentTime, 0.01);
+            if (primaryBassFilterRef.current) {
+                primaryBassFilterRef.current.frequency.setTargetAtTime(frequency, context.currentTime, 0.01);
+                primaryBassFilterRef.current.gain.setTargetAtTime(boost, context.currentTime, 0.01);
+            }
+            if (secondaryBassFilterRef.current) {
+                secondaryBassFilterRef.current.gain.setTargetAtTime(boost * 0.6, context.currentTime, 0.01);
+            }
+            if (subBassFilterRef.current) {
+                subBassFilterRef.current.gain.setTargetAtTime(subBoost, context.currentTime, 0.01);
             }
             if (masterGainNodeRef.current) {
                 masterGainNodeRef.current.gain.setTargetAtTime(masterVolume, context.currentTime, 0.01);
             }
         }
-    }, [frequency, boost, masterVolume]);
+    }, [frequency, boost, subBoost, masterVolume]);
 
     const getFrequencyData = useCallback(() => {
         if (analyserNodeRef.current && isPlaying) {
@@ -290,7 +311,7 @@ const useBassBooster = () => {
             analyserNodeRef.current.getByteFrequencyData(dataArray);
             return dataArray;
         }
-        return new Uint8Array(128).fill(0);
+        return new Uint8Array(256).fill(0);
     }, [isPlaying]);
 
     return {
@@ -299,12 +320,13 @@ const useBassBooster = () => {
         isFilterActive, setIsFilterActive,
         frequency, setFrequency,
         boost, setBoost,
+        subBoost, setSubBoost,
         masterVolume, setMasterVolume,
     };
 };
 
-// --- 3D Visualizer Component ---
-const BassVisualizer = ({ getFrequencyData, boost, isPlaying }) => {
+// --- Enhanced 3D Visualizer Component ---
+const BassVisualizer = ({ getFrequencyData, boost, subBoost, isPlaying }) => {
     const mountRef = useRef(null);
     const animationFrameId = useRef(null);
     const orbRef = useRef(null);
@@ -316,32 +338,34 @@ const BassVisualizer = ({ getFrequencyData, boost, isPlaying }) => {
 
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, mount.clientWidth / mount.clientHeight, 0.1, 1000);
-        camera.position.z = 20;
+        camera.position.z = 25;
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(mount.clientWidth, mount.clientHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
         mount.appendChild(renderer.domElement);
 
-        const controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.enablePan = false;
-        controls.enableZoom = false;
-
-        const geometry = new THREE.IcosahedronGeometry(7, 5);
+        // Main orb
+        const geometry = new THREE.IcosahedronGeometry(8, 6);
         originalPositionsRef.current = geometry.attributes.position.clone();
         
         const material = new THREE.MeshStandardMaterial({
-            color: 0x00ffff, emissive: 0x00ffff, emissiveIntensity: 0,
-            metalness: 0.8, roughness: 0.2, wireframe: true,
+            color: 0x00ffff,
+            emissive: 0x00ffff,
+            emissiveIntensity: 0,
+            metalness: 0.9,
+            roughness: 0.1,
+            wireframe: true,
         });
         orbRef.current = new THREE.Mesh(geometry, material);
         scene.add(orbRef.current);
 
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
         scene.add(ambientLight);
-        const pointLight = new THREE.PointLight(0x00ffff, 1, 100);
-        pointLight.position.set(10, 10, 10);
+        
+        const pointLight = new THREE.PointLight(0x00ffff, 1.5, 100);
+        pointLight.position.set(15, 15, 15);
         scene.add(pointLight);
 
         const animate = () => {
@@ -349,41 +373,70 @@ const BassVisualizer = ({ getFrequencyData, boost, isPlaying }) => {
 
             if (isPlaying && orbRef.current && originalPositionsRef.current) {
                 const freqData = getFrequencyData();
-                const bassBins = Math.floor(freqData.length * 0.1);
+                
+                // Calculate bass values
+                const bassBins = Math.floor(freqData.length * 0.15);
+                const subBassBins = Math.floor(freqData.length * 0.08);
+                
                 let bassValue = 0;
+                let subBassValue = 0;
+                
                 for (let i = 0; i < bassBins; i++) bassValue += freqData[i];
+                for (let i = 0; i < subBassBins; i++) subBassValue += freqData[i];
+                
                 bassValue /= bassBins;
+                subBassValue /= subBassBins;
+                
                 const normalizedBass = bassValue / 255;
-
+                const normalizedSubBass = subBassValue / 255;
+                
+                // Update orb geometry
                 const positions = orbRef.current.geometry.attributes.position;
                 const originalPositions = originalPositionsRef.current;
                 
-                // Clamp displacement to prevent visual artifacts from going "out of the park"
-                const displacementStrength = THREE.MathUtils.clamp(normalizedBass * (boost / 2), 0, 5);
+                const bassDisplacement = THREE.MathUtils.clamp(normalizedBass * (boost / 3), 0, 8);
+                const subBassDisplacement = THREE.MathUtils.clamp(normalizedSubBass * (subBoost / 4), 0, 6);
                 
                 for (let i = 0; i < positions.count; i++) {
                     const ox = originalPositions.getX(i);
                     const oy = originalPositions.getY(i);
                     const oz = originalPositions.getZ(i);
+                    
                     const vertexVector = new THREE.Vector3(ox, oy, oz).normalize();
-                    const displacement = vertexVector.multiplyScalar(displacementStrength);
+                    const totalDisplacement = bassDisplacement + subBassDisplacement;
+                    const displacement = vertexVector.multiplyScalar(totalDisplacement);
+                    
                     positions.setXYZ(i, ox + displacement.x, oy + displacement.y, oz + displacement.z);
                 }
                 positions.needsUpdate = true;
 
-                orbRef.current.material.emissiveIntensity = THREE.MathUtils.lerp(orbRef.current.material.emissiveIntensity, normalizedBass * 1.5, 0.1);
-                const targetColor = new THREE.Color().setHSL(0.5, 1, 0.5 + (boost / 40));
+                // Update materials and colors
+                const targetIntensity = (normalizedBass + normalizedSubBass) * 2;
+                orbRef.current.material.emissiveIntensity = THREE.MathUtils.lerp(
+                    orbRef.current.material.emissiveIntensity, 
+                    targetIntensity, 
+                    0.15
+                );
+                
+                const hue = 0.5;
+                const targetColor = new THREE.Color().setHSL(hue, 1, 0.5 + (boost / 50));
                 orbRef.current.material.color.lerp(targetColor, 0.1);
                 orbRef.current.material.emissive.lerp(targetColor, 0.1);
+                
                 pointLight.color.lerp(targetColor, 0.1);
-                orbRef.current.rotation.x += 0.001;
-                orbRef.current.rotation.y += 0.001;
+                pointLight.intensity = 1.5 + (normalizedBass * 2);
+
+                // Rotation
+                orbRef.current.rotation.x += 0.002 + (normalizedBass * 0.01);
+                orbRef.current.rotation.y += 0.002 + (normalizedSubBass * 0.01);
 
             } else if (orbRef.current) {
+                // Rest state
                 orbRef.current.material.emissiveIntensity = THREE.MathUtils.lerp(orbRef.current.material.emissiveIntensity, 0, 0.1);
                 const positions = orbRef.current.geometry.attributes.position;
                 const originalPositions = originalPositionsRef.current;
-                 for (let i = 0; i < positions.count; i++) {
+                
+                for (let i = 0; i < positions.count; i++) {
                     const ox = originalPositions.getX(i), oy = originalPositions.getY(i), oz = originalPositions.getZ(i);
                     const currentX = positions.getX(i), currentY = positions.getY(i), currentZ = positions.getZ(i);
                     positions.setXYZ(
@@ -396,7 +449,6 @@ const BassVisualizer = ({ getFrequencyData, boost, isPlaying }) => {
                 positions.needsUpdate = true;
             }
 
-            controls.update();
             renderer.render(scene, camera);
         };
         animate();
@@ -412,9 +464,11 @@ const BassVisualizer = ({ getFrequencyData, boost, isPlaying }) => {
             window.removeEventListener('resize', handleResize);
             cancelAnimationFrame(animationFrameId.current);
             if (mount && renderer.domElement) mount.removeChild(renderer.domElement);
-            geometry.dispose(); material.dispose(); renderer.dispose(); controls.dispose();
+            geometry.dispose();
+            material.dispose();
+            renderer.dispose();
         };
-    }, [getFrequencyData, boost, isPlaying]);
+    }, [getFrequencyData, boost, subBoost, isPlaying]);
 
     return <div ref={mountRef} className="w-full h-80 md:h-96 rounded-lg cursor-grab active:cursor-grabbing bg-black/20" />;
 };
@@ -427,22 +481,27 @@ export default function BassBoosterStudio() {
         isFilterActive, setIsFilterActive,
         frequency, setFrequency,
         boost, setBoost,
+        subBoost, setSubBoost,
         masterVolume, setMasterVolume,
     } = useBassBooster();
 
     const fileInputRef = useRef(null);
     const [fileName, setFileName] = useState('');
+    const [showAdvanced, setShowAdvanced] = useState(false);
 
     const presets = {
-        "Subtle Warmth": { frequency: 80, boost: 6 },
-        "Punchy Kick": { frequency: 100, boost: 12 },
-        "Deep Rumble": { frequency: 60, boost: 15 },
-        "Max Rumble": { frequency: 70, boost: 20 },
+        "Subtle Warmth": { frequency: 85, boost: 8, subBoost: 4 },
+        "Punchy Bass": { frequency: 95, boost: 15, subBoost: 8 },
+        "Deep Rumble": { frequency: 65, boost: 18, subBoost: 12 },
+        "Sub Monster": { frequency: 75, boost: 20, subBoost: 16 },
+        "Club Thump": { frequency: 80, boost: 16, subBoost: 10 },
+        "808 Style": { frequency: 60, boost: 22, subBoost: 18 },
     };
 
     const applyPreset = (preset) => {
         setFrequency(preset.frequency);
         setBoost(preset.boost);
+        setSubBoost(preset.subBoost);
     };
 
     const handleFileChange = (e) => {
@@ -457,89 +516,192 @@ export default function BassBoosterStudio() {
 
     return (
         <div className="min-h-screen bg-gray-900 text-white font-sans flex items-center justify-center p-4">
-            <div className="w-full max-w-2xl bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl shadow-cyan-500/10 ring-1 ring-white/10 p-6 md:p-8">
+            <div className="w-full max-w-4xl bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl shadow-cyan-500/10 ring-1 ring-white/10 p-6 md:p-8">
                 <header className="text-center mb-6">
-                    <h1 className="text-3xl md:text-4xl font-bold text-cyan-300">Bass Booster Studio</h1>
-                    <p className="text-gray-400 mt-1">Upload, tweak, and download your perfect bass sound.</p>
+                    <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-300 to-purple-400 bg-clip-text text-transparent">
+                        Bass Booster Studio
+                    </h1>
+                    <p className="text-gray-400 mt-2">
+                        Professional bass enhancement tool
+                    </p>
                 </header>
 
                 {!isReady && !isLoading && (
                     <div className="text-center">
-                        <button onClick={handleUploadClick} className="w-full flex flex-col items-center justify-center p-10 border-2 border-dashed border-gray-600 rounded-xl hover:border-cyan-400 hover:bg-gray-800 transition-colors">
-                            <Upload size={48} className="text-cyan-400 mb-2"/>
-                            <span className="font-semibold">Upload Audio File</span>
-                            <span className="text-sm text-gray-500">MP3, WAV, etc.</span>
+                        <button 
+                            onClick={handleUploadClick} 
+                            className="w-full flex flex-col items-center justify-center p-12 border-2 border-dashed border-gray-600 rounded-xl hover:border-cyan-400 hover:bg-gray-800 transition-all duration-300 transform hover:scale-105"
+                        >
+                            <Upload size={56} className="text-cyan-400 mb-4 animate-pulse"/>
+                            <span className="font-semibold text-lg">Upload Audio File</span>
+                            <span className="text-sm text-gray-500 mt-1">MP3, WAV, FLAC, OGG supported</span>
                         </button>
                         <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="audio/*" className="hidden" />
                     </div>
                 )}
 
                 {isLoading && (
-                    <div className="flex items-center justify-center p-10">
-                        <Loader2 size={48} className="animate-spin text-cyan-400 mr-4" />
-                        <span className="text-lg">Analyzing Audio...</span>
+                    <div className="flex items-center justify-center p-12">
+                        <Loader2 size={56} className="animate-spin text-cyan-400 mr-4" />
+                        <span className="text-xl">Analyzing Audio...</span>
                     </div>
                 )}
 
-                {error && <p className="text-center text-red-400 p-4 bg-red-900/50 rounded-md">{error}</p>}
+                {error && (
+                    <div className="text-center text-red-400 p-4 bg-red-900/30 rounded-lg border border-red-500/30">
+                        {error}
+                    </div>
+                )}
 
                 {isReady && (
                     <main className="flex flex-col gap-6">
-                        <p className="text-center text-gray-300 truncate" title={fileName}>
-                            Now Loaded: <span className="font-bold text-cyan-400">{fileName}</span>
-                        </p>
-
-                        <BassVisualizer getFrequencyData={getFrequencyData} boost={boost} isPlaying={isPlaying} />
-
-                        {/* Presets */}
-                        <div className="bg-black/20 p-3 rounded-lg">
-                            <h3 className="text-sm font-medium text-cyan-200 text-center mb-2">Presets</h3>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                                {Object.entries(presets).map(([name, values]) => (
-                                    <button key={name} onClick={() => applyPreset(values)} className="text-xs px-2 py-1.5 bg-gray-700 rounded-md hover:bg-cyan-600 transition-colors">
-                                        {name}
-                                    </button>
-                                ))}
+                        <div className="text-center">
+                            <p className="text-gray-300 truncate mb-2" title={fileName}>
+                                <span className="text-cyan-400 font-bold">{fileName}</span>
+                            </p>
+                            <div className="flex justify-center gap-2">
+                                <span className={`px-2 py-1 rounded-full text-xs ${isFilterActive ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'}`}>
+                                    Bass Boost {isFilterActive ? 'ON' : 'OFF'}
+                                </span>
                             </div>
                         </div>
 
-                        {/* Sliders */}
-                        <div className="space-y-4 bg-black/20 p-4 rounded-lg">
-                            <div className="flex flex-col">
-                                <label htmlFor="frequency" className="text-sm font-medium text-cyan-200">Bass Frequency</label>
-                                <input id="frequency" type="range" min="40" max="250" step="1" value={frequency} onChange={(e) => setFrequency(Number(e.target.value))} className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-400"/>
-                                <span className="text-xs text-right text-gray-400">{frequency} Hz</span>
-                            </div>
-                            <div className="flex flex-col">
-                                <label htmlFor="boost" className="text-sm font-medium text-cyan-200">Bass Boost</label>
-                                <input id="boost" type="range" min="0" max="24" step="0.5" value={boost} onChange={(e) => setBoost(Number(e.target.value))} className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-400"/>
-                                <span className="text-xs text-right text-gray-400">+{boost.toFixed(1)} dB</span>
-                            </div>
-                            <div className="flex flex-col">
-                                <label htmlFor="volume" className="text-sm font-medium text-cyan-200 flex items-center gap-2"><Volume2 size={16}/> Master Volume</label>
-                                <input id="volume" type="range" min="0" max="1.5" step="0.05" value={masterVolume} onChange={(e) => setMasterVolume(Number(e.target.value))} className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-400"/>
-                                <span className="text-xs text-right text-gray-400">{Math.round(masterVolume * 100)}%</span>
-                            </div>
-                        </div>
+                        <BassVisualizer 
+                            getFrequencyData={getFrequencyData}
+                            boost={boost} 
+                            subBoost={subBoost}
+                            isPlaying={isPlaying}
+                        />
 
-                        {/* Controls */}
-                        <div className="flex items-center justify-center gap-4">
-                           <button onClick={handleUploadClick} title="Upload New File" className="p-3 bg-gray-700 rounded-full hover:bg-cyan-600 transition-colors">
+                        {/* Main Controls */}
+                        <div className="flex items-center justify-center gap-4 mb-4">
+                            <button 
+                                onClick={handleUploadClick} 
+                                title="Upload New File" 
+                                className="p-3 bg-gray-700 rounded-full hover:bg-cyan-600 transition-colors"
+                            >
                                 <Upload size={20} />
-                           </button>
-                           <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="audio/*" className="hidden" />
+                            </button>
+                            <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="audio/*" className="hidden" />
 
-                            <button onClick={togglePlayback} className="p-4 bg-cyan-500 rounded-full text-black shadow-lg shadow-cyan-500/30 hover:bg-cyan-400 transition-transform hover:scale-105">
-                                {isPlaying ? <Pause size={28} /> : <Play size={28} />}
+                            <button 
+                                onClick={togglePlayback} 
+                                className="p-5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full text-black shadow-lg shadow-cyan-500/30 hover:from-cyan-400 hover:to-blue-400 transition-all duration-300 transform hover:scale-105"
+                            >
+                                {isPlaying ? <Pause size={32} /> : <Play size={32} />}
                             </button>
 
-                           <button onClick={() => setIsFilterActive(p => !p)} title={isFilterActive ? 'Disable Booster' : 'Enable Booster'} className={`p-3 rounded-full transition-colors ${isFilterActive ? 'bg-green-500 shadow-green-500/20' : 'bg-red-600 shadow-red-500/20'}`}>
+                            <button 
+                                onClick={() => setIsFilterActive(p => !p)} 
+                                title={isFilterActive ? 'Disable Bass Boost' : 'Enable Bass Boost'} 
+                                className={`p-3 rounded-full transition-all duration-300 ${isFilterActive ? 'bg-green-500 shadow-green-500/30' : 'bg-red-600 shadow-red-500/30'}`}
+                            >
                                 <Power size={20} />
-                           </button>
-                           
-                           <button onClick={downloadProcessedAudio} disabled={isRendering} title="Download as WAV" className="p-3 bg-gray-700 rounded-full hover:bg-cyan-600 transition-colors disabled:bg-gray-800 disabled:cursor-not-allowed">
+                            </button>
+                            
+                            <button 
+                                onClick={downloadProcessedAudio} 
+                                disabled={isRendering} 
+                                title="Download Enhanced Audio" 
+                                className="p-3 bg-gray-700 rounded-full hover:bg-cyan-600 transition-colors disabled:bg-gray-800 disabled:cursor-not-allowed"
+                            >
                                 {isRendering ? <Loader2 size={20} className="animate-spin"/> : <Download size={20} />}
-                           </button>
+                            </button>
+
+                            <button 
+                                onClick={() => setShowAdvanced(p => !p)} 
+                                title="Advanced Settings" 
+                                className={`p-3 rounded-full transition-colors ${showAdvanced ? 'bg-cyan-600' : 'bg-gray-700 hover:bg-gray-600'}`}
+                            >
+                                <Settings size={20} />
+                            </button>
+                        </div>
+
+                        {/* Bass Enhancement Section */}
+                        <div className="bg-gradient-to-r from-cyan-900/20 to-blue-900/20 p-6 rounded-xl border border-cyan-500/20">
+                            <h3 className="text-lg font-semibold text-cyan-300 mb-4 flex items-center gap-2">
+                                <Volume2 size={20} />
+                                Bass Enhancement
+                            </h3>
+                            
+                            {/* Bass Presets */}
+                            <div className="mb-4">
+                                <h4 className="text-sm font-medium text-cyan-200 mb-2">Presets</h4>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                    {Object.entries(presets).map(([name, values]) => (
+                                        <button 
+                                            key={name} 
+                                            onClick={() => applyPreset(values)} 
+                                            className="text-xs px-3 py-2 bg-cyan-800/30 rounded-lg hover:bg-cyan-600/50 transition-colors border border-cyan-500/20"
+                                        >
+                                            {name}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Bass Controls */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-sm font-medium text-cyan-200 block mb-2">
+                                        Bass Frequency: {frequency} Hz
+                                    </label>
+                                    <input 
+                                        type="range" 
+                                        min="40" 
+                                        max="200" 
+                                        step="1" 
+                                        value={frequency} 
+                                        onChange={(e) => setFrequency(Number(e.target.value))} 
+                                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="text-sm font-medium text-cyan-200 block mb-2">
+                                        Bass Boost: +{boost.toFixed(1)} dB
+                                    </label>
+                                    <input 
+                                        type="range" 
+                                        min="0" 
+                                        max="24" 
+                                        step="0.5" 
+                                        value={boost} 
+                                        onChange={(e) => setBoost(Number(e.target.value))} 
+                                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="text-sm font-medium text-cyan-200 block mb-2">
+                                        Sub-Bass Boost: +{subBoost.toFixed(1)} dB
+                                    </label>
+                                    <input 
+                                        type="range" 
+                                        min="0" 
+                                        max="20" 
+                                        step="0.5" 
+                                        value={subBoost} 
+                                        onChange={(e) => setSubBoost(Number(e.target.value))} 
+                                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="text-sm font-medium text-cyan-200 block mb-2">
+                                        Master Volume: {Math.round(masterVolume * 100)}%
+                                    </label>
+                                    <input 
+                                        type="range" 
+                                        min="0" 
+                                        max="1.5" 
+                                        step="0.05" 
+                                        value={masterVolume} 
+                                        onChange={(e) => setMasterVolume(Number(e.target.value))} 
+                                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </main>
                 )}
