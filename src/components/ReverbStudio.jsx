@@ -344,66 +344,122 @@ const useReverbProcessor = () => {
         try {
             console.log('Starting offline reverb processing...');
             
-            // Create offline context with the same parameters as the original audio
-            const offlineContext = new OfflineAudioContext(
-                currentAudioBufferRef.current.numberOfChannels,
-                currentAudioBufferRef.current.length, // Use exact length
-                currentAudioBufferRef.current.sampleRate
-            );
+            const originalBuffer = currentAudioBufferRef.current;
+            const channels = originalBuffer.numberOfChannels;
+            const sampleRate = originalBuffer.sampleRate;
+            
+            // Add extra length for reverb tail
+            const reverbTailLength = Math.floor(sampleRate * reverbDecay);
+            const totalLength = originalBuffer.length + reverbTailLength;
+            
+            // Create offline context with extended length for reverb tail
+            const offlineContext = new OfflineAudioContext(channels, totalLength, sampleRate);
 
             // Create source node
             const source = offlineContext.createBufferSource();
-            source.buffer = currentAudioBufferRef.current;
+            source.buffer = originalBuffer;
 
-            // Create delay node
-            const delay = offlineContext.createDelay(1.0); // Max delay of 1 second
+            // Create delay node for pre-delay
+            const delay = offlineContext.createDelay(1.0);
             delay.delayTime.value = preDelay;
 
-            // Create reverb node
-            const reverb = offlineContext.createConvolver();
+            // Create a better impulse response for reverb
+            const impulseLength = Math.floor(sampleRate * reverbDecay);
+            const impulse = offlineContext.createBuffer(2, impulseLength, sampleRate);
             
-            // Generate impulse response for reverb
-            const decay = reverbDecay;
-            const sampleRate = offlineContext.sampleRate;
-            const length = sampleRate * decay;
-            const impulse = offlineContext.createBuffer(2, length, sampleRate);
-            const left = impulse.getChannelData(0);
-            const right = impulse.getChannelData(1);
-            
-            for (let i = 0; i < length; i++) {
-                const n = length - i;
-                left[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
-                right[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
+            // Generate more realistic impulse response
+            for (let channel = 0; channel < 2; channel++) {
+                const channelData = impulse.getChannelData(channel);
+                
+                // Early reflections (first 80ms)
+                const earlyReflectionTime = Math.floor(sampleRate * 0.08);
+                for (let i = 0; i < earlyReflectionTime; i++) {
+                    const t = i / sampleRate;
+                    const amplitude = Math.exp(-t * 3) * (Math.random() * 0.5 - 0.25);
+                    channelData[i] = amplitude;
+                }
+                
+                // Late reverberation (exponential decay)
+                for (let i = earlyReflectionTime; i < impulseLength; i++) {
+                    const t = i / sampleRate;
+                    const decayFactor = 6.91 / reverbDecay; // -60dB decay time
+                    const amplitude = Math.exp(-t * decayFactor);
+                    
+                    // Add some randomness and density
+                    const noise = (Math.random() * 2 - 1) * amplitude;
+                    const diffusion = Math.sin(t * 1000 + channel * Math.PI) * amplitude * 0.1;
+                    
+                    channelData[i] = noise + diffusion;
+                }
+                
+                // Apply room size effect by filtering
+                if (roomSize < 0.5) {
+                    // Smaller rooms have more high-frequency absorption
+                    const cutoff = 0.3 + (roomSize * 0.4);
+                    for (let i = 1; i < impulseLength; i++) {
+                        channelData[i] = channelData[i] * cutoff + channelData[i-1] * (1 - cutoff);
+                    }
+                }
             }
-            
+
+            // Create convolution reverb
+            const reverb = offlineContext.createConvolver();
             reverb.buffer = impulse;
 
-            // Create gain node for wet/dry mix
+            // Create gain nodes for wet/dry mix
             const wetGain = offlineContext.createGain();
             const dryGain = offlineContext.createGain();
+            const outputGain = offlineContext.createGain();
             
-            wetGain.gain.value = isReverbActive ? wetLevel : 0;
-            dryGain.gain.value = 1 - wetGain.gain.value;
+            // Set gain values
+            const wetAmount = isReverbActive ? wetLevel : 0;
+            const dryAmount = 1 - wetAmount * 0.5; // Compensate for wet signal
+            
+            wetGain.gain.value = wetAmount;
+            dryGain.gain.value = dryAmount;
+            outputGain.gain.value = 0.8; // Prevent clipping
 
-            // Connect the audio chain
+            // Connect the audio chain properly
             source.connect(delay);
+            
+            // Dry path
             delay.connect(dryGain);
+            dryGain.connect(outputGain);
+            
+            // Wet path
             delay.connect(reverb);
             reverb.connect(wetGain);
+            wetGain.connect(outputGain);
             
-            // Merge wet and dry signals
-            const merger = offlineContext.createChannelMerger(2);
-            dryGain.connect(merger, 0, 0);
-            wetGain.connect(merger, 0, 1);
-            
-            merger.connect(offlineContext.destination);
+            // Connect to destination
+            outputGain.connect(offlineContext.destination);
 
             // Start playback
             source.start(0);
 
             // Render the audio
+            console.log('Rendering audio...');
             const renderedBuffer = await offlineContext.startRendering();
             console.log('Offline reverb processing complete');
+
+            // Normalize the output to prevent clipping
+            for (let channel = 0; channel < renderedBuffer.numberOfChannels; channel++) {
+                const channelData = renderedBuffer.getChannelData(channel);
+                let maxValue = 0;
+                
+                // Find peak value
+                for (let i = 0; i < channelData.length; i++) {
+                    maxValue = Math.max(maxValue, Math.abs(channelData[i]));
+                }
+                
+                // Apply normalization if needed
+                if (maxValue > 0.95) {
+                    const normalizationFactor = 0.95 / maxValue;
+                    for (let i = 0; i < channelData.length; i++) {
+                        channelData[i] *= normalizationFactor;
+                    }
+                }
+            }
 
             // Convert to WAV and download
             const wavBlob = audioBufferToWav(renderedBuffer);
@@ -431,7 +487,7 @@ const useReverbProcessor = () => {
         } finally {
             setIsDownloading(false);
         }
-    }, [currentAudioBufferRef, reverbDecay, wetLevel, preDelay, isReverbActive, audioFileName, isDownloading]);
+    }, [currentAudioBufferRef, reverbDecay, wetLevel, preDelay, roomSize, isReverbActive, audioFileName, isDownloading]);
 
     const getFrequencyData = useCallback(() => {
         if (analyserRef.current) {

@@ -110,6 +110,11 @@ const Navbar = ({ allTools, categorizedTools }) => {
   // Updated default nav link class with dark text colors
   const defaultNavLinkClass = "text-gray-700 hover:text-gray-900 hover:bg-gray-100/10 hover:backdrop-blur-sm";
 
+  // Function to check if a tool belongs to Audio category
+  const isAudioTool = (tool) => {
+    return categorizedTools['Audio']?.some(audioTool => audioTool.id === tool.id);
+  };
+
   return (
     <>
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out ${
@@ -163,13 +168,19 @@ const Navbar = ({ allTools, categorizedTools }) => {
                           <Link
                             key={tool.id}
                             to={tool.path}
-                            className="flex items-center space-x-3 p-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 rounded-xl transition-all duration-200 group backdrop-blur-sm"
+                            className={`flex items-center space-x-3 p-2 rounded-xl transition-all duration-200 group backdrop-blur-sm ${
+                              category === 'Audio' 
+                                ? 'text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-lg' 
+                                : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100/50'
+                            }`}
                             onClick={() => setActiveDropdownCategory(null)}
                           >
                             <div className="flex flex-col">
                               <span className="font-medium text-sm drop-shadow-sm">{tool.name}</span>
                               {tool.description && (
-                                <span className="text-xs text-gray-600 drop-shadow-sm">
+                                <span className={`text-xs drop-shadow-sm ${
+                                  category === 'Audio' ? 'text-white/80' : 'text-gray-600'
+                                }`}>
                                   {tool.description.substring(0, 30)}{tool.description.length > 30 ? '...' : ''}
                                 </span>
                               )}
@@ -266,7 +277,11 @@ const Navbar = ({ allTools, categorizedTools }) => {
                                 <Link
                                   key={tool.id}
                                   to={tool.path}
-                                  className="flex items-center space-x-3 p-3 text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 rounded-lg transition-all duration-200 group backdrop-blur-sm"
+                                  className={`flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 group backdrop-blur-sm ${
+                                    category === 'Audio' 
+                                      ? 'text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-lg' 
+                                      : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100/50'
+                                  }`}
                                   onClick={() => setIsMobileMenuOpen(false)}
                                 >
                                   <span className="text-sm font-medium drop-shadow-sm">{tool.name}</span>
@@ -292,4 +307,3 @@ const Navbar = ({ allTools, categorizedTools }) => {
 };
 
 export default Navbar;
-

@@ -4,6 +4,38 @@
 
 export const TOOLS = [
   {
+  id: 'eq-studio',
+  name: 'EQ Studio',
+  path: '/eq-studio',
+  component: 'EQStudio',
+  importPath: './components/EQStudio.jsx',
+  description: 'Professional audio equalizer with real-time visualization and vertical frequency controls.',
+  icon: 'SlidersHorizontal',
+  categories: ['Audio']
+  },
+  {
+    id: 'reverb-studio',
+    name: 'Reverb Studio',
+    path: '/reverb-studio',
+    component: 'ReverbStudio',
+    importPath: './components/ReverbStudio.jsx',
+    description: 'Professional audio Reverb with real-time visualization.',
+    icon: '',
+    categories: ['Audio']
+
+  },
+  {
+    id: 'slowed-reverb-studio',
+    name: 'Slowed Reverb Studio',
+    path: '/slowed-reverb-studio',
+    component: 'SlowedReverbStudio',
+    importPath: './components/SlowedReverbStudio.jsx',
+    description: 'Professional audio Reverb with real-time visualization.',
+    icon: '',
+    categories: ['Audio']
+
+  },
+  {
     id: 'home',
     name: 'Home',
     path: '/',
@@ -348,43 +380,13 @@ export const TOOLS = [
     description: 'Sound design puzzles. Recreate target sounds using provided synth parameters.',
     icon: '',
     categories: ['Games', 'Synth', 'Challenge']
-  },
-  {
-  id: 'eq-studio',
-  name: 'EQ Studio',
-  path: '/eq-studio',
-  component: 'EQStudio',
-  importPath: './components/EQStudio.jsx',
-  description: 'Professional audio equalizer with real-time visualization and vertical frequency controls.',
-  icon: 'SlidersHorizontal',
-  categories: ['Audio', 'Tools', 'EQ']
-  },
-  {
-    id: 'reverb-studio',
-    name: 'Reverb Studio',
-    path: '/reverb-studio',
-    component: 'ReverbStudio',
-    importPath: './components/ReverbStudio.jsx',
-    description: 'Professional audio Reverb with real-time visualization.',
-    icon: '',
-    categories: ['Audio', 'Tools', 'Reverb']
-
-  },
-  {
-    id: 'slowed-reverb-studio',
-    name: 'Slowed Reverb Studio',
-    path: '/slowed-reverb-studio',
-    component: 'SlowedReverbStudio',
-    importPath: './components/SlowedReverbStudio.jsx',
-    description: 'Professional audio Reverb with real-time visualization.',
-    icon: '',
-    categories: ['Audio', 'Tools', 'Reverb']
-
   }
+  
 ];
 
 // Define the desired order of categories for the Navbar dropdown
 const DEFAULT_CATEGORIES_ORDER = [
+  'Audio',
   'Instruments',
   'Synth',
   'Theory',

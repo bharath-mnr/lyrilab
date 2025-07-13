@@ -58,6 +58,11 @@ const HomePage = ({ tools, allTools, categorizedTools }) => {
     return matchesSearch && matchesCategory;
   });
 
+  // Helper function to check if a tool has 'Audio' category
+  const isAudioTool = (tool) => {
+    return tool.categories && tool.categories.includes('Audio');
+  };
+
   // Enhanced canvas visualization with better colors
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -195,6 +200,7 @@ const HomePage = ({ tools, allTools, categorizedTools }) => {
   const getCategoryIcon = (category) => {
     const iconClass = "mr-1 sm:mr-2";
     switch(category) {
+      case 'Audio': return <Headphones size={16} className={iconClass} />;
       case 'Instruments': return <Guitar size={16} className={iconClass} />;
       case 'Synth': return <Disc size={16} className={iconClass} />;
       case 'Theory': return <BookOpen size={16} className={iconClass} />;
@@ -215,6 +221,7 @@ const HomePage = ({ tools, allTools, categorizedTools }) => {
     const iconClass = "text-emerald-400 group-hover:text-emerald-300 transition-colors duration-300";
     
     switch(category) {
+      case 'Audio': return <Headphones size={20} className={iconClass} />;
       case 'Instruments': return <Guitar size={20} className={iconClass} />;
       case 'Synth': return <Disc size={20} className={iconClass} />;
       case 'Theory': return <BookOpen size={20} className={iconClass} />;
@@ -461,21 +468,41 @@ const HomePage = ({ tools, allTools, categorizedTools }) => {
                 <Link
                   key={tool.id}
                   to={tool.path}
-                  className="block relative overflow-hidden rounded-xl sm:rounded-2xl 
-                             bg-white border border-slate-200 hover:border-emerald-400
-                             shadow-md hover:shadow-lg transform hover:-translate-y-1
-                             transition-all duration-300 group"
+                  className={`block relative overflow-hidden rounded-xl sm:rounded-2xl 
+                             bg-white border shadow-md hover:shadow-lg transform hover:-translate-y-1
+                             transition-all duration-300 group ${
+                               isAudioTool(tool) 
+                                 ? 'border-purple-400 hover:border-purple-500 ring-2 ring-purple-200 hover:ring-purple-300' 
+                                 : 'border-slate-200 hover:border-emerald-400'
+                             }`}
                   style={{
                     animation: `fadeInUp 0.5s ease-out ${index * 0.05}s both`
                   }}
                 >
+                  {/* Audio Tool Highlight Badge */}
+                  {isAudioTool(tool) && (
+                    <div className="absolute top-2 right-2 z-20">
+                      <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center animate-pulse">
+                        <Headphones size={12} className="text-white" />
+                      </div>
+                    </div>
+                  )}
+                  
                   <div className="relative z-10 p-3 sm:p-5 h-full flex flex-col">
                     <div className="flex items-start mb-2 sm:mb-4">
-                      <div className="bg-emerald-600 w-8 sm:w-10 h-8 sm:h-10 rounded-lg 
-                                       flex items-center justify-center flex-shrink-0 mr-2 sm:mr-3">
+                      <div className={`w-8 sm:w-10 h-8 sm:h-10 rounded-lg 
+                                       flex items-center justify-center flex-shrink-0 mr-2 sm:mr-3 ${
+                                         isAudioTool(tool) 
+                                           ? 'bg-purple-600 group-hover:bg-purple-700' 
+                                           : 'bg-emerald-600 group-hover:bg-emerald-700'
+                                       }`}>
                         {getToolIcon(tool)}
                       </div>
-                      <h3 className="text-sm sm:text-lg font-bold text-slate-800 group-hover:text-emerald-700 transition-colors duration-300 leading-tight">
+                      <h3 className={`text-sm sm:text-lg font-bold transition-colors duration-300 leading-tight ${
+                        isAudioTool(tool) 
+                          ? 'text-slate-800 group-hover:text-purple-700' 
+                          : 'text-slate-800 group-hover:text-emerald-700'
+                      }`}>
                         {tool.name}
                       </h3>
                     </div>
@@ -486,19 +513,30 @@ const HomePage = ({ tools, allTools, categorizedTools }) => {
                       {tool.categories && tool.categories.slice(0, 2).map(cat => (
                         <span
                           key={cat}
-                          className="text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 bg-emerald-100 rounded text-emerald-800
-                                     group-hover:bg-emerald-200 transition-all duration-300"
+                          className={`text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded transition-all duration-300 ${
+                            cat === 'Audio' 
+                              ? 'bg-purple-100 text-purple-800 group-hover:bg-purple-200' 
+                              : 'bg-emerald-100 text-emerald-800 group-hover:bg-emerald-200'
+                          }`}
                         >
                           {cat}
                         </span>
                       ))}
                     </div>
-                    <div className="flex justify-between items-center pt-2 sm:pt-3 border-t border-slate-200 group-hover:border-emerald-200 transition-colors duration-300">
+                    <div className={`flex justify-between items-center pt-2 sm:pt-3 border-t transition-colors duration-300 ${
+                      isAudioTool(tool) 
+                        ? 'border-purple-200 group-hover:border-purple-300' 
+                        : 'border-slate-200 group-hover:border-emerald-200'
+                    }`}>
                       <span className="text-xs text-slate-500 group-hover:text-slate-600 transition-colors duration-300 hidden sm:block">
                         Click to explore
                       </span>
-                      <div className="w-6 sm:w-8 h-6 sm:h-8 rounded-full bg-slate-100 flex items-center justify-center 
-                                       group-hover:bg-emerald-600 group-hover:scale-110 transition-all duration-300">
+                      <div className={`w-6 sm:w-8 h-6 sm:h-8 rounded-full bg-slate-100 flex items-center justify-center 
+                                       group-hover:scale-110 transition-all duration-300 ${
+                                         isAudioTool(tool) 
+                                           ? 'group-hover:bg-purple-600' 
+                                           : 'group-hover:bg-emerald-600'
+                                       }`}>
                         <Play size={12} className="text-slate-600 group-hover:text-white ml-0.5" />
                       </div>
                     </div>
