@@ -617,7 +617,7 @@ const SlowedReverbContent = () => {
             {/* Header Section */}
             <div className="text-center mb-4 sm:mb-6 md:mb-8 lg:mb-10 w-full px-2">
                 <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 mb-1 sm:mb-2 md:mb-3 lg:mb-4">
-                    <Clock size={32} className="text-purple-400" />
+                    
                     <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white">
                         Slowed Reverb Studio
                     </h1>
