@@ -1,6 +1,24 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import * as THREE from 'three';
 import { Upload, Play, Pause, Power, Loader2, Volume2, Download, Settings } from 'lucide-react';
+import SEOHead from './SEOHead';
+
+// Define the tool object for SEO structured data
+const bassBoosterStudioTool = {
+    id: 'bass-booster-studio',
+    name: 'Bass Booster Studio',
+    description: 'Professional audio bass boost with real-time visualization.',
+    path: '/bass-booster',
+    categories: [
+        'Audio',
+        'Bass Boost',
+        'Mixing',
+        'Low-End',
+        'Sound Enhancement'
+    ]
+};
+
+
 
 // --- Enhanced Custom Hook for Advanced Bass Boosting Logic ---
 const useBassBooster = () => {
@@ -515,197 +533,206 @@ export default function BassBoosterStudio() {
     const handleUploadClick = () => fileInputRef.current.click();
 
     return (
-        <div className="min-h-screen bg-gray-900 text-white font-sans flex items-center justify-center p-4">
-            <div className="w-full max-w-4xl bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl shadow-cyan-500/10 ring-1 ring-white/10 p-6 md:p-8">
-                <header className="text-center mb-6">
-                    <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-300 to-purple-400 bg-clip-text text-transparent">
-                        Bass Booster Studio
-                    </h1>
-                    <p className="text-gray-400 mt-2">
-                        Professional bass enhancement tool
-                    </p>
-                </header>
+        <>
 
-                {!isReady && !isLoading && (
-                    <div className="text-center">
-                        <button 
-                            onClick={handleUploadClick} 
-                            className="w-full flex flex-col items-center justify-center p-12 border-2 border-dashed border-gray-600 rounded-xl hover:border-cyan-400 hover:bg-gray-800 transition-all duration-300 transform hover:scale-105"
-                        >
-                            <Upload size={56} className="text-cyan-400 mb-4 animate-pulse"/>
-                            <span className="font-semibold text-lg">Upload Audio File</span>
-                            <span className="text-sm text-gray-500 mt-1">MP3, WAV, FLAC, OGG supported</span>
-                        </button>
-                        <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="audio/*" className="hidden" />
-                    </div>
-                )}
+            <SEOHead 
+                pageId="bass-booster-studio" 
+                tool={bassBoosterStudioTool} 
+                customData={{}} 
+            />
 
-                {isLoading && (
-                    <div className="flex items-center justify-center p-12">
-                        <Loader2 size={56} className="animate-spin text-cyan-400 mr-4" />
-                        <span className="text-xl">Analyzing Audio...</span>
-                    </div>
-                )}
+            <div className="min-h-screen bg-gray-900 text-white font-sans flex items-center justify-center p-4">
+                <div className="w-full max-w-4xl bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl shadow-cyan-500/10 ring-1 ring-white/10 p-6 md:p-8">
+                    <header className="text-center mb-6">
+                        <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-300 to-purple-400 bg-clip-text text-transparent">
+                            Bass Booster Studio
+                        </h1>
+                        <p className="text-gray-400 mt-2">
+                            Professional bass enhancement tool
+                        </p>
+                    </header>
 
-                {error && (
-                    <div className="text-center text-red-400 p-4 bg-red-900/30 rounded-lg border border-red-500/30">
-                        {error}
-                    </div>
-                )}
-
-                {isReady && (
-                    <main className="flex flex-col gap-6">
+                    {!isReady && !isLoading && (
                         <div className="text-center">
-                            <p className="text-gray-300 truncate mb-2" title={fileName}>
-                                <span className="text-cyan-400 font-bold">{fileName}</span>
-                            </p>
-                            <div className="flex justify-center gap-2">
-                                <span className={`px-2 py-1 rounded-full text-xs ${isFilterActive ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'}`}>
-                                    Bass Boost {isFilterActive ? 'ON' : 'OFF'}
-                                </span>
-                            </div>
-                        </div>
-
-                        <BassVisualizer 
-                            getFrequencyData={getFrequencyData}
-                            boost={boost} 
-                            subBoost={subBoost}
-                            isPlaying={isPlaying}
-                        />
-
-                        {/* Main Controls */}
-                        <div className="flex items-center justify-center gap-4 mb-4">
                             <button 
                                 onClick={handleUploadClick} 
-                                title="Upload New File" 
-                                className="p-3 bg-gray-700 rounded-full hover:bg-cyan-600 transition-colors"
+                                className="w-full flex flex-col items-center justify-center p-12 border-2 border-dashed border-gray-600 rounded-xl hover:border-cyan-400 hover:bg-gray-800 transition-all duration-300 transform hover:scale-105"
                             >
-                                <Upload size={20} />
+                                <Upload size={56} className="text-cyan-400 mb-4 animate-pulse"/>
+                                <span className="font-semibold text-lg">Upload Audio File</span>
+                                <span className="text-sm text-gray-500 mt-1">MP3, WAV, FLAC, OGG supported</span>
                             </button>
                             <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="audio/*" className="hidden" />
-
-                            <button 
-                                onClick={togglePlayback} 
-                                className="p-5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full text-black shadow-lg shadow-cyan-500/30 hover:from-cyan-400 hover:to-blue-400 transition-all duration-300 transform hover:scale-105"
-                            >
-                                {isPlaying ? <Pause size={32} /> : <Play size={32} />}
-                            </button>
-
-                            <button 
-                                onClick={() => setIsFilterActive(p => !p)} 
-                                title={isFilterActive ? 'Disable Bass Boost' : 'Enable Bass Boost'} 
-                                className={`p-3 rounded-full transition-all duration-300 ${isFilterActive ? 'bg-green-500 shadow-green-500/30' : 'bg-red-600 shadow-red-500/30'}`}
-                            >
-                                <Power size={20} />
-                            </button>
-                            
-                            <button 
-                                onClick={downloadProcessedAudio} 
-                                disabled={isRendering} 
-                                title="Download Enhanced Audio" 
-                                className="p-3 bg-gray-700 rounded-full hover:bg-cyan-600 transition-colors disabled:bg-gray-800 disabled:cursor-not-allowed"
-                            >
-                                {isRendering ? <Loader2 size={20} className="animate-spin"/> : <Download size={20} />}
-                            </button>
-
-                            <button 
-                                onClick={() => setShowAdvanced(p => !p)} 
-                                title="Advanced Settings" 
-                                className={`p-3 rounded-full transition-colors ${showAdvanced ? 'bg-cyan-600' : 'bg-gray-700 hover:bg-gray-600'}`}
-                            >
-                                <Settings size={20} />
-                            </button>
                         </div>
+                    )}
 
-                        {/* Bass Enhancement Section */}
-                        <div className="bg-gradient-to-r from-cyan-900/20 to-blue-900/20 p-6 rounded-xl border border-cyan-500/20">
-                            <h3 className="text-lg font-semibold text-cyan-300 mb-4 flex items-center gap-2">
-                                <Volume2 size={20} />
-                                Bass Enhancement
-                            </h3>
-                            
-                            {/* Bass Presets */}
-                            <div className="mb-4">
-                                <h4 className="text-sm font-medium text-cyan-200 mb-2">Presets</h4>
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                    {Object.entries(presets).map(([name, values]) => (
-                                        <button 
-                                            key={name} 
-                                            onClick={() => applyPreset(values)} 
-                                            className="text-xs px-3 py-2 bg-cyan-800/30 rounded-lg hover:bg-cyan-600/50 transition-colors border border-cyan-500/20"
-                                        >
-                                            {name}
-                                        </button>
-                                    ))}
+                    {isLoading && (
+                        <div className="flex items-center justify-center p-12">
+                            <Loader2 size={56} className="animate-spin text-cyan-400 mr-4" />
+                            <span className="text-xl">Analyzing Audio...</span>
+                        </div>
+                    )}
+
+                    {error && (
+                        <div className="text-center text-red-400 p-4 bg-red-900/30 rounded-lg border border-red-500/30">
+                            {error}
+                        </div>
+                    )}
+
+                    {isReady && (
+                        <main className="flex flex-col gap-6">
+                            <div className="text-center">
+                                <p className="text-gray-300 truncate mb-2" title={fileName}>
+                                    <span className="text-cyan-400 font-bold">{fileName}</span>
+                                </p>
+                                <div className="flex justify-center gap-2">
+                                    <span className={`px-2 py-1 rounded-full text-xs ${isFilterActive ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'}`}>
+                                        Bass Boost {isFilterActive ? 'ON' : 'OFF'}
+                                    </span>
                                 </div>
                             </div>
 
-                            {/* Bass Controls */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="text-sm font-medium text-cyan-200 block mb-2">
-                                        Bass Frequency: {frequency} Hz
-                                    </label>
-                                    <input 
-                                        type="range" 
-                                        min="40" 
-                                        max="200" 
-                                        step="1" 
-                                        value={frequency} 
-                                        onChange={(e) => setFrequency(Number(e.target.value))} 
-                                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-400"
-                                    />
-                                </div>
+                            <BassVisualizer 
+                                getFrequencyData={getFrequencyData}
+                                boost={boost} 
+                                subBoost={subBoost}
+                                isPlaying={isPlaying}
+                            />
+
+                            {/* Main Controls */}
+                            <div className="flex items-center justify-center gap-4 mb-4">
+                                <button 
+                                    onClick={handleUploadClick} 
+                                    title="Upload New File" 
+                                    className="p-3 bg-gray-700 rounded-full hover:bg-cyan-600 transition-colors"
+                                >
+                                    <Upload size={20} />
+                                </button>
+                                <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="audio/*" className="hidden" />
+
+                                <button 
+                                    onClick={togglePlayback} 
+                                    className="p-5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full text-black shadow-lg shadow-cyan-500/30 hover:from-cyan-400 hover:to-blue-400 transition-all duration-300 transform hover:scale-105"
+                                >
+                                    {isPlaying ? <Pause size={32} /> : <Play size={32} />}
+                                </button>
+
+                                <button 
+                                    onClick={() => setIsFilterActive(p => !p)} 
+                                    title={isFilterActive ? 'Disable Bass Boost' : 'Enable Bass Boost'} 
+                                    className={`p-3 rounded-full transition-all duration-300 ${isFilterActive ? 'bg-green-500 shadow-green-500/30' : 'bg-red-600 shadow-red-500/30'}`}
+                                >
+                                    <Power size={20} />
+                                </button>
                                 
-                                <div>
-                                    <label className="text-sm font-medium text-cyan-200 block mb-2">
-                                        Bass Boost: +{boost.toFixed(1)} dB
-                                    </label>
-                                    <input 
-                                        type="range" 
-                                        min="0" 
-                                        max="24" 
-                                        step="0.5" 
-                                        value={boost} 
-                                        onChange={(e) => setBoost(Number(e.target.value))} 
-                                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-400"
-                                    />
-                                </div>
+                                <button 
+                                    onClick={downloadProcessedAudio} 
+                                    disabled={isRendering} 
+                                    title="Download Enhanced Audio" 
+                                    className="p-3 bg-gray-700 rounded-full hover:bg-cyan-600 transition-colors disabled:bg-gray-800 disabled:cursor-not-allowed"
+                                >
+                                    {isRendering ? <Loader2 size={20} className="animate-spin"/> : <Download size={20} />}
+                                </button>
+
+                                <button 
+                                    onClick={() => setShowAdvanced(p => !p)} 
+                                    title="Advanced Settings" 
+                                    className={`p-3 rounded-full transition-colors ${showAdvanced ? 'bg-cyan-600' : 'bg-gray-700 hover:bg-gray-600'}`}
+                                >
+                                    <Settings size={20} />
+                                </button>
+                            </div>
+
+                            {/* Bass Enhancement Section */}
+                            <div className="bg-gradient-to-r from-cyan-900/20 to-blue-900/20 p-6 rounded-xl border border-cyan-500/20">
+                                <h3 className="text-lg font-semibold text-cyan-300 mb-4 flex items-center gap-2">
+                                    <Volume2 size={20} />
+                                    Bass Enhancement
+                                </h3>
                                 
-                                <div>
-                                    <label className="text-sm font-medium text-cyan-200 block mb-2">
-                                        Sub-Bass Boost: +{subBoost.toFixed(1)} dB
-                                    </label>
-                                    <input 
-                                        type="range" 
-                                        min="0" 
-                                        max="20" 
-                                        step="0.5" 
-                                        value={subBoost} 
-                                        onChange={(e) => setSubBoost(Number(e.target.value))} 
-                                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-400"
-                                    />
+                                {/* Bass Presets */}
+                                <div className="mb-4">
+                                    <h4 className="text-sm font-medium text-cyan-200 mb-2">Presets</h4>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                        {Object.entries(presets).map(([name, values]) => (
+                                            <button 
+                                                key={name} 
+                                                onClick={() => applyPreset(values)} 
+                                                className="text-xs px-3 py-2 bg-cyan-800/30 rounded-lg hover:bg-cyan-600/50 transition-colors border border-cyan-500/20"
+                                            >
+                                                {name}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
-                                
-                                <div>
-                                    <label className="text-sm font-medium text-cyan-200 block mb-2">
-                                        Master Volume: {Math.round(masterVolume * 100)}%
-                                    </label>
-                                    <input 
-                                        type="range" 
-                                        min="0" 
-                                        max="1.5" 
-                                        step="0.05" 
-                                        value={masterVolume} 
-                                        onChange={(e) => setMasterVolume(Number(e.target.value))} 
-                                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-400"
-                                    />
+
+                                {/* Bass Controls */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="text-sm font-medium text-cyan-200 block mb-2">
+                                            Bass Frequency: {frequency} Hz
+                                        </label>
+                                        <input 
+                                            type="range" 
+                                            min="40" 
+                                            max="200" 
+                                            step="1" 
+                                            value={frequency} 
+                                            onChange={(e) => setFrequency(Number(e.target.value))} 
+                                            className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                                        />
+                                    </div>
+                                    
+                                    <div>
+                                        <label className="text-sm font-medium text-cyan-200 block mb-2">
+                                            Bass Boost: +{boost.toFixed(1)} dB
+                                        </label>
+                                        <input 
+                                            type="range" 
+                                            min="0" 
+                                            max="24" 
+                                            step="0.5" 
+                                            value={boost} 
+                                            onChange={(e) => setBoost(Number(e.target.value))} 
+                                            className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                                        />
+                                    </div>
+                                    
+                                    <div>
+                                        <label className="text-sm font-medium text-cyan-200 block mb-2">
+                                            Sub-Bass Boost: +{subBoost.toFixed(1)} dB
+                                        </label>
+                                        <input 
+                                            type="range" 
+                                            min="0" 
+                                            max="20" 
+                                            step="0.5" 
+                                            value={subBoost} 
+                                            onChange={(e) => setSubBoost(Number(e.target.value))} 
+                                            className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                                        />
+                                    </div>
+                                    
+                                    <div>
+                                        <label className="text-sm font-medium text-cyan-200 block mb-2">
+                                            Master Volume: {Math.round(masterVolume * 100)}%
+                                        </label>
+                                        <input 
+                                            type="range" 
+                                            min="0" 
+                                            max="1.5" 
+                                            step="0.05" 
+                                            value={masterVolume} 
+                                            onChange={(e) => setMasterVolume(Number(e.target.value))} 
+                                            className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                                        />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </main>
-                )}
+                        </main>
+                    )}
+                </div>
             </div>
-        </div>
+        </>
     );
 }

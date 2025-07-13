@@ -11,6 +11,49 @@ export const SEO_CONFIG = {
   },
 
   pages: {
+
+    'eq-studio': {
+      title: "Online EQ Studio - Professional Audio Equalizer with Visual Controls | LyriLab",
+      description: "Use our online EQ Studio to fine-tune your sound with vertical frequency controls and real-time visual feedback. Perfect for mixing, mastering, or casual listening.",
+      keywords: "online audio equalizer, EQ studio online, frequency control tool, real-time EQ visualizer, audio mastering EQ online, web equalizer, vertical EQ controls, mix audio online, graphic equalizer browser tool",
+      image: "/images/og-eq-studio.jpg",
+      canonical: "/eq-studio"
+    },
+
+    'reverb-studio': {
+      title: "Online Reverb Studio - Add Space and Depth with Real-Time Audio Reverb | LyriLab",
+      description: "Enhance your audio with professional reverb using our online Reverb Studio. Adjust room size, decay, and more with live audio feedback and visualization.",
+      keywords: "online reverb tool, reverb studio online, add reverb to audio online, real-time reverb visualizer, room reverb online, audio space simulator, sound reverb editor, web-based reverb effect, reverb mix tool",
+      image: "/images/og-reverb-studio.jpg",
+      canonical: "/reverb-studio"
+    },
+
+    'slowed-reverb-studio': {
+      title: "Slowed + Reverb Audio Studio - Create Aesthetic Sounds Online | LyriLab",
+      description: "Make your music dreamy and emotional with our Slowed Reverb Studio. Slow down tracks and add smooth reverb with real-time audio feedback and visual effects.",
+      keywords: "slowed and reverb online, aesthetic audio editor, slowed reverb maker, chill sound effect tool, dreamy reverb audio online, slow reverb music editor, lofi sound online, online audio slowing and reverb",
+      image: "/images/og-slowed-reverb-studio.jpg",
+      canonical: "/slowed-reverb-studio"
+    },
+
+    '3D-audio-studio': {
+      title: "3D Audio Studio - Create Immersive Audio Experiences Online | LyriLab",
+      description: "Add depth and dimension to your sound with our 3D Audio Studio. Experience spatial audio movement in real time, great for headphones and immersive music.",
+      keywords: "3D audio online, spatial sound editor, immersive audio tool, online 3D sound designer, surround sound studio, binaural audio editor, 3D sound panning online, 360 audio maker, 3D reverb audio studio",
+      image: "/images/og-3d-audio-studio.jpg",
+      canonical: "/3D-audio-studio"
+    },
+
+    'bass-booster-studio': {
+      title: "Online Bass Booster Studio - Enhance Your Low-End in Real-Time | LyriLab",
+      description: "Boost your bass frequencies instantly with our Bass Booster Studio. Designed for music producers, DJs, and listeners who love deep, punchy sound.",
+      keywords: "bass booster online, enhance bass audio, low-end boost tool, bass boost studio, online audio bass enhancer, music bass booster, punchy bass tool online, subwoofer boost online, deep bass EQ",
+      image: "/images/og-bass-booster-studio.jpg",
+      canonical: "/bass-booster"
+    },
+
+    
+
     'virtual-piano': {
       title: "Online Piano Practice No Download - Visual Keyboard Learning | LyriLab",
       description: "Practice piano online with visual keyboard feedback - no software download needed. Learn piano basics with real-time visual guides and instant audio response.",

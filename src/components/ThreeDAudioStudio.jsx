@@ -3,6 +3,24 @@ import * as Tone from 'tone';
 import { Play, Pause, Upload, Download, RotateCcw, Headphones, AlertCircle, Loader2 } from 'lucide-react';
 import * as THREE from 'three';
 import { OrbitControls as ThreeOrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import SEOHead from './SEOHead';
+
+
+
+// Define the tool object for SEO structured data
+const threeDAudioStudioTool = {
+    id: '3D-audio-studio',
+    name: '3D Audio Studio',
+    description: 'Professional 3D audio with real-time visualization.',
+    path: '/3D-audio-studio',
+    categories: [
+        'Audio',
+        '3D Audio',
+        'Spatial Sound',
+        'Immersive',
+        'Binaural'
+    ]
+};
 
 // --- Context for managing global audio state ---
 const AudioContext = createContext(null);
@@ -554,55 +572,63 @@ const ThreeDAudioContent = () => {
     const isMovementActive = movementPattern !== 'static';
 
     return (
-        <div className="min-h-screen w-full flex flex-col items-center p-4 md:p-6 bg-gray-900 text-white font-sans">
-            <main className="w-full max-w-5xl mx-auto">
-                <div className="text-center mb-4">
-                    <h1 className="text-3xl font-bold text-white">3D Spatial Audio</h1>
-                    {isAudioReady && <p className="text-cyan-300 mt-1 truncate">Now Playing: {audioFileName}</p>}
-                    {audioLoadError && <p className="text-red-400 mt-2 font-medium">Error: {audioLoadError}</p>}
-                </div>
+        <>
+            <SEOHead 
+                pageId="3D-audio-studio" 
+                tool={threeDAudioStudioTool} 
+                customData={{}} 
+            />
 
-                <div className="flex flex-wrap justify-center items-center gap-3 mb-6 p-3 bg-black/20 rounded-xl ring-1 ring-white/10 shadow-lg">
-                    <button onClick={processor.togglePlay} disabled={!isAudioReady || isLoadingAudio} className="px-4 py-2 rounded-full bg-green-600 hover:bg-green-700 text-white flex items-center gap-2 transition disabled:opacity-50 disabled:cursor-not-allowed"><_components.PlayPauseIcon isPlaying={isPlaying} /><span>{isPlaying ? 'Stop' : 'Play'}</span></button>
-                    <label className="px-4 py-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white cursor-pointer flex items-center gap-2 transition"><Upload size={16} /><span>New File</span><input type="file" accept="audio/*" onChange={(e) => handleFileUpload(e.target.files[0])} className="hidden" /></label>
-                    <button onClick={processor.downloadProcessed3DAudio} disabled={!isAudioReady || processor.isDownloading || !is3DActive} className="px-4 py-2 rounded-full bg-cyan-600 hover:bg-cyan-700 text-white flex items-center gap-2 transition disabled:opacity-50 disabled:cursor-not-allowed">{processor.isDownloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}<span>{processor.isDownloading ? 'Processing...' : 'Download'}</span></button>
-                    <button onClick={processor.reset3DAudio} className="px-4 py-2 rounded-full bg-gray-600 hover:bg-gray-700 text-white flex items-center gap-2 transition"><RotateCcw size={16} /><span>Reset</span></button>
-                </div>
-
-                <div className="mb-6 p-4 bg-black/20 rounded-xl ring-1 ring-white/10 shadow-lg backdrop-blur-sm">
-                    <h3 className="text-white text-lg font-semibold mb-3 text-center">Spatial Presets</h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
-                        {Object.keys(AUDIO_3D_PRESETS).map(name => (<button key={name} onClick={() => processor.applyPreset(name)} className={`py-2 px-3 rounded-md text-sm transition ${processor.selectedPreset === name ? 'bg-cyan-500 text-white font-bold' : 'bg-gray-700 text-cyan-200 hover:bg-gray-600'}`}>{name}</button>))}
-                    </div>
-                </div>
-
-                <div className="grid lg:grid-cols-2 gap-6 items-start">
-                    <div className="flex flex-col gap-4 p-4 bg-black/20 rounded-xl ring-1 ring-white/10 shadow-lg backdrop-blur-sm">
-                        <ThreeDVisualizer position={currentPosition} onPositionChange={setPosition} isActive={is3DActive} isMovementActive={isMovementActive} />
-                        <canvas ref={canvasRef} width={512} height={100} className="w-full h-24 bg-black/30 rounded-lg border border-cyan-500/20"></canvas>
-                        <button onClick={() => processor.setIs3DActive(p => !p)} className={`w-full py-3 rounded-full font-semibold flex items-center justify-center gap-2 transition ${is3DActive ? 'bg-cyan-600 hover:bg-cyan-700 text-white' : 'bg-gray-700 hover:bg-gray-600 text-gray-300'}`}>{is3DActive ? <Headphones size={20} /> : <AlertCircle size={20} />}<span>{is3DActive ? '3D Audio Active' : '3D Audio Bypassed'}</span></button>
+            <div className="min-h-screen w-full flex flex-col items-center p-4 md:p-6 bg-gray-900 text-white font-sans">
+                <main className="w-full max-w-5xl mx-auto">
+                    <div className="text-center mb-4">
+                        <h1 className="text-3xl font-bold text-white">3D Spatial Audio</h1>
+                        {isAudioReady && <p className="text-cyan-300 mt-1 truncate">Now Playing: {audioFileName}</p>}
+                        {audioLoadError && <p className="text-red-400 mt-2 font-medium">Error: {audioLoadError}</p>}
                     </div>
 
-                    <div className="flex flex-col gap-4 p-4 bg-black/20 rounded-xl ring-1 ring-white/10 shadow-lg backdrop-blur-sm">
-                        <div className="p-3 bg-gray-900/50 rounded-lg"><ParameterSlider label="Volume" value={processor.volume} onChange={processor.setVolume} min={0} max={1} step={0.01} /></div>
-                        <h3 className="text-white text-lg font-semibold text-center mt-2">3D Parameters</h3>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                            <div className="bg-gray-900/50 rounded-lg"><ParameterSlider label="Position X" value={processor.position.x} onChange={v => setPosition(p => ({ ...p, x: v }))} min={-10} max={10} step={0.1} disabled={!is3DActive || isMovementActive} /></div>
-                            <div className="bg-gray-900/50 rounded-lg"><ParameterSlider label="Position Y" value={processor.position.y} onChange={v => setPosition(p => ({ ...p, y: v }))} min={-10} max={10} step={0.1} disabled={!is3DActive || isMovementActive} /></div>
-                            <div className="bg-gray-900/50 rounded-lg"><ParameterSlider label="Position Z" value={processor.position.z} onChange={v => setPosition(p => ({ ...p, z: v }))} min={-10} max={10} step={0.1} disabled={!is3DActive || isMovementActive} /></div>
-                            <div className="bg-gray-900/50 rounded-lg"><ParameterSlider label="Rolloff" value={processor.rolloffFactor} onChange={processor.setRolloffFactor} min={0} max={4} step={0.1} disabled={!is3DActive} /></div>
-                            <div className="bg-gray-900/50 rounded-lg"><ParameterSlider label="Cone Inner" value={processor.cone.innerAngle} onChange={v => processor.setCone(c => ({ ...c, innerAngle: v }))} min={0} max={360} step={1} unit="°" disabled={!is3DActive} /></div>
-                            <div className="bg-gray-900/50 rounded-lg"><ParameterSlider label="Cone Outer" value={processor.cone.outerAngle} onChange={v => processor.setCone(c => ({ ...c, outerAngle: v }))} min={0} max={360} step={1} unit="°" disabled={!is3DActive} /></div>
-                        </div>
-                        <h3 className="text-white text-lg font-semibold text-center mt-2">Movement</h3>
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="bg-gray-900/50 rounded-lg"><ParameterSlider label="Distance" value={processor.distance} onChange={processor.setDistance} min={0} max={10} step={0.1} disabled={!is3DActive || !isMovementActive} /></div>
-                            <div className="bg-gray-900/50 rounded-lg"><ParameterSlider label="Speed" value={processor.movementSpeed} onChange={processor.setMovementSpeed} min={0} max={5} step={0.1} disabled={!is3DActive || !isMovementActive} /></div>
+                    <div className="flex flex-wrap justify-center items-center gap-3 mb-6 p-3 bg-black/20 rounded-xl ring-1 ring-white/10 shadow-lg">
+                        <button onClick={processor.togglePlay} disabled={!isAudioReady || isLoadingAudio} className="px-4 py-2 rounded-full bg-green-600 hover:bg-green-700 text-white flex items-center gap-2 transition disabled:opacity-50 disabled:cursor-not-allowed"><_components.PlayPauseIcon isPlaying={isPlaying} /><span>{isPlaying ? 'Stop' : 'Play'}</span></button>
+                        <label className="px-4 py-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white cursor-pointer flex items-center gap-2 transition"><Upload size={16} /><span>New File</span><input type="file" accept="audio/*" onChange={(e) => handleFileUpload(e.target.files[0])} className="hidden" /></label>
+                        <button onClick={processor.downloadProcessed3DAudio} disabled={!isAudioReady || processor.isDownloading || !is3DActive} className="px-4 py-2 rounded-full bg-cyan-600 hover:bg-cyan-700 text-white flex items-center gap-2 transition disabled:opacity-50 disabled:cursor-not-allowed">{processor.isDownloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}<span>{processor.isDownloading ? 'Processing...' : 'Download'}</span></button>
+                        <button onClick={processor.reset3DAudio} className="px-4 py-2 rounded-full bg-gray-600 hover:bg-gray-700 text-white flex items-center gap-2 transition"><RotateCcw size={16} /><span>Reset</span></button>
+                    </div>
+
+                    <div className="mb-6 p-4 bg-black/20 rounded-xl ring-1 ring-white/10 shadow-lg backdrop-blur-sm">
+                        <h3 className="text-white text-lg font-semibold mb-3 text-center">Spatial Presets</h3>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
+                            {Object.keys(AUDIO_3D_PRESETS).map(name => (<button key={name} onClick={() => processor.applyPreset(name)} className={`py-2 px-3 rounded-md text-sm transition ${processor.selectedPreset === name ? 'bg-cyan-500 text-white font-bold' : 'bg-gray-700 text-cyan-200 hover:bg-gray-600'}`}>{name}</button>))}
                         </div>
                     </div>
-                </div>
-            </main>
-        </div>
+
+                    <div className="grid lg:grid-cols-2 gap-6 items-start">
+                        <div className="flex flex-col gap-4 p-4 bg-black/20 rounded-xl ring-1 ring-white/10 shadow-lg backdrop-blur-sm">
+                            <ThreeDVisualizer position={currentPosition} onPositionChange={setPosition} isActive={is3DActive} isMovementActive={isMovementActive} />
+                            <canvas ref={canvasRef} width={512} height={100} className="w-full h-24 bg-black/30 rounded-lg border border-cyan-500/20"></canvas>
+                            <button onClick={() => processor.setIs3DActive(p => !p)} className={`w-full py-3 rounded-full font-semibold flex items-center justify-center gap-2 transition ${is3DActive ? 'bg-cyan-600 hover:bg-cyan-700 text-white' : 'bg-gray-700 hover:bg-gray-600 text-gray-300'}`}>{is3DActive ? <Headphones size={20} /> : <AlertCircle size={20} />}<span>{is3DActive ? '3D Audio Active' : '3D Audio Bypassed'}</span></button>
+                        </div>
+
+                        <div className="flex flex-col gap-4 p-4 bg-black/20 rounded-xl ring-1 ring-white/10 shadow-lg backdrop-blur-sm">
+                            <div className="p-3 bg-gray-900/50 rounded-lg"><ParameterSlider label="Volume" value={processor.volume} onChange={processor.setVolume} min={0} max={1} step={0.01} /></div>
+                            <h3 className="text-white text-lg font-semibold text-center mt-2">3D Parameters</h3>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                <div className="bg-gray-900/50 rounded-lg"><ParameterSlider label="Position X" value={processor.position.x} onChange={v => setPosition(p => ({ ...p, x: v }))} min={-10} max={10} step={0.1} disabled={!is3DActive || isMovementActive} /></div>
+                                <div className="bg-gray-900/50 rounded-lg"><ParameterSlider label="Position Y" value={processor.position.y} onChange={v => setPosition(p => ({ ...p, y: v }))} min={-10} max={10} step={0.1} disabled={!is3DActive || isMovementActive} /></div>
+                                <div className="bg-gray-900/50 rounded-lg"><ParameterSlider label="Position Z" value={processor.position.z} onChange={v => setPosition(p => ({ ...p, z: v }))} min={-10} max={10} step={0.1} disabled={!is3DActive || isMovementActive} /></div>
+                                <div className="bg-gray-900/50 rounded-lg"><ParameterSlider label="Rolloff" value={processor.rolloffFactor} onChange={processor.setRolloffFactor} min={0} max={4} step={0.1} disabled={!is3DActive} /></div>
+                                <div className="bg-gray-900/50 rounded-lg"><ParameterSlider label="Cone Inner" value={processor.cone.innerAngle} onChange={v => processor.setCone(c => ({ ...c, innerAngle: v }))} min={0} max={360} step={1} unit="°" disabled={!is3DActive} /></div>
+                                <div className="bg-gray-900/50 rounded-lg"><ParameterSlider label="Cone Outer" value={processor.cone.outerAngle} onChange={v => processor.setCone(c => ({ ...c, outerAngle: v }))} min={0} max={360} step={1} unit="°" disabled={!is3DActive} /></div>
+                            </div>
+                            <h3 className="text-white text-lg font-semibold text-center mt-2">Movement</h3>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="bg-gray-900/50 rounded-lg"><ParameterSlider label="Distance" value={processor.distance} onChange={processor.setDistance} min={0} max={10} step={0.1} disabled={!is3DActive || !isMovementActive} /></div>
+                                <div className="bg-gray-900/50 rounded-lg"><ParameterSlider label="Speed" value={processor.movementSpeed} onChange={processor.setMovementSpeed} min={0} max={5} step={0.1} disabled={!is3DActive || !isMovementActive} /></div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </>
     );
 };
 

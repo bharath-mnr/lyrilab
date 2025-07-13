@@ -23,7 +23,7 @@ export const TOOLS = [
   component: 'EQStudio',
   importPath: './components/EQStudio.jsx',
   description: 'Professional audio equalizer with real-time visualization and vertical frequency controls.',
-  icon: 'SlidersHorizontal',
+  icon: '',
   categories: ['Audio']
   },
   {

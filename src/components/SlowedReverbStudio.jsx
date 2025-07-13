@@ -1,6 +1,25 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import * as Tone from 'tone';
 import { Play, Pause, Upload, Download, RotateCcw, ChevronDown, Waves, Clock, AlertCircle } from 'lucide-react';
+import SEOHead from './SEOHead';
+
+
+// Define the tool object for SEO structured data
+const slowedReverbStudioTool = {
+    id: 'slowed-reverb-studio',
+    name: 'Slowed Reverb Studio',
+    description: 'Professional slowed audio + reverb with real-time visualization.',
+    path: '/slowed-reverb-studio',
+    categories: [
+        'Audio',
+        'Reverb',
+        'Slowed Audio',
+        'Aesthetic Effects',
+        'Sound Design'
+    ]
+};
+
+
 
 // Audio Context Provider
 export const AudioContext = createContext(null);
@@ -682,178 +701,187 @@ const SlowedReverbContent = () => {
     }
 
     return (
-        <div className="min-h-screen flex flex-col items-center p-4 md:p-8 bg-gradient-to-br from-purple-900 via-pink-900 to-indigo-900 font-inter">
-            {/* Header Section */}
-            <div className="text-center mb-4 sm:mb-6 md:mb-8 lg:mb-10 w-full px-2">
-                <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 mb-1 sm:mb-2 md:mb-3 lg:mb-4">
+        <>
+
+            <SEOHead 
+                pageId="slowed-reverb-studio" 
+                tool={slowedReverbStudioTool} 
+                customData={{}} 
+            />
+
+            <div className="min-h-screen flex flex-col items-center p-4 md:p-8 bg-gradient-to-br from-purple-900 via-pink-900 to-indigo-900 font-inter">
+                {/* Header Section */}
+                <div className="text-center mb-4 sm:mb-6 md:mb-8 lg:mb-10 w-full px-2">
+                    <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 mb-1 sm:mb-2 md:mb-3 lg:mb-4">
+                        
+                        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white">
+                            Slowed Reverb Studio
+                        </h1>
+                    </div>
                     
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white">
-                        Slowed Reverb Studio
-                    </h1>
+                    <p className="text-purple-200 text-xs sm:text-sm md:text-base lg:text-lg">
+                        Create dreamy slowed + reverb versions
+                    </p>
+                    
+                    {isLoadingAudio && (
+                        <p className="text-purple-300 text-[0.65rem] xs:text-xs sm:text-sm mt-1 sm:mt-2 md:mt-3 lg:mt-4 animate-pulse">
+                            Loading audio: {audioFileName}...
+                        </p>
+                    )}
+                    
+                    {audioLoadError && (
+                        <p className="text-red-400 text-[0.65rem] xs:text-xs sm:text-sm mt-1 sm:mt-2 md:mt-3 lg:mt-4">
+                            Error: {audioLoadError}
+                        </p>
+                    )}
+                    
+                    {isAudioReady && (
+                        <p className="text-purple-300 text-[0.65rem] xs:text-xs sm:text-sm mt-1 sm:mt-2 truncate max-w-full">
+                            Current: <span className="font-semibold">{audioFileName}</span>
+                        </p>
+                    )}
                 </div>
-                
-                <p className="text-purple-200 text-xs sm:text-sm md:text-base lg:text-lg">
-                    Create dreamy slowed + reverb versions
-                </p>
-                
-                {isLoadingAudio && (
-                    <p className="text-purple-300 text-[0.65rem] xs:text-xs sm:text-sm mt-1 sm:mt-2 md:mt-3 lg:mt-4 animate-pulse">
-                        Loading audio: {audioFileName}...
-                    </p>
-                )}
-                
-                {audioLoadError && (
-                    <p className="text-red-400 text-[0.65rem] xs:text-xs sm:text-sm mt-1 sm:mt-2 md:mt-3 lg:mt-4">
-                        Error: {audioLoadError}
-                    </p>
-                )}
-                
-                {isAudioReady && (
-                    <p className="text-purple-300 text-[0.65rem] xs:text-xs sm:text-sm mt-1 sm:mt-2 truncate max-w-full">
-                        Current: <span className="font-semibold">{audioFileName}</span>
-                    </p>
-                )}
-            </div>
 
-            {/* Main Content */}
-            <div className="bg-black/20 backdrop-blur-sm p-4 md:p-8 rounded-xl md:rounded-2xl shadow-lg md:shadow-2xl w-full max-w-7xl border border-purple-500/20">
-                {/* Control Buttons */}
-                <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-4 md:mb-8">
-                    <button
-                        onClick={togglePlay}
-                        disabled={!isAudioReady || isLoadingAudio}
-                        className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold flex items-center gap-1 md:gap-2 transition-all duration-200 text-sm md:text-base ${
-                            isPlaying ? 'bg-red-500 hover:bg-red-600 text-white' 
-                            : 'bg-green-500 hover:bg-green-600 text-white'
-                        } ${(!isAudioReady || isLoadingAudio) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    >
-                        {isPlaying ? <Pause size={16} /> : <Play size={16} />}
-                        <span className="hidden sm:inline ml-1">{isPlaying ? 'Stop' : 'Play'}</span>
-                    </button>
+                {/* Main Content */}
+                <div className="bg-black/20 backdrop-blur-sm p-4 md:p-8 rounded-xl md:rounded-2xl shadow-lg md:shadow-2xl w-full max-w-7xl border border-purple-500/20">
+                    {/* Control Buttons */}
+                    <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-4 md:mb-8">
+                        <button
+                            onClick={togglePlay}
+                            disabled={!isAudioReady || isLoadingAudio}
+                            className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold flex items-center gap-1 md:gap-2 transition-all duration-200 text-sm md:text-base ${
+                                isPlaying ? 'bg-red-500 hover:bg-red-600 text-white' 
+                                : 'bg-green-500 hover:bg-green-600 text-white'
+                            } ${(!isAudioReady || isLoadingAudio) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                            {isPlaying ? <Pause size={16} /> : <Play size={16} />}
+                            <span className="hidden sm:inline ml-1">{isPlaying ? 'Stop' : 'Play'}</span>
+                        </button>
 
-                    <label className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold bg-blue-500 hover:bg-blue-600 text-white cursor-pointer flex items-center gap-1 md:gap-2 transition-all duration-200 text-sm md:text-base`}>
-                        <Upload size={16} />
-                        <span className="hidden sm:inline ml-1">New File</span>
-                        <input
-                            type="file"
-                            accept="audio/*"
-                            onChange={(e) => e.target.files && handleFileUpload(e.target.files[0])}
-                            className="hidden"
+                        <label className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold bg-blue-500 hover:bg-blue-600 text-white cursor-pointer flex items-center gap-1 md:gap-2 transition-all duration-200 text-sm md:text-base`}>
+                            <Upload size={16} />
+                            <span className="hidden sm:inline ml-1">New File</span>
+                            <input
+                                type="file"
+                                accept="audio/*"
+                                onChange={(e) => e.target.files && handleFileUpload(e.target.files[0])}
+                                className="hidden"
+                            />
+                        </label>
+
+                        <button
+                            onClick={downloadProcessedAudio}
+                            disabled={!isAudioReady || isDownloading}
+                            className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold bg-purple-500 hover:bg-purple-600 text-white flex items-center gap-1 md:gap-2 transition-all duration-200 text-sm md:text-base ${
+                                (!isAudioReady || isDownloading) ? 'opacity-50 cursor-not-allowed' : ''
+                            }`}
+                        >
+                            {isDownloading ? (
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            ) : (
+                                <Download size={16} />
+                            )}
+                            <span className="hidden sm:inline ml-1">
+                                {isDownloading ? `${downloadProgress}%` : 'Download'}
+                            </span>
+                        </button>
+
+                        <button
+                            onClick={resetSettings}
+                            className="px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold bg-gray-500 hover:bg-gray-600 text-white flex items-center gap-1 md:gap-2 transition-all duration-200 text-sm md:text-base"
+                        >
+                            <RotateCcw size={16} />
+                            <span className="hidden sm:inline ml-1">Reset</span>
+                        </button>
+                    </div>
+
+                    {/* Preset Selection */}
+                    <div className="mb-4 md:mb-8">
+                        <h3 className="text-white text-base md:text-lg lg:text-xl font-semibold mb-2 md:mb-4 text-center">
+                            Slowed Reverb Presets
+                        </h3>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-3">
+                            {Object.keys(SLOWED_REVERB_PRESETS).map((presetName) => (
+                                <button
+                                    key={presetName}
+                                    onClick={() => applyPreset(presetName)}
+                                    className={`px-2 py-1 md:px-3 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 ${
+                                        selectedPreset === presetName 
+                                            ? 'bg-purple-500 text-white shadow-lg' 
+                                            : 'bg-purple-900/30 text-purple-200 hover:bg-purple-800/50'
+                                    }`}
+                                >
+                                    {presetName}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Effect Toggle */}
+                    <div className="mb-6 md:mb-10 text-center">
+                        <button
+                            onClick={toggleEffectActive}
+                            className={`px-6 py-3 rounded-full font-semibold flex items-center justify-center mx-auto gap-2 transition-all duration-300 text-base md:text-lg ${
+                                isEffectActive 
+                                    ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-md' 
+                                    : 'bg-gray-700 hover:bg-gray-800 text-gray-300 border border-gray-600'
+                            }`}
+                        >
+                            {isEffectActive ? <Waves size={20} /> : <AlertCircle size={20} />}
+                            {isEffectActive ? 'Effect Active' : 'Effect Bypassed'}
+                        </button>
+                    </div>
+
+                    {/* Parameter Sliders */}
+                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 justify-items-center">
+                        <ParameterSlider
+                            label="Reverb Decay"
+                            value={reverbDecay}
+                            onChange={setReverbDecay}
+                            min={0.5}
+                            max={20.0}
+                            step={0.1}
+                            unit="s"
+                            disabled={!isEffectActive}
+                            mobileCompact={true}
                         />
-                    </label>
-
-                    <button
-                        onClick={downloadProcessedAudio}
-                        disabled={!isAudioReady || isDownloading}
-                        className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold bg-purple-500 hover:bg-purple-600 text-white flex items-center gap-1 md:gap-2 transition-all duration-200 text-sm md:text-base ${
-                            (!isAudioReady || isDownloading) ? 'opacity-50 cursor-not-allowed' : ''
-                        }`}
-                    >
-                        {isDownloading ? (
-                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        ) : (
-                            <Download size={16} />
-                        )}
-                        <span className="hidden sm:inline ml-1">
-                            {isDownloading ? `${downloadProgress}%` : 'Download'}
-                        </span>
-                    </button>
-
-                    <button
-                        onClick={resetSettings}
-                        className="px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold bg-gray-500 hover:bg-gray-600 text-white flex items-center gap-1 md:gap-2 transition-all duration-200 text-sm md:text-base"
-                    >
-                        <RotateCcw size={16} />
-                        <span className="hidden sm:inline ml-1">Reset</span>
-                    </button>
-                </div>
-
-                {/* Preset Selection */}
-                <div className="mb-4 md:mb-8">
-                    <h3 className="text-white text-base md:text-lg lg:text-xl font-semibold mb-2 md:mb-4 text-center">
-                        Slowed Reverb Presets
-                    </h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-3">
-                        {Object.keys(SLOWED_REVERB_PRESETS).map((presetName) => (
-                            <button
-                                key={presetName}
-                                onClick={() => applyPreset(presetName)}
-                                className={`px-2 py-1 md:px-3 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 ${
-                                    selectedPreset === presetName 
-                                        ? 'bg-purple-500 text-white shadow-lg' 
-                                        : 'bg-purple-900/30 text-purple-200 hover:bg-purple-800/50'
-                                }`}
-                            >
-                                {presetName}
-                            </button>
-                        ))}
+                        <ParameterSlider
+                            label="Wet Level"
+                            value={wetLevel}
+                            onChange={setWetLevel}
+                            min={0.0}
+                            max={1.0}
+                            step={0.01}
+                            unit="%"
+                            disabled={!isEffectActive}
+                            mobileCompact={true}
+                        />
+                        <ParameterSlider
+                            label="Slow Rate"
+                            value={slowRate}
+                            onChange={setSlowRate}
+                            min={0.1}
+                            max={1.0}
+                            step={0.01}
+                            unit="x"
+                            disabled={!isEffectActive}
+                            mobileCompact={true}
+                        />
+                        <ParameterSlider
+                            label="Pre-Delay"
+                            value={preDelay}
+                            onChange={setPreDelay}
+                            min={0.0}
+                            max={0.5}
+                            step={0.01}
+                            unit="s"
+                            disabled={!isEffectActive}
+                            mobileCompact={true}
+                        />
                     </div>
                 </div>
-
-                {/* Effect Toggle */}
-                <div className="mb-6 md:mb-10 text-center">
-                    <button
-                        onClick={toggleEffectActive}
-                        className={`px-6 py-3 rounded-full font-semibold flex items-center justify-center mx-auto gap-2 transition-all duration-300 text-base md:text-lg ${
-                            isEffectActive 
-                                ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-md' 
-                                : 'bg-gray-700 hover:bg-gray-800 text-gray-300 border border-gray-600'
-                        }`}
-                    >
-                        {isEffectActive ? <Waves size={20} /> : <AlertCircle size={20} />}
-                        {isEffectActive ? 'Effect Active' : 'Effect Bypassed'}
-                    </button>
-                </div>
-
-                {/* Parameter Sliders */}
-                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 justify-items-center">
-                    <ParameterSlider
-                        label="Reverb Decay"
-                        value={reverbDecay}
-                        onChange={setReverbDecay}
-                        min={0.5}
-                        max={20.0}
-                        step={0.1}
-                        unit="s"
-                        disabled={!isEffectActive}
-                        mobileCompact={true}
-                    />
-                    <ParameterSlider
-                        label="Wet Level"
-                        value={wetLevel}
-                        onChange={setWetLevel}
-                        min={0.0}
-                        max={1.0}
-                        step={0.01}
-                        unit="%"
-                        disabled={!isEffectActive}
-                        mobileCompact={true}
-                    />
-                    <ParameterSlider
-                        label="Slow Rate"
-                        value={slowRate}
-                        onChange={setSlowRate}
-                        min={0.1}
-                        max={1.0}
-                        step={0.01}
-                        unit="x"
-                        disabled={!isEffectActive}
-                        mobileCompact={true}
-                    />
-                    <ParameterSlider
-                        label="Pre-Delay"
-                        value={preDelay}
-                        onChange={setPreDelay}
-                        min={0.0}
-                        max={0.5}
-                        step={0.01}
-                        unit="s"
-                        disabled={!isEffectActive}
-                        mobileCompact={true}
-                    />
-                </div>
             </div>
-        </div>
+        </>
     );
 };
 

@@ -1,6 +1,24 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext, useMemo } from 'react';
 import * as Tone from 'tone';
 import { Play, Pause, Upload, Download, Waves, RotateCcw, ChevronDown, Volume2 } from 'lucide-react';
+import SEOHead from './SEOHead';
+
+
+// Define the tool object for SEO structured data
+const reverbStudioTool = {
+    id: 'reverb-studio',
+    name: 'Reverb Studio',
+    description: 'Professional audio reverb with real-time visualization.',
+    path: '/reverb-studio',
+    categories: [
+        'Audio',
+        'Reverb',
+        'Sound Design',
+        'Mixing',
+        'Effects'
+    ]
+};
+
 
 // Audio Context Provider
 export const AudioContext = createContext(null);
@@ -829,176 +847,185 @@ const ReverbContent = () => {
     }
 
     return (
-        <div className="min-h-screen flex flex-col items-center p-4 md:p-8 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 font-inter">
-            {/* Header Section */}
-            <div className="text-center mb-4 sm:mb-6 md:mb-8 lg:mb-10 w-full px-2">
-                <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 mb-1 sm:mb-2 md:mb-3 lg:mb-4">
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white">
-                        Reverb Studio
-                    </h1>
+        <>
+
+            <SEOHead 
+                pageId="reverb-studio" 
+                tool={reverbStudioTool} 
+                customData={{}} 
+            />
+
+            <div className="min-h-screen flex flex-col items-center p-4 md:p-8 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 font-inter">
+                {/* Header Section */}
+                <div className="text-center mb-4 sm:mb-6 md:mb-8 lg:mb-10 w-full px-2">
+                    <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 mb-1 sm:mb-2 md:mb-3 lg:mb-4">
+                        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white">
+                            Reverb Studio
+                        </h1>
+                    </div>
+                    
+                    <p className="text-cyan-200 text-xs sm:text-sm md:text-base lg:text-lg">
+                        Professional reverb processor
+                    </p>
+                    
+                    {isLoadingAudio && (
+                        <p className="text-cyan-300 text-[0.65rem] xs:text-xs sm:text-sm mt-1 sm:mt-2 md:mt-3 lg:mt-4 animate-pulse">
+                            Loading audio: {audioFileName}...
+                        </p>
+                    )}
+                    
+                    {audioLoadError && (
+                        <p className="text-red-400 text-[0.65rem] xs:text-xs sm:text-sm mt-1 sm:mt-2 md:mt-3 lg:mt-4">
+                            Error: {audioLoadError}
+                        </p>
+                    )}
+                    
+                    {isAudioReady && (
+                        <p className="text-cyan-300 text-[0.65rem] xs:text-xs sm:text-sm mt-1 sm:mt-2 truncate max-w-full">
+                            Current: <span className="font-semibold">{audioFileName}</span>
+                        </p>
+                    )}
                 </div>
-                
-                <p className="text-cyan-200 text-xs sm:text-sm md:text-base lg:text-lg">
-                    Professional reverb processor
-                </p>
-                
-                {isLoadingAudio && (
-                    <p className="text-cyan-300 text-[0.65rem] xs:text-xs sm:text-sm mt-1 sm:mt-2 md:mt-3 lg:mt-4 animate-pulse">
-                        Loading audio: {audioFileName}...
-                    </p>
-                )}
-                
-                {audioLoadError && (
-                    <p className="text-red-400 text-[0.65rem] xs:text-xs sm:text-sm mt-1 sm:mt-2 md:mt-3 lg:mt-4">
-                        Error: {audioLoadError}
-                    </p>
-                )}
-                
-                {isAudioReady && (
-                    <p className="text-cyan-300 text-[0.65rem] xs:text-xs sm:text-sm mt-1 sm:mt-2 truncate max-w-full">
-                        Current: <span className="font-semibold">{audioFileName}</span>
-                    </p>
-                )}
-            </div>
 
-            {/* Main Content */}
-            <div className="bg-black/20 backdrop-blur-sm p-4 md:p-8 rounded-xl md:rounded-2xl shadow-lg md:shadow-2xl w-full max-w-7xl border border-cyan-500/20">
-                {/* Control Buttons */}
-                <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-4 md:mb-8">
-                    <button
-                        onClick={togglePlay}
-                        disabled={!isAudioReady || isLoadingAudio}
-                        className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold flex items-center gap-1 md:gap-2 transition-all duration-200 text-sm md:text-base ${
-                            isPlaying ? 'bg-red-500 hover:bg-red-600 text-white' 
-                            : 'bg-green-500 hover:bg-green-600 text-white'
-                        } ${(!isAudioReady || isLoadingAudio) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    >
-                        {isPlaying ? <Pause size={16} /> : <Play size={16} />}
-                        <span className="hidden sm:inline ml-1">{isPlaying ? 'Stop' : 'Play'}</span>
-                    </button>
-
-                    <label className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold bg-blue-500 hover:bg-blue-600 text-white cursor-pointer flex items-center gap-1 md:gap-2 transition-all duration-200 text-sm md:text-base ${isLoadingAudio ? 'opacity-50 cursor-not-allowed' : ''}`}>
-                        <Upload size={16} />
-                        <span className="hidden sm:inline ml-1">Upload</span>
-                        <input type="file" accept="audio/*" onChange={(e) => handleFileUpload(e.target.files[0])} className="hidden" disabled={isLoadingAudio} />
-                    </label>
-
-                    <button
-                        onClick={downloadProcessedAudio}
-                        disabled={!isAudioReady || isLoadingAudio || isDownloading}
-                        className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold bg-indigo-500 hover:bg-indigo-600 text-white flex items-center gap-1 md:gap-2 transition-all duration-200 text-sm md:text-base ${(!isAudioReady || isLoadingAudio || isDownloading) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    >
-                        {isDownloading ? (
-                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        ) : (
-                            <Download size={16} />
-                        )}
-                        <span className="hidden sm:inline ml-1">Download</span>
-                    </button>
-
-                    <button
-                        onClick={resetReverb}
-                        disabled={!isAudioReady || isLoadingAudio || isDownloading}
-                        className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold bg-gray-500 hover:bg-gray-600 text-white flex items-center gap-1 md:gap-2 transition-all duration-200 text-sm md:text-base ${(!isAudioReady || isLoadingAudio || isDownloading) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    >
-                        <RotateCcw size={16} />
-                        <span className="hidden sm:inline ml-1">Reset</span>
-                    </button>
-
-                    {/* Reverb Toggle */}
-                    <button
-                        onClick={toggleReverbActive}
-                        disabled={!isAudioReady || isLoadingAudio || isDownloading}
-                        className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold flex items-center gap-1 md:gap-2 transition-all duration-200 text-sm md:text-base ${
-                            isReverbActive ? 'bg-orange-500 hover:bg-orange-600 text-white'
-                            : 'bg-gray-400 hover:bg-gray-500 text-white'
-                        } ${(!isAudioReady || isLoadingAudio || isDownloading) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    >
-                        <Waves size={16} />
-                        <span className="hidden sm:inline ml-1">Reverb {isReverbActive ? 'On' : 'Off'}</span>
-                    </button>
-
-                    {/* Preset Selector */}
-                    <div className="relative w-full sm:w-auto">
-                        <select
-                            value={selectedPreset}
-                            onChange={(e) => applyPreset(e.target.value)}
-                            disabled={!isAudioReady || isLoadingAudio || isDownloading || !isReverbActive}
-                            className={`block w-full px-4 py-2 md:px-6 md:py-3 rounded-full bg-purple-500 text-white font-semibold cursor-pointer appearance-none transition-all duration-200 hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent text-sm md:text-base ${(!isAudioReady || isLoadingAudio || isDownloading || !isReverbActive) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                {/* Main Content */}
+                <div className="bg-black/20 backdrop-blur-sm p-4 md:p-8 rounded-xl md:rounded-2xl shadow-lg md:shadow-2xl w-full max-w-7xl border border-cyan-500/20">
+                    {/* Control Buttons */}
+                    <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-4 md:mb-8">
+                        <button
+                            onClick={togglePlay}
+                            disabled={!isAudioReady || isLoadingAudio}
+                            className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold flex items-center gap-1 md:gap-2 transition-all duration-200 text-sm md:text-base ${
+                                isPlaying ? 'bg-red-500 hover:bg-red-600 text-white' 
+                                : 'bg-green-500 hover:bg-green-600 text-white'
+                            } ${(!isAudioReady || isLoadingAudio) ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
-                            {Object.keys(REVERB_PRESETS).map((presetName) => (
-                                <option key={presetName} value={presetName}>
-                                    {presetName}
-                                </option>
-                            ))}
-                        </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 md:px-4 text-white">
-                            <ChevronDown size={16} />
+                            {isPlaying ? <Pause size={16} /> : <Play size={16} />}
+                            <span className="hidden sm:inline ml-1">{isPlaying ? 'Stop' : 'Play'}</span>
+                        </button>
+
+                        <label className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold bg-blue-500 hover:bg-blue-600 text-white cursor-pointer flex items-center gap-1 md:gap-2 transition-all duration-200 text-sm md:text-base ${isLoadingAudio ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                            <Upload size={16} />
+                            <span className="hidden sm:inline ml-1">Upload</span>
+                            <input type="file" accept="audio/*" onChange={(e) => handleFileUpload(e.target.files[0])} className="hidden" disabled={isLoadingAudio} />
+                        </label>
+
+                        <button
+                            onClick={downloadProcessedAudio}
+                            disabled={!isAudioReady || isLoadingAudio || isDownloading}
+                            className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold bg-indigo-500 hover:bg-indigo-600 text-white flex items-center gap-1 md:gap-2 transition-all duration-200 text-sm md:text-base ${(!isAudioReady || isLoadingAudio || isDownloading) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                            {isDownloading ? (
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            ) : (
+                                <Download size={16} />
+                            )}
+                            <span className="hidden sm:inline ml-1">Download</span>
+                        </button>
+
+                        <button
+                            onClick={resetReverb}
+                            disabled={!isAudioReady || isLoadingAudio || isDownloading}
+                            className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold bg-gray-500 hover:bg-gray-600 text-white flex items-center gap-1 md:gap-2 transition-all duration-200 text-sm md:text-base ${(!isAudioReady || isLoadingAudio || isDownloading) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                            <RotateCcw size={16} />
+                            <span className="hidden sm:inline ml-1">Reset</span>
+                        </button>
+
+                        {/* Reverb Toggle */}
+                        <button
+                            onClick={toggleReverbActive}
+                            disabled={!isAudioReady || isLoadingAudio || isDownloading}
+                            className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold flex items-center gap-1 md:gap-2 transition-all duration-200 text-sm md:text-base ${
+                                isReverbActive ? 'bg-orange-500 hover:bg-orange-600 text-white'
+                                : 'bg-gray-400 hover:bg-gray-500 text-white'
+                            } ${(!isAudioReady || isLoadingAudio || isDownloading) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                            <Waves size={16} />
+                            <span className="hidden sm:inline ml-1">Reverb {isReverbActive ? 'On' : 'Off'}</span>
+                        </button>
+
+                        {/* Preset Selector */}
+                        <div className="relative w-full sm:w-auto">
+                            <select
+                                value={selectedPreset}
+                                onChange={(e) => applyPreset(e.target.value)}
+                                disabled={!isAudioReady || isLoadingAudio || isDownloading || !isReverbActive}
+                                className={`block w-full px-4 py-2 md:px-6 md:py-3 rounded-full bg-purple-500 text-white font-semibold cursor-pointer appearance-none transition-all duration-200 hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent text-sm md:text-base ${(!isAudioReady || isLoadingAudio || isDownloading || !isReverbActive) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            >
+                                {Object.keys(REVERB_PRESETS).map((presetName) => (
+                                    <option key={presetName} value={presetName}>
+                                        {presetName}
+                                    </option>
+                                ))}
+                            </select>
+                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 md:px-4 text-white">
+                                <ChevronDown size={16} />
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Compact Parameter Sliders */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-4 mb-4 md:mb-8">
-                    <ParameterSlider
-                        label="Decay"
-                        value={reverbDecay}
-                        onChange={setReverbDecay}
-                        min={0.1}
-                        max={10}
-                        step={0.1}
-                        unit="s"
-                        disabled={!isAudioReady || isLoadingAudio || !isReverbActive}
-                        compact={true}
-                        mobileCompact={true}
-                    />
-                    <ParameterSlider
-                        label="Wet"
-                        value={wetLevel}
-                        onChange={setWetLevel}
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        unit="%"
-                        disabled={!isAudioReady || isLoadingAudio || !isReverbActive}
-                        compact={true}
-                        mobileCompact={true}
-                    />
-                    <ParameterSlider
-                        label="Room"
-                        value={roomSize}
-                        onChange={setRoomSize}
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        disabled={!isAudioReady || isLoadingAudio || !isReverbActive}
-                        compact={true}
-                        mobileCompact={true}
-                    />
-                    <ParameterSlider
-                        label="Pre-Dly"
-                        value={preDelay}
-                        onChange={setPreDelay}
-                        min={0}
-                        max={0.5}
-                        step={0.001}
-                        unit="s"
-                        disabled={!isAudioReady || isLoadingAudio || !isReverbActive}
-                        compact={true}
-                        mobileCompact={true}
-                    />
-                </div>
+                    {/* Compact Parameter Sliders */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-4 mb-4 md:mb-8">
+                        <ParameterSlider
+                            label="Decay"
+                            value={reverbDecay}
+                            onChange={setReverbDecay}
+                            min={0.1}
+                            max={10}
+                            step={0.1}
+                            unit="s"
+                            disabled={!isAudioReady || isLoadingAudio || !isReverbActive}
+                            compact={true}
+                            mobileCompact={true}
+                        />
+                        <ParameterSlider
+                            label="Wet"
+                            value={wetLevel}
+                            onChange={setWetLevel}
+                            min={0}
+                            max={1}
+                            step={0.01}
+                            unit="%"
+                            disabled={!isAudioReady || isLoadingAudio || !isReverbActive}
+                            compact={true}
+                            mobileCompact={true}
+                        />
+                        <ParameterSlider
+                            label="Room"
+                            value={roomSize}
+                            onChange={setRoomSize}
+                            min={0}
+                            max={1}
+                            step={0.01}
+                            disabled={!isAudioReady || isLoadingAudio || !isReverbActive}
+                            compact={true}
+                            mobileCompact={true}
+                        />
+                        <ParameterSlider
+                            label="Pre-Dly"
+                            value={preDelay}
+                            onChange={setPreDelay}
+                            min={0}
+                            max={0.5}
+                            step={0.001}
+                            unit="s"
+                            disabled={!isAudioReady || isLoadingAudio || !isReverbActive}
+                            compact={true}
+                            mobileCompact={true}
+                        />
+                    </div>
 
-                {/* Visualizer */}
-                <div className="mb-4 md:mb-8 w-full overflow-hidden">
-                    <ReverbVisualizer 
-                        analyser={analyserNode} 
-                        width={Math.min(window.innerWidth - 32, 700)}
-                        height={200}
-                    />
+                    {/* Visualizer */}
+                    <div className="mb-4 md:mb-8 w-full overflow-hidden">
+                        <ReverbVisualizer 
+                            analyser={analyserNode} 
+                            width={Math.min(window.innerWidth - 32, 700)}
+                            height={200}
+                        />
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 // Main App component for the Reverb Studio
