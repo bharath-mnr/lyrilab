@@ -59,6 +59,16 @@ export const TOOLS = [
     categories: ['Audio']
   },
   {
+    id: 'bass-booster-studio',
+    name: 'Bass Booster Studio',
+    path: '/bass-booster',
+    component: 'BassBoosterStudio',
+    importPath: './components/BassBoosterStudio.jsx',
+    description: 'Professional audio bass boost with real-time visualization.',
+    icon: '',
+    categories: ['Audio']
+  },
+  {
     id: 'virtual-piano',
     name: 'Piano',
     path: '/virtual-piano',
