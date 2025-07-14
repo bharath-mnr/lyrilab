@@ -18,8 +18,7 @@ const bassBoosterStudioTool = {
     ]
 };
 
-
-
+// --- Enhanced Custom Hook for Advanced Bass Boosting Logic ---
 // --- Enhanced Custom Hook for Advanced Bass Boosting Logic ---
 const useBassBooster = () => {
     // Refs for Web Audio API nodes
@@ -50,6 +49,51 @@ const useBassBooster = () => {
     const [boost, setBoost] = useState(15);
     const [subBoost, setSubBoost] = useState(8);
     const [masterVolume, setMasterVolume] = useState(0.75);
+
+    // Cleanup function to stop audio and disconnect nodes
+    const cleanupAudio = useCallback(() => {
+        if (sourceNodeRef.current) {
+            try {
+                sourceNodeRef.current.stop();
+                sourceNodeRef.current.disconnect();
+            } catch (e) {
+                // Source may already be stopped
+            }
+            sourceNodeRef.current = null;
+        }
+        
+        // Clear all node references
+        analyserNodeRef.current = null;
+        primaryBassFilterRef.current = null;
+        secondaryBassFilterRef.current = null;
+        subBassFilterRef.current = null;
+        compressorNodeRef.current = null;
+        masterGainNodeRef.current = null;
+        wetGainNodeRef.current = null;
+        dryGainNodeRef.current = null;
+        
+        if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+            audioContextRef.current.close();
+            audioContextRef.current = null;
+        }
+        
+        setIsPlaying(false);
+        setIsReady(false);
+    }, []);
+
+    // Audio cleanup on unmount and page unload
+    useEffect(() => {
+        const handleBeforeUnload = () => {
+            cleanupAudio();
+        };
+        
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+            cleanupAudio();
+        };
+    }, [cleanupAudio]);
 
     const setupAudioGraph = useCallback((context, source) => {
         // Primary bass filter (peaking)
@@ -128,17 +172,28 @@ const useBassBooster = () => {
         setIsLoading(true);
         setError(null);
         
-        // Stop any playing audio
+        // Stop any playing audio and cleanup
         if (isPlaying) {
-            sourceNodeRef.current?.stop();
+            if (sourceNodeRef.current) {
+                try {
+                    sourceNodeRef.current.stop();
+                    sourceNodeRef.current.disconnect();
+                } catch (e) {
+                    // Source may already be stopped
+                }
+            }
             setIsPlaying(false);
         }
         setIsReady(false);
 
         try {
-            if (!audioContextRef.current) {
-                audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+            // Close existing context if it exists
+            if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+                await audioContextRef.current.close();
             }
+            
+            // Create new context
+            audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
             await audioContextRef.current.resume();
 
             const arrayBuffer = await file.arrayBuffer();
@@ -165,10 +220,24 @@ const useBassBooster = () => {
 
     const togglePlayback = useCallback(async () => {
         if (!isReady || isLoading) return;
+        
+        if (!audioContextRef.current || audioContextRef.current.state === 'closed') {
+            setError("Audio context is not available. Please reload the audio file.");
+            return;
+        }
+        
         await audioContextRef.current.resume();
 
         if (isPlaying) {
-            sourceNodeRef.current?.stop();
+            if (sourceNodeRef.current) {
+                try {
+                    sourceNodeRef.current.stop();
+                    sourceNodeRef.current.disconnect();
+                } catch (e) {
+                    // Source may already be stopped
+                }
+                sourceNodeRef.current = null;
+            }
             setIsPlaying(false);
         } else {
             sourceNodeRef.current = audioContextRef.current.createBufferSource();
@@ -186,7 +255,10 @@ const useBassBooster = () => {
             }
 
             sourceNodeRef.current.start();
-            sourceNodeRef.current.onended = () => setIsPlaying(false);
+            sourceNodeRef.current.onended = () => {
+                setIsPlaying(false);
+                sourceNodeRef.current = null;
+            };
             setIsPlaying(true);
         }
     }, [isReady, isLoading, isPlaying, setupAudioGraph, isFilterActive]);
@@ -292,7 +364,7 @@ const useBassBooster = () => {
 
     // Update filter parameters in real-time
     useEffect(() => {
-        if (isPlaying && wetGainNodeRef.current && dryGainNodeRef.current) {
+        if (isPlaying && wetGainNodeRef.current && dryGainNodeRef.current && audioContextRef.current) {
             const context = audioContextRef.current;
             if (isFilterActive) {
                 wetGainNodeRef.current.gain.setTargetAtTime(1, context.currentTime, 0.015);
@@ -340,6 +412,7 @@ const useBassBooster = () => {
         boost, setBoost,
         subBoost, setSubBoost,
         masterVolume, setMasterVolume,
+        cleanupAudio
     };
 };
 
