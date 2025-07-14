@@ -22,12 +22,19 @@ const SEOHead = ({ pageId, tool = null, customData = {} }) => {
       <title>{finalData.fullTitle || finalData.title}</title>
       <meta name="description" content={finalData.description} />
       <meta name="keywords" content={finalData.keywords} />
-      <meta name="author" content={finalData.author} />
+      <meta name="author" content="Bharath" />
       
       {/* Debug: Add a test meta tag to verify Helmet is working */}
       <meta name="seo-debug" content="helmet-working" />
       
       <link rel="canonical" href={`${finalData.domain}${finalData.canonical}`} />
+
+      {/* Enhanced Robot Meta Tags */}
+      <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+      <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large" />
+      <meta name="bingbot" content="index, follow" />
+      <meta name="language" content="English" />
+      <meta name="revisit-after" content="7 days" />
 
       {/* Open Graph Tags */}
       <meta property="og:title" content={finalData.ogTitle || finalData.title} />
@@ -46,7 +53,6 @@ const SEOHead = ({ pageId, tool = null, customData = {} }) => {
       <meta name="twitter:image" content={finalData.ogImage} />
 
       {/* Additional Meta Tags */}
-      <meta name="robots" content="index, follow" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <meta httpEquiv="Content-Language" content="en" />
 
@@ -60,10 +66,10 @@ const SEOHead = ({ pageId, tool = null, customData = {} }) => {
   );
 };
 
-export default SEOHead
+export default SEOHead;
 
 // Usage example in your components:
-/*
+/* 
 import SEOHead from './components/SEOHead';
 import { TOOLS } from './config/tools';
 
@@ -80,3 +86,4 @@ const VirtualPiano = () => {
   );
 };
 */
+
