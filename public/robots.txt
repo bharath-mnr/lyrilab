@@ -1,9 +1,27 @@
 User-agent: *
 Allow: /
 Disallow: /admin/
-Disallow: /api/
+Disallow: /api/internal/
+Disallow: /api/auth/
 
-# For AI crawlers
+# Allow important API endpoints that serve content
+Allow: /api/public/
+Allow: /api/content/
+
+# For search engines and ad crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: AdsBot-Google
+Allow: /
+
+User-agent: AdsBot-Google-Mobile
+Allow: /
+
+# For AI crawlers (good for content discovery)
 User-agent: GPTBot
 Allow: /
 
@@ -16,4 +34,4 @@ Allow: /
 User-agent: anthropic-ai
 Allow: /
 
-Sitemap: https://lyrilab.vercel.app/sitemap.xml  // replace after buy domain
+Sitemap: https://lyrilab.com/sitemap.xml
