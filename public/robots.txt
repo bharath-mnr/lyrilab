@@ -34,4 +34,4 @@ Allow: /
 User-agent: anthropic-ai
 Allow: /
 
-Sitemap: https://lyrilab.com/sitemap.xml
+Sitemap: https://www.lyrilab.com/sitemap.xml

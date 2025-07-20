@@ -3,7 +3,7 @@ export const SEO_CONFIG = {
   // Global defaults
   global: {
     siteName: "LyriLab",
-    domain: "https://lyrilab.com",
+    domain: "https://www.lyrilab.com", //https://lyrilab.com // npm run sitemap
     twitterHandle: "...",
     locale: "en_US",
     type: "website",
