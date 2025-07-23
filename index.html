@@ -2,10 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- Google Site Verification -->
   <meta name="google-site-verification" content="JIfP_1_KxBmpAIIuafVSLUUNTll_fNlQjelBRANVbqc" />
-
+  
+  <!-- Performance Optimizations -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+  <link rel="dns-prefetch" href="//www.google-analytics.com" />
+  <meta http-equiv="X-DNS-Prefetch-Control" content="on" />
+  
   <!-- Favicons -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="shortcut icon" href="/favicon.ico" />
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
@@ -13,11 +25,109 @@
   <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
-
-  <!-- Default meta tags (will be overridden by Helmet) -->
-  <title>LyriLab - Interactive Music Tools</title>
-  <meta name="description" content="Interactive music tools for learning and creating music." />
-  <meta name="keywords" content="music tools, virtual instruments, music education" />
+  
+  <!-- Theme & PWA Config -->
+  <meta name="theme-color" content="#6366f1" />
+  <meta name="msapplication-TileColor" content="#6366f1" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="LyriLab" />
+  <meta name="format-detection" content="telephone=no" />
+  
+  <!-- Security Headers -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://www.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://www.google-analytics.com;" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta http-equiv="X-Frame-Options" content="DENY" />
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+  
+  <!-- Additional SEO & Language -->
+  <meta name="language" content="English" />
+  <meta name="revisit-after" content="7 days" />
+  <meta name="rating" content="General" />
+  <meta name="distribution" content="Global" />
+  
+  <!-- Default Meta (Fallback for SEOHead) -->
+  <title>LyriLab - Learn Music Visually Online | No DAW Software Needed</title>
+  <meta name="description" content="Learn music fundamentals visually online - no DAW or software downloads needed. Master sine, square, saw waves, EQ, compression with real-time visual feedback." />
+  <meta name="keywords" content="learn music visually online, music training no DAW needed, visual music learning online, sine square saw triangle waves online, EQ visual learning, compression visual training, no software music practice" />
+  <meta name="author" content="Bharath" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  
+  <!-- Open Graph (Fallback) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="LyriLab" />
+  <meta property="og:title" content="LyriLab - Learn Music Visually Online | No DAW Software Needed" />
+  <meta property="og:description" content="Learn music fundamentals visually online - no DAW or software downloads needed. Master sine, square, saw waves, EQ, compression with real-time visual feedback." />
+  <meta property="og:url" content="https://www.lyrilab.com/" />
+  <meta property="og:image" content="https://www.lyrilab.com/images/og-default.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="LyriLab - Visual Music Learning Platform" />
+  <meta property="og:locale" content="en_US" />
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://www.lyrilab.com/" />
+  
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "LyriLab",
+    "url": "https://www.lyrilab.com",
+    "logo": "https://www.lyrilab.com/images/logo.png",
+    "description": "Interactive music education platform with visual learning tools",
+    "sameAs": [
+      "https://github.com/lyrilab"
+    ],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer support",
+      "email": "support@lyrilab.com",
+      "availableLanguage": "English"
+    }
+  }
+  </script>
+  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "LyriLab",
+    "url": "https://www.lyrilab.com",
+    "publisher": {
+      "@type": "Organization",
+      "name": "LyriLab",
+      "logo": "https://www.lyrilab.com/images/logo.png"
+    },
+    "description": "Learn music fundamentals visually online - no DAW or software downloads needed.",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://www.lyrilab.com/search?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    "name": "LyriLab",
+    "url": "https://www.lyrilab.com",
+    "logo": "https://www.lyrilab.com/images/logo.png",
+    "description": "Visual music learning platform offering interactive education tools",
+    "educationalUse": "Music Education",
+    "teaches": [
+      "Music Theory",
+      "Audio Engineering",
+      "Sound Design",
+      "Music Production"
+    ],
+    "audienceType": "Students, Musicians, Producers"
+  }
+  </script>
 </head>
 <body>
   <div id="root"></div>
