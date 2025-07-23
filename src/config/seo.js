@@ -7,10 +7,61 @@ export const SEO_CONFIG = {
     twitterHandle: "...",
     locale: "en_US",
     type: "website",
-    author: "Bharath"
+    author: "Bharath",
+    image: "/images/og-default.jpg"
   },
 
   pages: {
+
+    // Home page
+    'home': {
+      title: "LyriLab - Learn Music Visually Online | No DAW Software Needed",
+      description: "Learn music fundamentals visually online without DAW or software downloads. Master EQ, compression, synthesis, and music theory with real-time visual feedback.",
+      keywords: "learn music online, visual music learning, music theory online, EQ training online, compression tutorial, synthesis learning, no DAW needed, online music education",
+      // image: "/images/og-home.jpg",
+      canonical: "/"
+    },
+
+    // Static pages
+    'docs': {
+      title: "Documentation - How to Use LyriLab Music Tools | LyriLab",
+      description: "Complete documentation and guides for all LyriLab music learning tools. Learn how to use our visual music training platform effectively.",
+      keywords: "LyriLab documentation, music tool guides, online music learning help, music education tutorials, visual learning guides",
+      // image: "/images/og-docs.jpg",
+      canonical: "/docs"
+    },
+
+    'contact': {
+      title: "Contact Us - Get Help with Music Learning | LyriLab",
+      description: "Contact LyriLab for support, feedback, or questions about our visual music learning platform. We're here to help your musical journey.",
+      keywords: "LyriLab contact, music learning support, customer service, feedback, music education help",
+      // image: "/images/og-contact.jpg",
+      canonical: "/contact"
+    },
+
+    'privacy-policy': {
+      title: "Privacy Policy - How We Protect Your Data | LyriLab",
+      description: "Learn how LyriLab protects your privacy and handles your data while you learn music online. Our commitment to user privacy.",
+      keywords: "LyriLab privacy policy, data protection, user privacy, music learning platform privacy",
+      // image: "/images/og-privacy.jpg",
+      canonical: "/privacy-policy"
+    },
+
+    'terms-and-conditions': {
+      title: "Terms and Conditions - LyriLab Usage Guidelines | LyriLab",
+      description: "Read LyriLab's terms of service and usage guidelines for our online music learning platform.",
+      keywords: "LyriLab terms of service, usage guidelines, music learning platform terms",
+      // image: "/images/og-terms.jpg",
+      canonical: "/terms-and-conditions"
+    },
+
+    // '404': {
+    //   title: "Page Not Found - LyriLab Music Learning Platform",
+    //   description: "The page you're looking for doesn't exist. Explore our visual music learning tools and educational resources.",
+    //   keywords: "404 error, page not found, LyriLab, music learning",
+    //   image: "/images/og-404.jpg",
+    //   canonical: "/"
+    // },
 
     'eq-studio': {
       title: "Online EQ Studio - Professional Audio Equalizer with Visual Controls | LyriLab",
@@ -369,7 +420,67 @@ export const SEO_CONFIG = {
   }
 };
 
-// Helper function to get SEO data for a specific page
+// // Helper function to get SEO data for a specific page
+// export const getSEOData = (pageId) => {
+//   console.log('getSEOData called with pageId:', pageId);
+  
+//   const pageData = SEO_CONFIG.pages[pageId];
+//   const global = SEO_CONFIG.global;
+  
+//   console.log('Found pageData:', pageData);
+  
+//   if (!pageData) {
+//     console.warn(`No SEO data found for pageId: ${pageId}`);
+//     return {
+//       title: `${global.siteName} - Learn Music Visually Online | No DAW Software Needed`,
+//       description: "Learn music fundamentals visually online - no DAW or software downloads needed. Master sine, square, saw waves, EQ, compression with real-time visual feedback.",
+//       keywords: "learn music visually online, music training no DAW needed, visual music learning online, sine square saw triangle waves online, EQ visual learning, compression visual training, no software music practice",
+//       image: "/images/og-default.jpg",
+//       canonical: "/",
+//       ...global
+//     };
+//   }
+
+//   const result = {
+//     ...pageData,
+//     fullTitle: pageData.title,
+//     ogTitle: pageData.title,
+//     ogDescription: pageData.description,
+//     ogImage: `${global.domain}${pageData.image}`,
+//     ogUrl: `${global.domain}${pageData.canonical}`,
+//     ...global
+//   };
+  
+//   console.log('getSEOData returning:', result);
+//   return result;
+// };
+
+// export const generateMusicToolStructuredData = (tool, seoData) => {
+//   return {
+//     "@context": "https://schema.org",
+//     "@type": "SoftwareApplication",
+//     "name": tool.name,
+//     "description": tool.description,
+//     "url": `${SEO_CONFIG.global.domain}${tool.path}`,
+//     "applicationCategory": "MultimediaApplication",
+//     "operatingSystem": "Web Browser",
+//     "offers": {
+//       "@type": "Offer",
+//       "price": "0",
+//       "priceCurrency": "USD"
+//     },
+//     "creator": {
+//       "@type": "Organization",
+//       "name": SEO_CONFIG.global.siteName
+//     },
+//     "featureList": tool.categories,
+//     "keywords": seoData.keywords
+//   };
+// };
+
+
+
+// Enhanced helper function to get SEO data for a specific page
 export const getSEOData = (pageId) => {
   console.log('getSEOData called with pageId:', pageId);
   
@@ -404,8 +515,9 @@ export const getSEOData = (pageId) => {
   return result;
 };
 
+// Enhanced structured data generator
 export const generateMusicToolStructuredData = (tool, seoData) => {
-  return {
+  const baseStructuredData = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "name": tool.name,
@@ -413,16 +525,61 @@ export const generateMusicToolStructuredData = (tool, seoData) => {
     "url": `${SEO_CONFIG.global.domain}${tool.path}`,
     "applicationCategory": "MultimediaApplication",
     "operatingSystem": "Web Browser",
+    "browserRequirements": "Requires JavaScript. Works with Chrome, Firefox, Safari, Edge.",
     "offers": {
       "@type": "Offer",
       "price": "0",
-      "priceCurrency": "USD"
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock"
     },
     "creator": {
       "@type": "Organization",
-      "name": SEO_CONFIG.global.siteName
+      "name": SEO_CONFIG.global.siteName,
+      "url": SEO_CONFIG.global.domain
     },
-    "featureList": tool.categories,
-    "keywords": seoData.keywords
+    "publisher": {
+      "@type": "Organization",
+      "name": SEO_CONFIG.global.siteName,
+      "url": SEO_CONFIG.global.domain
+    },
+    "featureList": tool.categories || [],
+    "keywords": seoData.keywords,
+    "inLanguage": "en-US",
+    "isFreeOfCharge": true,
+    "isAccessibleForFree": true,
+    "accessibilityControl": ["fullKeyboardControl", "fullMouseControl"],
+    "accessibilityFeature": ["alternativeText", "structuralNavigation"],
+    "accessibilityHazard": "none",
+    "educationalUse": "instruction",
+    "interactivityType": "active",
+    "learningResourceType": "interactive resource",
+    "typicalAgeRange": "13-99"
   };
+
+  // Add additional structured data for music education tools
+  if (tool.categories && tool.categories.includes('Music Theory')) {
+    baseStructuredData["@type"] = ["SoftwareApplication", "LearningResource"];
+    baseStructuredData.about = {
+      "@type": "Thing",
+      "name": "Music Theory",
+      "description": "Educational content about music theory and composition"
+    };
+  }
+
+  return baseStructuredData;
+};
+
+// Sitemap generation helper
+export const generateSitemap = () => {
+  const pages = Object.keys(SEO_CONFIG.pages).map(pageId => {
+    const pageData = SEO_CONFIG.pages[pageId];
+    return {
+      url: `${SEO_CONFIG.global.domain}${pageData.canonical}`,
+      lastmod: new Date().toISOString().split('T')[0],
+      changefreq: pageId === 'home' ? 'weekly' : 'monthly',
+      priority: pageId === 'home' ? '1.0' : '0.8'
+    };
+  });
+  
+  return pages;
 };
