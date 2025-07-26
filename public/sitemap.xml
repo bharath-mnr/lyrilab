@@ -2,253 +2,253 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.lyrilab.com</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
     <priority>1.0</priority>
   </url>
   
   <url>
     <loc>https://www.lyrilab.com/</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.lyrilab.com/docs</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.lyrilab.com/contact</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.lyrilab.com/privacy-policy</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.lyrilab.com/terms-and-conditions</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.lyrilab.com/eq-studio</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.lyrilab.com/reverb-studio</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.lyrilab.com/slowed-reverb-studio</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.lyrilab.com/3D-audio-studio</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.lyrilab.com/bass-booster</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.lyrilab.com/virtual-piano</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.lyrilab.com/drum-machine</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.lyrilab.com/tap-tempo-tool</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.lyrilab.com/time-signature-metronome</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/chord-explorer</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/chord-progression-builder</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/scale-explorer</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/interval-training</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/circle-of-fifths</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/arpeggiator-sequencer</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/wavetable-editor</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/lfo-modulation</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/adsr-envelope-tool</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/eq-explorer</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/compression-explorer</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/reverb-explorer</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/delay-explorer</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.lyrilab.com/polyrhythm-sequencer</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.lyrilab.com/euclidean-rhythm-generator</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/chord-training-quiz</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/ear-training-quiz</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/synthesis-challenge</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/humanizer-panel</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/portamento-glide</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/waveform-combiner</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/consonance-dissonance</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/piano-roll-basics</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/panner-tool</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/mid-side-explorer</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/pitch-shift-explorer</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/stereo-imager-explorer</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/limiter-explorer</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/saturation-explorer</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/chorus-explorer</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/tremolo-explorer</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/granular-explorer</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lyrilab.com/beat-repeat-looper</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.lyrilab.com/swing-groove-visualizer</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/chord-explorer</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/chord-progression-builder</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/scale-explorer</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/interval-training</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/circle-of-fifths</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/consonance-dissonance</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/wavetable-editor</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/lfo-modulation</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/adsr-envelope-tool</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/arpeggiator-sequencer</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/waveform-combiner</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/granular-explorer</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/portamento-glide</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/eq-explorer</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/compression-explorer</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/reverb-explorer</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/delay-explorer</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/limiter-explorer</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/saturation-explorer</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/chorus-explorer</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/tremolo-explorer</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/panner-tool</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/mid-side-explorer</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/pitch-shift-explorer</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/stereo-imager-explorer</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/piano-roll-basics</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/humanizer-panel</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/beat-repeat-looper</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/chord-training-quiz</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/ear-training-quiz</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lyrilab.com/synthesis-challenge</loc>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.lyrilab.com/drum-sequencer-game</loc>
-    <lastmod>2025-07-23T15:05:19.656Z</lastmod>
+    <lastmod>2025-07-26T08:30:50.716Z</lastmod>
     <priority>0.8</priority>
   </url>
 </urlset>
