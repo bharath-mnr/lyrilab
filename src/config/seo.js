@@ -306,13 +306,13 @@ export const SEO_CONFIG = {
       canonical: "/waveform-combiner"
     },
 
-  'consonance-dissonance': {
-  title: "Advanced Harmony Training - Interactive Consonance Dissonance Analyzer | LyriLab",
-  description: "Master harmony with real-time consonance and dissonance analysis. Interactive wave visualization, interval training, and dynamic harmonic tension analysis. Features live waveform display, customizable frequencies, and instant feedback on musical intervals from unison to octave.",
-  keywords: "harmony practice online, consonance dissonance analyzer, interactive music theory training, real-time harmonic analysis, interval relationship trainer, harmonic tension analyzer, music interval visualizer, wave interference patterns music, audio harmony generator, chord tension analysis tool, musical frequency relationships, harmonic series training, interval ear training online, practice consonance dissonance online, visual harmony training waveforms, musical interval mathematics, frequency ratio harmony training, acoustic harmony visualization, online pitch relationship trainer",
-  image: "/images/og-consonance.jpg",
-  canonical: "/consonance-dissonance"
-  },
+    'consonance-dissonance': {
+    title: "Advanced Harmony Training - Interactive Consonance Dissonance Analyzer | LyriLab",
+    description: "Master harmony with real-time consonance and dissonance analysis. Interactive wave visualization, interval training, and dynamic harmonic tension analysis. Features live waveform display, customizable frequencies, and instant feedback on musical intervals from unison to octave.",
+    keywords: "harmony practice online, consonance dissonance analyzer, interactive music theory training, real-time harmonic analysis, interval relationship trainer, harmonic tension analyzer, music interval visualizer, wave interference patterns music, audio harmony generator, chord tension analysis tool, musical frequency relationships, harmonic series training, interval ear training online, practice consonance dissonance online, visual harmony training waveforms, musical interval mathematics, frequency ratio harmony training, acoustic harmony visualization, online pitch relationship trainer",
+    image: "/images/og-consonance.jpg",
+    canonical: "/consonance-dissonance"
+    },
 
     'piano-roll-basics': {
       title: "Online Piano Roll Practice - Real-Time MIDI Sequencing Training | LyriLab",
@@ -419,66 +419,6 @@ export const SEO_CONFIG = {
     }
   }
 };
-
-// // Helper function to get SEO data for a specific page
-// export const getSEOData = (pageId) => {
-//   console.log('getSEOData called with pageId:', pageId);
-  
-//   const pageData = SEO_CONFIG.pages[pageId];
-//   const global = SEO_CONFIG.global;
-  
-//   console.log('Found pageData:', pageData);
-  
-//   if (!pageData) {
-//     console.warn(`No SEO data found for pageId: ${pageId}`);
-//     return {
-//       title: `${global.siteName} - Learn Music Visually Online | No DAW Software Needed`,
-//       description: "Learn music fundamentals visually online - no DAW or software downloads needed. Master sine, square, saw waves, EQ, compression with real-time visual feedback.",
-//       keywords: "learn music visually online, music training no DAW needed, visual music learning online, sine square saw triangle waves online, EQ visual learning, compression visual training, no software music practice",
-//       image: "/images/og-default.jpg",
-//       canonical: "/",
-//       ...global
-//     };
-//   }
-
-//   const result = {
-//     ...pageData,
-//     fullTitle: pageData.title,
-//     ogTitle: pageData.title,
-//     ogDescription: pageData.description,
-//     ogImage: `${global.domain}${pageData.image}`,
-//     ogUrl: `${global.domain}${pageData.canonical}`,
-//     ...global
-//   };
-  
-//   console.log('getSEOData returning:', result);
-//   return result;
-// };
-
-// export const generateMusicToolStructuredData = (tool, seoData) => {
-//   return {
-//     "@context": "https://schema.org",
-//     "@type": "SoftwareApplication",
-//     "name": tool.name,
-//     "description": tool.description,
-//     "url": `${SEO_CONFIG.global.domain}${tool.path}`,
-//     "applicationCategory": "MultimediaApplication",
-//     "operatingSystem": "Web Browser",
-//     "offers": {
-//       "@type": "Offer",
-//       "price": "0",
-//       "priceCurrency": "USD"
-//     },
-//     "creator": {
-//       "@type": "Organization",
-//       "name": SEO_CONFIG.global.siteName
-//     },
-//     "featureList": tool.categories,
-//     "keywords": seoData.keywords
-//   };
-// };
-
-
 
 // Enhanced helper function to get SEO data for a specific page
 export const getSEOData = (pageId) => {
