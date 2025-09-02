@@ -1,12 +1,40 @@
-# React + Vite
+🎵 LyriLab – Learn Music Visually Online
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+LyriLab is an interactive music learning platform with 40+ powerful tools designed to make learning music fun, engaging, and highly visual. Whether you’re a beginner or an advanced musician, LyriLab helps you explore theory, sound, and creativity with ease.
 
-Currently, two official plugins are available:
+✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🎹 40+ Music Tools – scales, chords, rhythm trainers, ear training, composition helpers & more
 
-## Expanding the ESLint configuration
+🎧 Audio Engine – powered by Tone.js
+ & Howler.js
+ for seamless sound playback
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+🎨 Visual Learning – 3D graphics with Three.js
+ to make concepts interactive
+
+⚡ Fast & Modern – built with React 19
+, Vite
+, and TailwindCSS
+
+📱 Responsive Design – works smoothly across desktop, tablet, and mobile
+
+🔍 Smart Search – quickly find tools and resources with autosuggest
+
+🌍 SEO Optimized – using dynamic meta tags via react-helmet-async
+
+🚀 Deployed on Vercel – fast, scalable, and production-ready
+
+🛠 Tech Stack
+
+Frontend: React 19, React Router, TailwindCSS
+
+Audio: Tone.js, Howler.js
+
+3D/Visuals: Three.js
+
+Utilities: Lucide React (icons), React Autosuggest
+
+Build Tool: Vite
+
+Deployment: Vercel
